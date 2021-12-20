@@ -12,4 +12,5 @@ public class LikesDto {
     public static class ResponseDto{
         private Long userId;
     }
+
 }

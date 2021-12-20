@@ -1,11 +1,14 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.dto.CommentDto;
+import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
+@Builder
 @Entity
 @Getter
 @NoArgsConstructor
@@ -24,4 +27,17 @@ public class Comment extends Timestamped {
 
     @Column(nullable = false)
     private String content;
+
+    public CommentDto.ResponseDto toResponseDto() {
+        return CommentDto.ResponseDto.builder()
+                .commentId(id)
+                .nickname(user.getNickname())
+                .content(content)
+                .createdAt(TimeConversion.timeConversion(getCreateAt()))
+                .build();
+    }
+
+    public void update(CommentDto.RequestDto requestDto) {
+        this.content = requestDto.getContent();
+    }
 }

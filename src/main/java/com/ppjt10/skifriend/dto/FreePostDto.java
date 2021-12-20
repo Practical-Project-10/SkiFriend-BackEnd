@@ -28,8 +28,8 @@ public class FreePostDto {
         private String content;
         private String image;
         private String createdAt;
-        private List<LikesDto> likesDtoList;
-        private List<CommentDto> commentDtoList;
+        private List<LikesDto.ResponseDto> likesDtoList;
+        private List<CommentDto.ResponseDto> commentDtoList;
     }
 
     @Builder

@@ -1,7 +1,9 @@
 package com.ppjt10.skifriend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.time.Timestamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Entity
 @Getter
 @NoArgsConstructor
@@ -40,4 +43,10 @@ public class FreePost extends Timestamped {
     @OneToMany(mappedBy = "freePost", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"freePost"})
     List<Likes> likeList = new ArrayList<>();
+
+    public void update(FreePostDto.RequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.Image = requestDto.getImage();
+    }
 }
