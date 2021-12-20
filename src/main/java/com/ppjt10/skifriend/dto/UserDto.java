@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserDto {
     @Builder
@@ -15,9 +16,8 @@ public class UserDto {
         private String name;
         private String phoneNum;
         private String nickname;
-        // Form data로 받기
-//        private String profileImg;
-//        private String vacImg;
+        private MultipartFile profileImg;
+        private MultipartFile vacImg;
         private String gender;
         private String ageRange;
         private String career;

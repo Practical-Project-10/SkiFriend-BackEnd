@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class FreePostDto {
     public static class RequestDto{
         private String title;
         private String content;
-//        private String image; // Formdata고려
+        private MultipartFile image; // Formdata고려
     }
 
     @Builder
