@@ -3,6 +3,7 @@ package com.ppjt10.skifriend.service;
 import java.util.HashMap;
 import java.util.Random;
 
+
 import com.ppjt10.skifriend.properties.ApiKeyForSMS;
 import org.json.simple.JSONObject;
 import net.nurigo.java_sdk.api.Message;
