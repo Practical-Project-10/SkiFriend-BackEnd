@@ -3,6 +3,8 @@ package com.ppjt10.skifriend.config;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ppjt10.skifriend.entity.FreePost;
+import com.ppjt10.skifriend.repository.FreePostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
+    private final FreePostRepository freePostRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
@@ -35,6 +38,13 @@ public class S3Uploader {
         return upload(uploadFile, dirName);
     }
 
+    public void delete(
+            String fileName
+    ) throws IOException {
+        amazonS3Client.deleteObject(bucket, fileName);
+        System.out.println("삭제왼료");
+    }
+
     // S3로 파일 업로드하기
     private String upload(
             File uploadFile, String dirName
@@ -44,6 +54,7 @@ public class S3Uploader {
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
+
 
     // S3로 업로드
     private String putS3(

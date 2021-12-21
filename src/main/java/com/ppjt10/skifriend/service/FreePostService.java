@@ -21,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +34,7 @@ public class FreePostService {
     private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
 
-    private final String imageDirName = "static";
+    private final String imageDirName = "freepost";
 
     //region 자유 게시판 게시글 작성
     @Transactional
@@ -64,7 +66,9 @@ public class FreePostService {
             String skiResort,
             Long postId
     ) {
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort);
+        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
         List<LikesDto.ResponseDto> likesResponseDtoList = freePost.getLikeList().stream()
                 .map(Likes::toResponseDto)
                 .collect(Collectors.toList());
@@ -78,48 +82,54 @@ public class FreePostService {
                 .title(freePost.getTitle())
                 .content(freePost.getContent())
                 .image(freePost.getImage())
-//                .likesDtoList(likesResponseDtoList)
-//                .commentDtoList(commentResponseDtoList)
+                .likesDtoList(likesResponseDtoList)
+                .commentDtoList(commentResponseDtoList)
                 .build();
         return ResponseEntity.ok().body(freeResponseDto);
     }
     //endregion
 
     //region 자유 게시판 게시글 수정
-//    public void modifyFreePost(
-//            FreePostDto.RequestDto requestDto,
-//            MultipartFile image,
-//            String skiResort,
-//            Long postId
-//            ) {
-//        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort);
-//
-//        freePost.update(requestDto);
-//    }
+    @Transactional
+    public void modifyFreePost(
+            FreePostDto.RequestDto requestDto,
+            MultipartFile image,
+            String skiResort,
+            Long postId
+            ) throws IOException {
+        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
+        String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+        s3Uploader.delete(oldImageUrl);
+        String imageUrl = s3Uploader.upload(image, imageDirName);
+        freePost.update(requestDto, imageUrl);
+    }
     //endregion
 
     //region 자유 게시판 게시글 삭제
+    @Transactional
     public void deleteFreePost(Long postId, String skiResort) {
-        freePostRepository.deleteByIdAndSkiResort(postId, skiResort);
+        freePostRepository.deleteById(postId);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 작성
     @Transactional
     public void writeComment(
-            UserDetailsImpl userDetails,
+//            UserDetailsImpl userDetails,
             CommentDto.RequestDto requestDto,
             String skiResort,
             Long postId
     ) {
-        if(userDetails == null) {
-            throw new IllegalArgumentException("회원가입 후 이용해주세요.");
-        }
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort);
+//        if(userDetails == null) {
+//            throw new IllegalArgumentException("회원가입 후 이용해주세요.");
+//        }
+        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
         Comment comment = Comment.builder()
                 .freePost(freePost)
-                .user(userDetails.getUser())
+//                .user(userDetails.getUser())
                 .content(requestDto.getContent())
                 .build();
 
@@ -129,26 +139,26 @@ public class FreePostService {
 
     //region 자유 게시판 게시글 댓글 수정
     @Transactional
-    public void editComment(UserDetailsImpl userDetails, CommentDto.RequestDto requestDto, Long commentId) {
+    public void editComment(CommentDto.RequestDto requestDto, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
-        if(userDetails.getUser().getId() != comment.getUser().getId()) {
-            throw new IllegalArgumentException("댓글 작성자만 댓글을 수정할 수 있습니다");
-        }
+//        if(userDetails.getUser().getId() != comment.getUser().getId()) {
+//            throw new IllegalArgumentException("댓글 작성자만 댓글을 수정할 수 있습니다");
+//        }
         comment.update(requestDto);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 삭제
     @Transactional
-    public void deleteComment(UserDetailsImpl userDetails, Long commentId) {
+    public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
-        if(userDetails.getUser().getId() != comment.getUser().getId()) {
-            throw new IllegalArgumentException("댓글 작성자만 댓글을 삭제할 수 있습니다");
-        }
+//        if(userDetails.getUser().getId() != comment.getUser().getId()) {
+//            throw new IllegalArgumentException("댓글 작성자만 댓글을 삭제할 수 있습니다");
+//        }
         commentRepository.deleteById(commentId);
     }
     //endregion
