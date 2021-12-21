@@ -73,13 +73,13 @@ public class FreePostService {
                 .collect(Collectors.toList());
         FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
                 .postId(postId)
-                .nickname(freePost.getUser().getNickname())
+//                .nickname(freePost.getUser().getNickname())
                 .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .content(freePost.getContent())
                 .image(freePost.getImage())
-                .likesDtoList(likesResponseDtoList)
-                .commentDtoList(commentResponseDtoList)
+//                .likesDtoList(likesResponseDtoList)
+//                .commentDtoList(commentResponseDtoList)
                 .build();
         return ResponseEntity.ok().body(freeResponseDto);
     }
