@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.service;
 
+
 import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.entity.User;
@@ -29,6 +30,7 @@ public class UserService {
 
     @Transactional
     public void createUser(MultipartFile profileImg, MultipartFile vacImg, UserDto.RequestDto requestDto) throws IOException {
+
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
@@ -72,6 +74,7 @@ public class UserService {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
     }
+
 
     @Transactional
     public UserDto.ResponseDto getUserInfo(Long userId) {

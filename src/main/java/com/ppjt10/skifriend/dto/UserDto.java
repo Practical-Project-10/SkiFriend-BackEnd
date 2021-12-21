@@ -9,6 +9,7 @@ public class UserDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestDto{
         private String username;
         private String password;
@@ -23,6 +24,7 @@ public class UserDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class updateRequestDto{
         private String password;
         private String nickname;
@@ -33,6 +35,7 @@ public class UserDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResponseDto{
         private String username;
         private String phoneNum;
