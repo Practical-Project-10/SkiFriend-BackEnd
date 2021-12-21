@@ -42,16 +42,17 @@ public class FreePostController {
     }
 
     //region 자유 게시판 게시글 수정
-//    @PutMapping("/board/{skiResort}/freeBoard/{postId}")
-//    public void editFreePost(
-//            @PathVariable String skiResort,
-//            @PathVariable Long postId,
-////            @AuthenticationPrincipal UserDetailsImpl userDetails,
-//            @ModelAttribute("requestDto") FreePostDto.RequestDto requestDto
-//    ) {
-//        freePostService.modifyFreePost(requestDto, skiResort, postId);
-//
-//    }
+    @PutMapping("/board/{skiResort}/freeBoard/{postId}")
+    public void editFreePost(
+            @PathVariable String skiResort,
+            @PathVariable Long postId,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("requestDto") FreePostDto.RequestDto requestDto
+    ) throws IOException {
+        freePostService.modifyFreePost(requestDto, image, skiResort, postId);
+
+    }
 
 
 
@@ -70,12 +71,12 @@ public class FreePostController {
     //region 자유 게시판 게시글 댓글 작성
     @PostMapping("/board/{skiResort}/freeBoard/{postId}/comments")
     public void writeFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            CommentDto.RequestDto requestDto,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody CommentDto.RequestDto requestDto,
             @PathVariable String skiResort,
             @PathVariable Long postId
     ) {
-        freePostService.writeComment(userDetails, requestDto, skiResort, postId);
+        freePostService.writeComment(requestDto, skiResort, postId);
     }
     //endregion
 
@@ -83,21 +84,23 @@ public class FreePostController {
     //region 자유 게시판 게시글 댓글 수정
     @PutMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
     public void editFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            CommentDto.RequestDto requestDto,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody CommentDto.RequestDto requestDto,
 //            @PathVariable String skiResort,
             @PathVariable Long commentId
 
     ) {
-        freePostService.editComment(userDetails, requestDto, commentId);
+        freePostService.editComment(requestDto, commentId);
     }
+    //endregion
 
+    //region 자유 게시판 게시글 댓글 삭제
     @DeleteMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
     public void deleteFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long commentId
             ) {
-        freePostService.deleteComment(userDetails, commentId);
+        freePostService.deleteComment(commentId);
     }
-
+    //endregion
 }
