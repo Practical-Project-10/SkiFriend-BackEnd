@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.config;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.repository.FreePostRepository;
@@ -38,11 +39,9 @@ public class S3Uploader {
         return upload(uploadFile, dirName);
     }
 
-    public void delete(
-            String fileName
-    ) throws IOException {
-        amazonS3Client.deleteObject(bucket, fileName);
-        System.out.println("삭제왼료");
+
+    public void deleteFromS3(String source) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, source));
     }
 
     // S3로 파일 업로드하기

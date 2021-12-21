@@ -62,4 +62,11 @@ public class User {
     public void setVacImg(String imgPath){
         this.vacImg = imgPath;
     }
+
+    public void update(UserDto.updateRequestDto requestDto, String enPassword) {
+        this.password = enPassword;
+        this.nickname = requestDto.getNickname();
+        this.career = requestDto.getCareer();
+        this.selfIntro = requestDto.getSelfIntro();
+    }
 }
