@@ -3,6 +3,7 @@ package com.ppjt10.skifriend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,15 +13,17 @@ public class FreePostDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestDto{
         private String title;
         private String content;
-        private MultipartFile image; // Formdata고려
+//        private MultipartFile image; // Formdata고려
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResponseDto{
         private Long postId;
         private String nickname;
@@ -28,13 +31,14 @@ public class FreePostDto {
         private String content;
         private String image;
         private String createdAt;
-        private List<LikesDto> likesDtoList;
-        private List<CommentDto> commentDtoList;
+        private List<LikesDto.ResponseDto> likesDtoList;
+        private List<CommentDto.ResponseDto> commentDtoList;
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ReortTabDto{
         private Long postId;
         private String nickname;

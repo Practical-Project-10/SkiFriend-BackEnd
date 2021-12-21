@@ -3,16 +3,21 @@ package com.ppjt10.skifriend.service;
 import java.util.HashMap;
 import java.util.Random;
 
+
+import com.ppjt10.skifriend.properties.ApiKeyForSMS;
 import org.json.simple.JSONObject;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.stereotype.Service;
 
+import static com.ppjt10.skifriend.properties.ApiKeyForSMS.*;
+
+
 @Service
 public class MessageService {
     public String sendSMS(String phonNumber) {
-        String api_key = "NCSUGJUECHMH2RNC";
-        String api_secret = "4JRE9YGPVRNPYZ8C9A5IQGIDYSI2USTD";
+        String api_key = API_KEY;
+        String api_secret = API_KEY_SECREAT;
 
         Message coolsms = new Message(api_key, api_secret);
         HashMap<String, String> params = new HashMap<String, String>();
