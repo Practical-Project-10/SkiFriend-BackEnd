@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.entity;
 
 import com.ppjt10.skifriend.dto.LikesDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,5 +27,10 @@ public class Likes {
         return LikesDto.ResponseDto.builder()
                 .userId(user.getId())
                 .build();
+    }
+
+    public Likes(User user, FreePost freePost) {
+        this.user = user;
+        this.freePost = freePost;
     }
 }
