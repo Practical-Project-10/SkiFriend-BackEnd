@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.config;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,10 @@ public class S3Uploader {
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
 
         return upload(uploadFile, dirName);
+    }
+
+    public void deleteFromS3(String source) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, source));
     }
 
     // S3로 파일 업로드하기
