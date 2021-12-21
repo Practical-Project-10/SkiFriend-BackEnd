@@ -30,7 +30,7 @@ public class CarpoolController {
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        carpoolService.updateCarpool(carpoolId, requestDto);
+        carpoolService.updateCarpool(carpoolId, requestDto); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
     }
 
     //카풀 게시글 삭제

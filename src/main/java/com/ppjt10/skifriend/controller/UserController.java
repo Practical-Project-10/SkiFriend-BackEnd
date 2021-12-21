@@ -20,13 +20,13 @@ public class UserController {
     private final MessageService messageService;
 
     // 문자 SMS 인증
-    @GetMapping("/check/sendsms")
+    @GetMapping("/user/sms")
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.phoneNumDto phoneNumber){
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
 
     // 유저 핸드폰 번호 공개하기
-    @GetMapping("/user/{userId}/phoneNum")
+    @GetMapping("/user/Info/phoneNum")
     public ResponseEntity<UserDto.phoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok().body(userService.getPhoneNum(userDetails.getUser().getId()));
     }
@@ -41,13 +41,13 @@ public class UserController {
     }
 
     // 유저 정보 조회하기
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/Info")
     public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok().body(userService.getUserInfo(userDetails.getUser().getId()));
     }
 
     // 유저 정보 수정하기
-    @PutMapping("/user/{userId}")
+    @PutMapping("/user/Info")
     public ResponseEntity<UserDto.ResponseDto> updateUserInfo(@RequestPart ("profileImg") MultipartFile profileImg,
                                                               @RequestPart("vacImg") MultipartFile vacImg,
                                                               @RequestPart("requestDto") UserDto.updateRequestDto requestDto,
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     // 유저 삭제하기
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/user/Info")
     public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.deleteUser(userDetails.getUser().getId());
     }
