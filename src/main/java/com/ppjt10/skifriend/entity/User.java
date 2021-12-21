@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.dto.UserDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +24,6 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String phoneNum;
 
     @Column
@@ -45,4 +43,23 @@ public class User {
 
     @Column(nullable = false)
     private String selfIntro;
+
+    public User(UserDto.RequestDto requestDto, String enPassword){
+        this.username = requestDto.getUsername();
+        this.nickname = requestDto.getNickname();
+        this.phoneNum = requestDto.getPhoneNum();
+        this.password = enPassword;
+        this.gender = requestDto.getGender();
+        this.ageRange = requestDto.getAgeRange();
+        this.career = requestDto.getCareer();
+        this.selfIntro = requestDto.getSelfIntro();
+    }
+
+    public void setProfileImg(String imgPath){
+        this.profileImg = imgPath;
+    }
+
+    public void setVacImg(String imgPath){
+        this.vacImg = imgPath;
+    }
 }

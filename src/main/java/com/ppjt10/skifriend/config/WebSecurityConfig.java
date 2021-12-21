@@ -123,19 +123,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/h2-console/**");
 
         // 회원 관리 API 허용
-        skipPathList.add("GET,/user/**");
         skipPathList.add("POST,/user/signup");
 
-        // Image View 허용
-        skipPathList.add("GET,/images/**");
+        // 문자 SMS 인증 요청
+        skipPathList.add("GET,/check/sendsms");
 
-
-        // Swagger
-        skipPathList.add("GET, /swagger-ui.html");
-        skipPathList.add("GET, /swagger/**");
-        skipPathList.add("GET, /swagger-resources/**");
-        skipPathList.add("GET, /webjars/**");
-        skipPathList.add("GET, /v2/api-docs");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
