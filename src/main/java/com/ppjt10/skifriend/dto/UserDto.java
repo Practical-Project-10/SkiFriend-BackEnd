@@ -35,7 +35,6 @@ public class UserDto {
     @AllArgsConstructor
     public static class ResponseDto{
         private String username;
-        private String password;
         private String phoneNum;
         private String nickname;
         private String profileImg;
