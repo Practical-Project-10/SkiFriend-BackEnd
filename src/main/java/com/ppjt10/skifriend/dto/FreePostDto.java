@@ -15,7 +15,6 @@ public class FreePostDto {
     public static class RequestDto{
         private String title;
         private String content;
-//        private MultipartFile image; // Formdata고려
     }
 
     @Builder
