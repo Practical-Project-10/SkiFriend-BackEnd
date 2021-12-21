@@ -12,4 +12,9 @@ public class SkiFriendApplication {
         SpringApplication.run(SkiFriendApplication.class, args);
     }
 
+
 }
+//    public static void main(String[] args) {
+//        SpringApplication.run(SkiFriendApplication.class, args);
+//    }
+//

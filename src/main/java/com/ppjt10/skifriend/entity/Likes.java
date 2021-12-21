@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.dto.LikesDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +22,9 @@ public class Likes {
     @JoinColumn(nullable = false)
     private FreePost freePost;
 
-
+    public LikesDto.ResponseDto toResponseDto() {
+        return LikesDto.ResponseDto.builder()
+                .userId(user.getId())
+                .build();
+    }
 }
