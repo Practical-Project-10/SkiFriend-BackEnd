@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,11 +22,13 @@ public class FreePostController {
     @PostMapping("/board/{skiResort}/freeBoard")
     //수정 필요할 수도? "" 부분
     public void writeFreePosts(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestPart("image") MultipartFile image,
             @PathVariable String skiResort,
-            @ModelAttribute("requestDto") FreePostDto.RequestDto requestDto
-    ) {
-        freePostService.uploadFreePosts(userDetails, skiResort, requestDto);
+            @RequestPart("requestDto") FreePostDto.RequestDto requestDto
+    ) throws IOException {
+        freePostService.uploadFreePosts(image, skiResort, requestDto);
+        System.out.println(requestDto.getContent());
     }
     //endregion
 
@@ -37,16 +42,16 @@ public class FreePostController {
     }
 
     //region 자유 게시판 게시글 수정
-    @PutMapping("/board/{skiResort}/freeBoard/{postId}")
-    public void editFreePost(
-            @PathVariable String skiResort,
-            @PathVariable Long postId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @ModelAttribute("requestDto") FreePostDto.RequestDto requestDto
-    ) {
-        freePostService
-
-    }
+//    @PutMapping("/board/{skiResort}/freeBoard/{postId}")
+//    public void editFreePost(
+//            @PathVariable String skiResort,
+//            @PathVariable Long postId,
+////            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @ModelAttribute("requestDto") FreePostDto.RequestDto requestDto
+//    ) {
+//        freePostService.modifyFreePost(requestDto, skiResort, postId);
+//
+//    }
 
 
 

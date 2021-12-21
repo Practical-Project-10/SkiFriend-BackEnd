@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 
+import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.CommentDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.dto.LikesDto;
@@ -9,17 +10,17 @@ import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.Likes;
 import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
+import com.ppjt10.skifriend.repository.LikesRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FreePostService {
     private final FreePostRepository freePostRepository;
-//    private final S3Uploader s3Uploader;
-//    private final LikesRepository likesRepository;
+    private final S3Uploader s3Uploader;
+    private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
 
     private final String imageDirName = "static";
@@ -36,17 +37,18 @@ public class FreePostService {
     //region 자유 게시판 게시글 작성
     @Transactional
     public void uploadFreePosts(
-            UserDetailsImpl userDetails,
+//            UserDetailsImpl userDetails,
+            MultipartFile image,
             String skiResort,
-            @ModelAttribute("requestDto") FreePostDto.RequestDto requestDto
-    ) {
-        if(userDetails == null) {
-            throw new IllegalArgumentException("회원가입 후 이용해주세요.");
-        }
-        String imageUrl = s3Uploader.upload(requestDto.getImage(), imageDirName);
+            FreePostDto.RequestDto requestDto
+    ) throws IOException {
+//        if(userDetails == null) {
+//            throw new IllegalArgumentException("회원가입 후 이용해주세요.");
+//        }
+        String imageUrl = s3Uploader.upload(image, imageDirName);
 
         FreePost freePost = FreePost.builder()
-                .user(userDetails.getUser())
+//                .user(userDetails.getUser())
                 .skiResort(skiResort)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
@@ -84,15 +86,16 @@ public class FreePostService {
     //endregion
 
     //region 자유 게시판 게시글 수정
-    public void modifyFreePost(
-            FreePostDto.RequestDto requestDto,
-            String skiResort,
-            Long postId
-            ) {
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort);
-        freePost.update(requestDto);
-
-    }
+//    public void modifyFreePost(
+//            FreePostDto.RequestDto requestDto,
+//            MultipartFile image,
+//            String skiResort,
+//            Long postId
+//            ) {
+//        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort);
+//
+//        freePost.update(requestDto);
+//    }
     //endregion
 
     //region 자유 게시판 게시글 삭제
