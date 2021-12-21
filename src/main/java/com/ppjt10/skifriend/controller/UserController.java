@@ -18,10 +18,12 @@ public class UserController {
     private final UserService userService;
     private final MessageService messageService;
 
+
     @GetMapping("/check/sendsms")
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.requestForSMS phoneNumber){
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
+
 
     @PostMapping("/user/signup")
     public void userSignup(@RequestPart("profileImg") MultipartFile profileImg,

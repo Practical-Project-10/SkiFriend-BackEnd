@@ -3,12 +3,14 @@ package com.ppjt10.skifriend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 public class CarpoolDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestDto{
         private String carpoolType;
         private String startLocation;
@@ -23,6 +25,7 @@ public class CarpoolDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResponseDto{
         private Long userId;
         private Long postId;

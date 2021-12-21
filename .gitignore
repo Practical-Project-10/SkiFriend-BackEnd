@@ -25,7 +25,11 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+<<<<<<< HEAD
+!**/src/main/java/com/ppjt10/skifriend/service/MessageService.java
+=======
 ApiKeyForSMS.java
+>>>>>>> ae55524641f07d3492c3026e794ea61a818c6d00
 
 ### NetBeans ###
 /nbproject/private/
@@ -39,3 +43,4 @@ ApiKeyForSMS.java
 
 ### AWS S3 ###
 application.properties
+

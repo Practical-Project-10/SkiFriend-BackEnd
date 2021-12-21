@@ -12,5 +12,4 @@ public class SkiFriendApplication {
         SpringApplication.run(SkiFriendApplication.class, args);
     }
 
-
 }
