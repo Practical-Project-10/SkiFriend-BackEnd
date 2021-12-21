@@ -1,9 +1,8 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.UserDto;
-import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
-import com.ppjt10.skifriend.service.MessageService;
+import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,13 @@ public class UserController {
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.phoneNumDto phoneNumber){
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
+
+    // 인증번호 일치하는지 검증
+    @PostMapping("/user/sms/check")
+    public void verifyRandNum(@RequestBody UserDto.SmsCertificationDto requestDto){
+        messageService.verifySms(requestDto);
+    }
+
 
     // 유저 핸드폰 번호 공개하기
     @GetMapping("/user/Info/phoneNum")
