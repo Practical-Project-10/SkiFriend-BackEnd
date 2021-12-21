@@ -1,6 +1,9 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.Timestamped;
+import com.ppjt10.skifriend.validator.CarpoolTypeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -44,4 +47,28 @@ public class Carpool extends Timestamped {
 
     @Column(nullable = false)
     private String notice;
+
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResult) {
+        this.user = user;
+        this.carpoolType = requestDto.getCarpoolType();
+        this.skiResult = skiResult;
+        this.startLocation = requestDto.getStartLocation();
+        this.endLocation = requestDto.getEndLocation();
+        this.date = requestDto.getDate();
+        this.time = requestDto.getTime();
+        this.price = requestDto.getPrice();
+        this.memberNum = requestDto.getMemberNum();
+        this.notice = requestDto.getNotice();
+    }
+
+    public void update(CarpoolDto.RequestDto requestDto) {
+        this.carpoolType = requestDto.getCarpoolType();
+        this.startLocation = requestDto.getStartLocation();
+        this.endLocation = requestDto.getEndLocation();
+        this.date = requestDto.getDate();
+        this.time = requestDto.getTime();
+        this.price = requestDto.getPrice();
+        this.memberNum = requestDto.getMemberNum();
+        this.notice = requestDto.getNotice();
+    }
 }
