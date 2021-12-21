@@ -34,18 +34,19 @@ public class UserService {
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
+        String phoneNumber = requestDto.getPhoneNum();
 
         // 중복 검사
-        checkDuplicatoin(username, nickname);
+        checkDuplicatoin(username, nickname, phoneNumber);
 
         // 유효성 검사
-        UserInfoValidator.validateUserInfoInput(username, nickname, password);
-        GenderType.findByGenderType(requestDto.getGender()).getGenderType();
-        AgeRangeType.findByageRangeType(requestDto.getAgeRange()).getageRangeType();
-        CareerType.findByCareerType(requestDto.getCareer()).getCareerType();
+        UserInfoValidator.validateUserInfoInput(username, nickname, password, phoneNumber, requestDto.getSelfIntro());
+        GenderType.findByGenderType(requestDto.getGender());
+        AgeRangeType.findByageRangeType(requestDto.getAgeRange());
+        CareerType.findByCareerType(requestDto.getCareer());
 
         // 민감 정보 암호화
-        String enPassword = passwordEncoder.encode(requestDto.getPassword());
+        String enPassword = passwordEncoder.encode(password);
         User user = new User(requestDto, enPassword);
 
         // 프로필 이미지 저장 및 저장 경로 User Entity에 set
@@ -67,10 +68,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private void checkDuplicatoin(String username, String nickname) {
+    private void checkDuplicatoin(String username, String nickname, String phoneNum) {
         Optional<User> isUsername = userRepository.findByUsername(username);
         Optional<User> isNickname = userRepository.findByNickname(nickname);
-        if (isUsername.isPresent() || isNickname.isPresent()) {
+        Optional<User> isPhoneNum = userRepository.findByPhoneNum(phoneNum);
+        if (isUsername.isPresent() || isNickname.isPresent() || isPhoneNum.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
     }
@@ -140,6 +142,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
+    @Transactional
     public UserDto.phoneNumDto getPhoneNum(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
 
