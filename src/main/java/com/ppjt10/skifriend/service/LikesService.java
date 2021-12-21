@@ -36,12 +36,15 @@ public class LikesService {
         Long userId = userDetails.getUser().getId();
         Optional<Likes> foundLikes = likesRepository.findByUserIdAndFreePostId(userId, postId);
         if(foundLikes.isPresent()) {
-            System.out.println(foundLikes.get().getId());
             likesRepository.deleteById(foundLikes.get().getId());
+            freePost.setLikeCnt(freePost.getLikeCnt()-1);
+            freePostRepository.save(freePost);
             System.out.println("좋아요가 삭제되었습니다");
         }
         else {
             likesRepository.save(new Likes(userDetails.getUser(), freePost));
+            freePost.setLikeCnt(freePost.getLikeCnt()+1);
+            freePostRepository.save(freePost);
             System.out.println("좋아요가 클릭되었습니다");
 
         }

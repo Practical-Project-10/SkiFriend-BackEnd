@@ -38,7 +38,7 @@ public class FreePostDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ReortTabDto{
+    public static class ResortTabDto{
         private Long postId;
         private String nickname;
         private String title;
