@@ -100,7 +100,7 @@ public class FreePostService {
         FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
         String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-        s3Uploader.delete(oldImageUrl);
+        s3Uploader.deleteFromS3(oldImageUrl);
         String imageUrl = s3Uploader.upload(image, imageDirName);
         freePost.update(requestDto, imageUrl);
     }
