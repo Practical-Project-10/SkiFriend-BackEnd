@@ -3,11 +3,15 @@ package com.ppjt10.skifriend.service;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.validator.AgeRangeType;
+import com.ppjt10.skifriend.validator.CareerType;
+import com.ppjt10.skifriend.validator.GenderType;
 import com.ppjt10.skifriend.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -18,7 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createUser(UserDto.RequestDto requestDto) {
+    public void createUser(MultipartFile profileImg, MultipartFile vacImg, UserDto.RequestDto requestDto) {
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
@@ -28,10 +32,12 @@ public class UserService {
 
         // 유효성 검사
         UserInfoValidator.validateUserInfoInput(username, nickname, password);
+        GenderType.findByGenderType(requestDto.getGender()).getGenderType();
+        AgeRangeType.findByageRangeType(requestDto.getAgeRange()).getageRangeType();
+        CareerType.findByCareerType(requestDto.getCareer()).getCareerType();
 
         // 민감 정보 암호화
         String enPassword = passwordEncoder.encode(requestDto.getPassword());
-
         User user = new User(requestDto, enPassword);
 
         // 이미지 저장

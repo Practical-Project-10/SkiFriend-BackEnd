@@ -16,8 +16,6 @@ public class UserDto {
         private String password;
         private String phoneNum;
         private String nickname;
-        private MultipartFile profileImg;
-        private MultipartFile vacImg;
         private String gender;
         private String ageRange;
         private String career;

@@ -6,6 +6,7 @@ import com.ppjt10.skifriend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,8 +15,11 @@ public class UserController {
     private final MessageService messageService;
 
     @PostMapping("/user/signup")
-    public void userSignup(@ModelAttribute UserDto.RequestDto requestDto){
-        userService.createUser(requestDto);
+    public void userSignup(@RequestPart("profileImg") MultipartFile profileImg,
+                           @RequestPart("vacImg") MultipartFile vacImg,
+                           @RequestPart("requestDto") UserDto.RequestDto requestDto
+                           ){
+        userService.createUser(profileImg, vacImg, requestDto);
     }
 
     @GetMapping("/check/sendsms")
