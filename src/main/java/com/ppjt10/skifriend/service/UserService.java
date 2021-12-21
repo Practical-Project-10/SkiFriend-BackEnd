@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Optional;
 
 @Service
@@ -98,17 +99,23 @@ public class UserService {
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
         try {
+            String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(source);
             String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
             user.setProfileImg(profileImgUrl);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             user.setProfileImg("이미지 미설정");
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
         try {
+            String source = URLDecoder.decode(user.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(source);
             String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
             user.setVacImg(vacImgUrl);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             user.setVacImg("이미지 미설정");
         }
 
