@@ -20,7 +20,7 @@ public class Comment extends Timestamped {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private User user;
 
     @ManyToOne
@@ -33,7 +33,7 @@ public class Comment extends Timestamped {
     public CommentDto.ResponseDto toResponseDto() {
         return CommentDto.ResponseDto.builder()
                 .commentId(id)
-                .nickname(user.getNickname())
+//                .nickname(user.getNickname())
                 .content(content)
                 .createdAt(TimeConversion.timeConversion(getCreateAt()))
                 .build();
