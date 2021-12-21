@@ -3,7 +3,9 @@ package com.ppjt10.skifriend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserDto {
     @Builder
@@ -12,12 +14,8 @@ public class UserDto {
     public static class RequestDto{
         private String username;
         private String password;
-        private String name;
         private String phoneNum;
         private String nickname;
-        // Form data로 받기
-//        private String profileImg;
-//        private String vacImg;
         private String gender;
         private String ageRange;
         private String career;
@@ -30,7 +28,6 @@ public class UserDto {
     public static class ResponseDto{
         private String username;
         private String password;
-        private String name;
         private String phoneNum;
         private String nickname;
         private String profileImg;
@@ -39,5 +36,13 @@ public class UserDto {
         private String ageRange;
         private String career;
         private String selfIntro;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class requestForSMS{
+        private String phoneNumber;
     }
 }
