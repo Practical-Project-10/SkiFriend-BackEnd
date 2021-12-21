@@ -15,7 +15,7 @@ public class FreePostDto {
     public static class RequestDto{
         private String title;
         private String content;
-        private MultipartFile image; // Formdata고려
+//        private MultipartFile image; // Formdata고려
     }
 
     @Builder
@@ -28,8 +28,8 @@ public class FreePostDto {
         private String content;
         private String image;
         private String createdAt;
-        private List<LikesDto> likesDtoList;
-        private List<CommentDto> commentDtoList;
+        private List<LikesDto.ResponseDto> likesDtoList;
+        private List<CommentDto.ResponseDto> commentDtoList;
     }
 
     @Builder
