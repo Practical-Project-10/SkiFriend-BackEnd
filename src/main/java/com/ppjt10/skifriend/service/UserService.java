@@ -136,4 +136,12 @@ public class UserService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
+    public UserDto.phoneNumDto getPhoneNum(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
+
+        return UserDto.phoneNumDto.builder()
+                .phoneNumber(user.getPhoneNum())
+                .build();
+    }
 }

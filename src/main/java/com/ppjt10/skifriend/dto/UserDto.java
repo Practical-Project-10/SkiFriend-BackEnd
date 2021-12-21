@@ -49,7 +49,7 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class requestForSMS{
+    public static class phoneNumDto{
         private String phoneNumber;
     }
 }
