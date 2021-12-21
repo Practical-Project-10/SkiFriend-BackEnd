@@ -1,7 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.time.Timestamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

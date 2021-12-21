@@ -14,7 +14,3 @@ public class SkiFriendApplication {
 
 
 }
-//    public static void main(String[] args) {
-//        SpringApplication.run(SkiFriendApplication.class, args);
-//    }
-//
