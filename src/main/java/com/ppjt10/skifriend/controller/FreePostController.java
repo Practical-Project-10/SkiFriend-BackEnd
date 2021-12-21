@@ -20,14 +20,13 @@ public class FreePostController {
 
     //region 자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
-    //수정 필요할 수도? "" 부분
     public void writeFreePosts(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart("image") MultipartFile image,
             @PathVariable String skiResort,
             @RequestPart("requestDto") FreePostDto.RequestDto requestDto
     ) throws IOException {
-        freePostService.uploadFreePosts(image, skiResort, requestDto);
+        freePostService.uploadFreePosts(userDetails, image, skiResort, requestDto);
         System.out.println(requestDto.getContent());
     }
     //endregion
@@ -40,17 +39,18 @@ public class FreePostController {
     ) {
         return freePostService.getFreePost(skiResort, postId);
     }
+    //endregion
 
     //region 자유 게시판 게시글 수정
     @PutMapping("/board/{skiResort}/freeBoard/{postId}")
     public void editFreePost(
             @PathVariable String skiResort,
             @PathVariable Long postId,
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart("image") MultipartFile image,
             @RequestPart("requestDto") FreePostDto.RequestDto requestDto
     ) throws IOException {
-        freePostService.modifyFreePost(requestDto, image, skiResort, postId);
+        freePostService.modifyFreePost(userDetails, requestDto, image, skiResort, postId);
 
     }
 
@@ -61,46 +61,46 @@ public class FreePostController {
     //region 자유 게시판 게시글 삭제
     @DeleteMapping("/board/{skiResort}/freeBoard/{postId}")
     public void deleteFreePost(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable String skiResort,
             @PathVariable Long postId
     ) {
-        freePostService.deleteFreePost(postId, skiResort);
+        freePostService.deleteFreePost(userDetails, postId, skiResort);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 작성
     @PostMapping("/board/{skiResort}/freeBoard/{postId}/comments")
     public void writeFreePostComment(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CommentDto.RequestDto requestDto,
             @PathVariable String skiResort,
             @PathVariable Long postId
     ) {
-        freePostService.writeComment(requestDto, skiResort, postId);
+        freePostService.writeComment(userDetails, requestDto, skiResort, postId);
     }
     //endregion
-
 
     //region 자유 게시판 게시글 댓글 수정
     @PutMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
     public void editFreePostComment(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CommentDto.RequestDto requestDto,
 //            @PathVariable String skiResort,
             @PathVariable Long commentId
 
     ) {
-        freePostService.editComment(requestDto, commentId);
+        freePostService.editComment(userDetails, requestDto, commentId);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 삭제
     @DeleteMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
     public void deleteFreePostComment(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long commentId
             ) {
-        freePostService.deleteComment(commentId);
+        freePostService.deleteComment(userDetails, commentId);
     }
     //endregion
 }
