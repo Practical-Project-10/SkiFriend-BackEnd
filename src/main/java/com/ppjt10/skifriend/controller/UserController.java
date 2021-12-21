@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -18,13 +20,12 @@ public class UserController {
     public void userSignup(@RequestPart("profileImg") MultipartFile profileImg,
                            @RequestPart("vacImg") MultipartFile vacImg,
                            @RequestPart("requestDto") UserDto.RequestDto requestDto
-                           ){
+                           ) throws IOException {
         userService.createUser(profileImg, vacImg, requestDto);
     }
 
     @GetMapping("/check/sendsms")
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.requestForSMS phoneNumber){
-        // return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
-        return ResponseEntity.ok().body(messageService.createRandomNumber());
+        return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
 }

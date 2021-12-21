@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.service;
 
+import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -20,9 +22,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Uploader s3Uploader;
+    private final String profileImgDirName = "Profile";
+    private final String vacImgDirName = "Vaccine";
 
     @Transactional
-    public void createUser(MultipartFile profileImg, MultipartFile vacImg, UserDto.RequestDto requestDto) {
+    public void createUser(MultipartFile profileImg, MultipartFile vacImg, UserDto.RequestDto requestDto) throws IOException {
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
@@ -40,10 +45,21 @@ public class UserService {
         String enPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = new User(requestDto, enPassword);
 
-        // 이미지 저장
+        // 프로필 이미지 저장 및 저장 경로 User Entity에 set
+        try {
+            String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
+            user.setProfileImg(profileImgUrl);
+        } catch (Exception e) {
+            user.setProfileImg("이미지 미설정");
+        }
 
-        // 이미지 경로값 Entity에 Set해주기
-
+        // 백신 이미지 저장 및 저장 경로 User Entity에 set
+        try {
+            String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
+            user.setVacImg(vacImgUrl);
+        } catch (Exception e){
+            user.setVacImg("이미지 미설정");
+        }
 
         userRepository.save(user);
     }
