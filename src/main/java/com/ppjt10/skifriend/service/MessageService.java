@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageService {
     public String sendSMS(String phonNumber) {
-        String api_key = "NCSUGJUECHMH2RNC";
-        String api_secret = "4JRE9YGPVRNPYZ8C9A5IQGIDYSI2USTD";
+
         Message coolsms = new Message(api_key, api_secret);
         HashMap<String, String> params = new HashMap<String, String>();
 
