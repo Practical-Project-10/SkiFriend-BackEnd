@@ -3,18 +3,15 @@ package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.Likes;
-import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.repository.LikesRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -22,6 +19,7 @@ public class LikesService {
     private final LikesRepository likesRepository;
     private final FreePostRepository freePostRepository;
 
+    //region 좋아요 기능
     @Transactional
     public void changeLike(
             UserDetailsImpl userDetails,
@@ -48,7 +46,7 @@ public class LikesService {
 
         }
     }
-
+    //endregion
 
 
 }
