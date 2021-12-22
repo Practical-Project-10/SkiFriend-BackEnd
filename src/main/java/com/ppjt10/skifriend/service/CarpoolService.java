@@ -4,7 +4,9 @@ import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
-import com.ppjt10.skifriend.security.UserDetailsImpl;
+import com.ppjt10.skifriend.time.TimeConversion;
+import com.ppjt10.skifriend.validator.CarpoolType;
+import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,15 @@ public class CarpoolService {
 
     @Transactional
     public void createCarpool(String skiResort, CarpoolDto.RequestDto requestDto, User user) {
+        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
+        SkiResortType.findBySkiResortType(skiResort);
         Carpool carpool = new Carpool(user, requestDto, skiResort);
         carpoolRepository.save(carpool);
     }
 
     @Transactional
     public void updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
+        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
@@ -68,7 +73,7 @@ public class CarpoolService {
                 pageable
         );
         List<CarpoolDto.CategoryResponseDto> categoryResponseDto = sortedCategories.stream()
-                .map(Carpool::toCatogoryResponseDto)
+                .map(e->toCategoryResponseDto(e))
                 .collect(Collectors.toList());
         Page<CarpoolDto.CategoryResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
         return ResponseEntity.ok().body(categoryResponseDtoPage);
@@ -85,4 +90,24 @@ public class CarpoolService {
         }
         carpool.changeStatus();
     }
+
+    private CarpoolDto.CategoryResponseDto toCategoryResponseDto(Carpool carpool) {
+        return CarpoolDto.CategoryResponseDto.builder()
+                .postId(carpool.getId())
+                .userId(carpool.getUser().getId())
+                .nickname(carpool.getUser().getNickname())
+                .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
+                .carpoolType(carpool.getCarpoolType())
+                .startLocation(carpool.getStartLocation())
+                .endLocation(carpool.getEndLocation())
+                .skiResort(carpool.getSkiResort())
+                .date(carpool.getDate())
+                .time(carpool.getTime())
+                .price(carpool.getPrice())
+                .memberNum(carpool.getMemberNum())
+                .notice(carpool.getNotice())
+                .build();
+    }
+
+
 }

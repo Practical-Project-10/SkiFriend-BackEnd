@@ -24,6 +24,6 @@ public enum SkiResortType {
         return Arrays.stream(SkiResortType.values())
                 .filter(e->e.getSkiResortType().equals(type))
                 .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 ageRange Type이 아닙니다."));
+                .orElseThrow(()-> new IllegalArgumentException("올바른 SkiResort Type이 아닙니다."));
     }
 }
