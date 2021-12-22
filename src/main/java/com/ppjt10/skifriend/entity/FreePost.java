@@ -60,8 +60,12 @@ public class FreePost extends Timestamped {
     public FreePostDto.ResortTabDto toResortTabDto() {
         return FreePostDto.ResortTabDto.builder()
                 .postId(id)
-                .createdAt(TimeConversion.timeConversion(getCreateAt()))
+                .resortName(skiResort)
+                .nickname(user.getNickname())
                 .title(title)
+                .content(content)
+                .image(Image)
+                .createdAt(TimeConversion.timeConversion(getCreateAt()))
                 .likeCnt(likeCnt)
                 .commentCnt(commentList.size())
                 .build();
