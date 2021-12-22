@@ -1,9 +1,8 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.UserDto;
-import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
-import com.ppjt10.skifriend.service.MessageService;
+import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +19,21 @@ public class UserController {
     private final MessageService messageService;
 
     // 문자 SMS 인증
-    @GetMapping("/check/sendsms")
-    public ResponseEntity<String> sendSMS(@RequestBody UserDto.phoneNumDto phoneNumber){
+    @GetMapping("/user/sms")
+    public ResponseEntity<String> sendSMS(@RequestBody UserDto.phoneNumDto phoneNumber) {
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
 
+    // 인증번호 일치하는지 검증
+    @PostMapping("/user/sms/check")
+    public ResponseEntity<String> verifyRandNum(@RequestBody UserDto.SmsCertificationDto requestDto) {
+        return ResponseEntity.ok().body(messageService.verifySms(requestDto));
+    }
+
+
     // 유저 핸드폰 번호 공개하기
-    @GetMapping("/user/{userId}/phoneNum")
-    public ResponseEntity<UserDto.phoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    @GetMapping("/user/Info/phoneNum")
+    public ResponseEntity<UserDto.phoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.getPhoneNum(userDetails.getUser().getId()));
     }
 
@@ -36,29 +42,29 @@ public class UserController {
     public void userSignup(@RequestPart("profileImg") MultipartFile profileImg,
                            @RequestPart("vacImg") MultipartFile vacImg,
                            @RequestPart("requestDto") UserDto.RequestDto requestDto
-                           ) throws IOException {
+    ) throws IOException {
         userService.createUser(profileImg, vacImg, requestDto);
     }
 
     // 유저 정보 조회하기
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    @GetMapping("/user/Info")
+    public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.getUserInfo(userDetails.getUser().getId()));
     }
 
     // 유저 정보 수정하기
-    @PutMapping("/user/{userId}")
-    public ResponseEntity<UserDto.ResponseDto> updateUserInfo(@RequestPart ("profileImg") MultipartFile profileImg,
+    @PutMapping("/user/Info")
+    public ResponseEntity<UserDto.ResponseDto> updateUserInfo(@RequestPart("profileImg") MultipartFile profileImg,
                                                               @RequestPart("vacImg") MultipartFile vacImg,
                                                               @RequestPart("requestDto") UserDto.updateRequestDto requestDto,
-                                                              @AuthenticationPrincipal UserDetailsImpl userDetails){
+                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.ok().body(userService.updateUserInfo(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
     }
 
     // 유저 삭제하기
-    @DeleteMapping("/user/{userId}")
-    public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    @DeleteMapping("/user/Info")
+    public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(userDetails.getUser().getId());
     }
 }

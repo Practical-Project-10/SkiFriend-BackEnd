@@ -55,4 +55,13 @@ public class UserDto {
     public static class phoneNumDto{
         private String phoneNumber;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SmsCertificationDto{
+        private String phoneNumber;
+        private String randomNumber;
+    }
 }
