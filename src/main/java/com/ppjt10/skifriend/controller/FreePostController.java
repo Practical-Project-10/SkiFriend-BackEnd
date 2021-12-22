@@ -52,9 +52,6 @@ public class FreePostController {
         freePostService.modifyFreePost(userDetails, requestDto, image, postId);
 
     }
-
-
-
     //endregion
 
     //region 자유 게시판 게시글 삭제
