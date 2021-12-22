@@ -8,7 +8,6 @@ import com.ppjt10.skifriend.dto.LikesDto;
 import com.ppjt10.skifriend.entity.Comment;
 import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.Likes;
-import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
@@ -71,10 +70,10 @@ public class FreePostService {
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         List<LikesDto.ResponseDto> likesResponseDtoList = freePost.getLikeList().stream()
-                .map(Likes::toResponseDto)
+                .map(e->toLikesResponseDto(e))
                 .collect(Collectors.toList());
         List<CommentDto.ResponseDto> commentResponseDtoList = freePost.getCommentList().stream()
-                .map(Comment::toResponseDto)
+                .map(e->toCommentResponseDto(e))
                 .collect(Collectors.toList());
         FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
                 .postId(postId)
@@ -87,6 +86,21 @@ public class FreePostService {
                 .commentDtoList(commentResponseDtoList)
                 .build();
         return ResponseEntity.ok().body(freeResponseDto);
+    }
+
+    private LikesDto.ResponseDto toLikesResponseDto(Likes likes) {
+        return LikesDto.ResponseDto.builder()
+                .userId(likes.getUser().getId())
+                .build();
+    }
+
+    private CommentDto.ResponseDto toCommentResponseDto(Comment comment) {
+        return CommentDto.ResponseDto.builder()
+                .commentId(comment.getId())
+                .nickname(comment.getUser().getNickname())
+                .content(comment.getContent())
+                .createdAt(TimeConversion.timeConversion(comment.getCreateAt()))
+                .build();
     }
     //endregion
 
@@ -134,8 +148,6 @@ public class FreePostService {
     }
     //endregion
 
-
-
     //region HOT게시물 가져오기
     @Transactional
     public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
@@ -153,7 +165,7 @@ public class FreePostService {
         List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.KONJIAM.getSkiResortType());
         extractHotFreePost(populatedResortPosts, konJiam);
         List<FreePostDto.HotResponseDto> resortTabDtoList  = populatedResortPosts.stream()
-                .map(e->toResortTabDto(e))
+                .map(e->toHotResponseDto(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(resortTabDtoList);
     }
@@ -164,9 +176,8 @@ public class FreePostService {
             populatedResortPosts.add(skiResort.get(0));
         }
     }
-    //endregion
 
-    private FreePostDto.HotResponseDto toResortTabDto(FreePost freePost) {
+    private FreePostDto.HotResponseDto toHotResponseDto(FreePost freePost) {
         return FreePostDto.HotResponseDto.builder()
                 .postId(freePost.getId())
                 .title(freePost.getTitle())
@@ -175,5 +186,11 @@ public class FreePostService {
                 .commentCnt(freePost.getCommentCnt())
                 .build();
     }
+    //endregion
+
+
+
+
+
 
 }
