@@ -2,8 +2,11 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.User;
+import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.validator.AgeRangeType;
 import com.ppjt10.skifriend.validator.CareerType;
@@ -17,12 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CarpoolRepository carpoolRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
@@ -149,5 +155,28 @@ public class UserService {
         return UserDto.phoneNumDto.builder()
                 .phoneNumber(user.getPhoneNum())
                 .build();
+    }
+
+    @Transactional
+    public List<CarpoolDto.ResponseDto> findMyCarpools(User user) {
+        List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
+
+        List<CarpoolDto.ResponseDto> carpoolListDto = new ArrayList<>();
+        for (Carpool carpool : carpoolList) {
+            carpoolListDto.add(CarpoolDto.ResponseDto.builder()
+                    .userId(carpool.getUser().getId())
+                    .postId(carpool.getId())
+                    .carpoolType(carpool.getCarpoolType())
+                    .startLocation(carpool.getStartLocation())
+                    .endLocation(carpool.getEndLocation())
+                    .date(carpool.getDate())
+                    .time(carpool.getTime())
+                    .price(carpool.getPrice())
+                    .memberNum(carpool.getMemberNum())
+                    .notice(carpool.getNotice())
+                    .build());
+        }
+
+        return carpoolListDto;
     }
 }
