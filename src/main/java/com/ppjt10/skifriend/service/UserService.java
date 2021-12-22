@@ -174,6 +174,7 @@ public class UserService {
                     .price(carpool.getPrice())
                     .memberNum(carpool.getMemberNum())
                     .notice(carpool.getNotice())
+                    .status(carpool.isStatus())
                     .build());
         }
 
