@@ -30,14 +30,7 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    public CommentDto.ResponseDto toResponseDto() {
-        return CommentDto.ResponseDto.builder()
-                .commentId(id)
-                .nickname(user.getNickname())
-                .content(content)
-                .createdAt(TimeConversion.timeConversion(getCreateAt()))
-                .build();
-    }
+
 
     public void update(CommentDto.RequestDto requestDto) {
         this.content = requestDto.getContent();

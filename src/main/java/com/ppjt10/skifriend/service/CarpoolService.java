@@ -6,7 +6,9 @@ import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
+import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.SkiResortType;
+import com.ppjt10.skifriend.validator.TimeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ public class CarpoolService {
     public void createCarpool(String skiResort, CarpoolDto.RequestDto requestDto, User user) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         SkiResortType.findBySkiResortType(skiResort);
+        DateValidator.validateDateForm(requestDto.getDate());
+        TimeValidator.validateTimeForm(requestDto.getTime());
         Carpool carpool = new Carpool(user, requestDto, skiResort);
         carpoolRepository.save(carpool);
     }
@@ -33,6 +37,8 @@ public class CarpoolService {
     @Transactional
     public void updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
+        DateValidator.validateDateForm(requestDto.getDate());
+        TimeValidator.validateTimeForm(requestDto.getTime());
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
