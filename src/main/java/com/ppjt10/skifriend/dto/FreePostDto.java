@@ -50,6 +50,7 @@ public class FreePostDto {
         private int commentCnt;
     }
 
+    //전체 게시글 내려주기
     @Builder
     @Getter
     @AllArgsConstructor

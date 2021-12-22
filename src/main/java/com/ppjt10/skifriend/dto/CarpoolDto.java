@@ -45,6 +45,7 @@ public class CarpoolDto {
         private boolean status;
     }
 
+    //필터링 정보
     @Builder
     @Getter
     @AllArgsConstructor
