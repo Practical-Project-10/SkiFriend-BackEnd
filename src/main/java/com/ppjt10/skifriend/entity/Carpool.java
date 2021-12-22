@@ -25,7 +25,7 @@ public class Carpool extends Timestamped {
     private String carpoolType;
 
     @Column(nullable = false)
-    private String skiResult;
+    private String skiResort;
 
     @Column(nullable = false)
     private String startLocation;
@@ -48,10 +48,10 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private String notice;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResult) {
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
-        this.skiResult = skiResult;
+        this.skiResort = skiResort;
         this.startLocation = requestDto.getStartLocation();
         this.endLocation = requestDto.getEndLocation();
         this.date = requestDto.getDate();

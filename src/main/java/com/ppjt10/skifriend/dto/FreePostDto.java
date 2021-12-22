@@ -48,4 +48,18 @@ public class FreePostDto {
         private int likeCnt;
         private int commentCnt;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AllResponseDto{
+        private Long postId;
+        private Long userId;
+        private String nickname;
+        private String createdAt;
+        private String title;
+        private int likeCnt;
+        private int commentCnt;
+    }
 }
