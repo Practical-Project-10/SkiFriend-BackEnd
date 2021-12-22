@@ -23,11 +23,7 @@ public class Likes {
     @JoinColumn(nullable = false)
     private FreePost freePost;
 
-    public LikesDto.ResponseDto toResponseDto() {
-        return LikesDto.ResponseDto.builder()
-                .userId(user.getId())
-                .build();
-    }
+
 
     public Likes(User user, FreePost freePost) {
         this.user = user;
