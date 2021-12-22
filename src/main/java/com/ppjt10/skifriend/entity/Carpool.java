@@ -48,6 +48,9 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private String notice;
 
+    @Column(nullable = false)
+    private boolean status;
+
     public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResult) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
@@ -59,6 +62,7 @@ public class Carpool extends Timestamped {
         this.price = requestDto.getPrice();
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
+        this.status = true;
     }
 
     public void update(CarpoolDto.RequestDto requestDto) {
@@ -70,5 +74,9 @@ public class Carpool extends Timestamped {
         this.price = requestDto.getPrice();
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
+    }
+
+    public void changeStatus(){
+        this.status = false;
     }
 }
