@@ -37,5 +37,6 @@ public class CarpoolDto {
         private int price;
         private int memberNum;
         private String notice;
+        private boolean status;
     }
 }
