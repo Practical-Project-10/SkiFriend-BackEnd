@@ -1,9 +1,7 @@
 package com.ppjt10.skifriend.entity;
 
 import com.ppjt10.skifriend.dto.CarpoolDto;
-import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.Timestamped;
-import com.ppjt10.skifriend.validator.CarpoolTypeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
