@@ -1,11 +1,8 @@
 package com.ppjt10.skifriend.entity;
 
 import com.ppjt10.skifriend.dto.CarpoolDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
-import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
-import com.ppjt10.skifriend.validator.CarpoolTypeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +24,7 @@ public class Carpool extends Timestamped {
     private String carpoolType;
 
     @Column(nullable = false)
-    private String skiResult;
+    private String skiResort;
 
     @Column(nullable = false)
     private String startLocation;
@@ -50,10 +47,13 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private String notice;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResult) {
+    @Column(nullable = false)
+    private boolean status;
+
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
-        this.skiResult = skiResult;
+        this.skiResort = skiResort;
         this.startLocation = requestDto.getStartLocation();
         this.endLocation = requestDto.getEndLocation();
         this.date = requestDto.getDate();
@@ -61,6 +61,7 @@ public class Carpool extends Timestamped {
         this.price = requestDto.getPrice();
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
+        this.status = true;
     }
 
     public void update(CarpoolDto.RequestDto requestDto) {
@@ -74,6 +75,7 @@ public class Carpool extends Timestamped {
         this.notice = requestDto.getNotice();
     }
 
+
     public CarpoolDto.CategoryResponseDto toCatogoryResponseDto() {
         return CarpoolDto.CategoryResponseDto.builder()
                 .postId(id)
@@ -83,12 +85,15 @@ public class Carpool extends Timestamped {
                 .carpoolType(carpoolType)
                 .startLocation(startLocation)
                 .endLocation(endLocation)
-                .skiResort(skiResult)
+                .skiResort(skiResort)
                 .date(date)
                 .time(time)
                 .price(price)
                 .memberNum(memberNum)
                 .notice(notice)
                 .build();
+        }
+    public void changeStatus(){
+        this.status = false;
     }
 }

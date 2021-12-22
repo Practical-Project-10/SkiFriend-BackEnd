@@ -32,7 +32,8 @@ public class CarpoolController {
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        carpoolService.updateCarpool(carpoolId, requestDto); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
+        User user = userDetails.getUser();
+        carpoolService.updateCarpool(carpoolId, requestDto, user.getId()); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
     }
 
     //카풀 게시글 삭제
@@ -40,7 +41,14 @@ public class CarpoolController {
     public void deleteCarpool(@PathVariable Long carpoolId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        carpoolService.deleteCarpool(carpoolId);
+        User user = userDetails.getUser();
+        carpoolService.deleteCarpool(carpoolId, user.getId());
+    }
+
+    // 카풀 모집 완료 기능
+    @PostMapping("/board/carpool/{carpoolId}/status")
+    public void changeStatus(@PathVariable Long carpoolId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        carpoolService.changeStatus(carpoolId, userDetails.getUser().getId());
     }
 
     //region 카풀 카테고리 분류

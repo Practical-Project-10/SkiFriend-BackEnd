@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.controller;
 
+import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.certification.MessageService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,5 +68,11 @@ public class UserController {
     @DeleteMapping("/user/Info")
     public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(userDetails.getUser().getId());
+    }
+
+    // 내가 쓴 카풀 게시물 불러오기
+    @GetMapping("/user/info/carpool")
+    public ResponseEntity<List<CarpoolDto.ResponseDto>> myCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok().body(userService.findMyCarpools(userDetails.getUser()));
     }
 }
