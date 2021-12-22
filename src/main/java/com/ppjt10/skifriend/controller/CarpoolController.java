@@ -39,4 +39,10 @@ public class CarpoolController {
     ) {
         carpoolService.deleteCarpool(carpoolId);
     }
+
+    // 카풀 모집 완료 기능
+    @PostMapping("/board/carpool/{carpoolId}/status")
+    public void changeStatus(@PathVariable Long carpoolId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        carpoolService.changeStatus(carpoolId, userDetails.getUser().getId());
+    }
 }
