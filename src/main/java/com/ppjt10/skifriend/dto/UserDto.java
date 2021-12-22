@@ -34,7 +34,7 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class updateRequestDto{
+    public static class UpdateRequestDto{
         private String password;
         private String nickname;
         private String career;
@@ -61,7 +61,7 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class phoneNumDto{
+    public static class PhoneNumDto{
         private String phoneNumber;
     }
 

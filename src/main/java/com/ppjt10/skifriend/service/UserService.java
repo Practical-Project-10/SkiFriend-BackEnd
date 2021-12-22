@@ -101,7 +101,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.ResponseDto updateUserInfo(MultipartFile profileImg, MultipartFile vacImg, UserDto.updateRequestDto requestDto, Long userId) {
+    public UserDto.ResponseDto updateUserInfo(MultipartFile profileImg, MultipartFile vacImg, UserDto.UpdateRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
 
         // 비밀번호, 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
@@ -149,10 +149,10 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.phoneNumDto getPhoneNum(Long userId) {
+    public UserDto.PhoneNumDto getPhoneNum(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
 
-        return UserDto.phoneNumDto.builder()
+        return UserDto.PhoneNumDto.builder()
                 .phoneNumber(user.getPhoneNum())
                 .build();
     }

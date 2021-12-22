@@ -138,7 +138,7 @@ public class FreePostService {
 
     //region HOT게시물 가져오기
     @Transactional
-    public ResponseEntity<List<FreePostDto.ResortTabDto>> takeHotFreePosts() {
+    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
         List<FreePost> populatedResortPosts = new ArrayList<>();
         List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.HIGHONE.getSkiResortType());
         extractHotFreePost(populatedResortPosts, highOne);
@@ -152,7 +152,7 @@ public class FreePostService {
         extractHotFreePost(populatedResortPosts, wellihilli);
         List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.KONJIAM.getSkiResortType());
         extractHotFreePost(populatedResortPosts, konJiam);
-        List<FreePostDto.ResortTabDto> resortTabDtoList  = populatedResortPosts.stream()
+        List<FreePostDto.HotResponseDto> resortTabDtoList  = populatedResortPosts.stream()
                 .map(e->toResortTabDto(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(resortTabDtoList);
@@ -166,14 +166,10 @@ public class FreePostService {
     }
     //endregion
 
-    private FreePostDto.ResortTabDto toResortTabDto(FreePost freePost) {
-        return FreePostDto.ResortTabDto.builder()
+    private FreePostDto.HotResponseDto toResortTabDto(FreePost freePost) {
+        return FreePostDto.HotResponseDto.builder()
                 .postId(freePost.getId())
-                .resortName(freePost.getSkiResort())
-                .nickname(freePost.getUser().getNickname())
                 .title(freePost.getTitle())
-                .content(freePost.getContent())
-                .image(freePost.getImage())
                 .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
                 .likeCnt(freePost.getLikeCnt())
                 .commentCnt(freePost.getCommentCnt())
