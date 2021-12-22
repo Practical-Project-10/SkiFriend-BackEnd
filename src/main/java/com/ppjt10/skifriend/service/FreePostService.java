@@ -10,24 +10,18 @@ import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.Likes;
 import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
-import com.ppjt10.skifriend.repository.LikesRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.io.NotActiveException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,9 +29,7 @@ import java.util.stream.Collectors;
 public class FreePostService {
     private final FreePostRepository freePostRepository;
     private final S3Uploader s3Uploader;
-    private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
-
     private final String imageDirName = "freepost";
 
     //region 자유 게시판 게시글 작성
@@ -51,7 +43,14 @@ public class FreePostService {
         if(userDetails == null) {
             throw new IllegalArgumentException("회원가입 후 이용해주세요.");
         }
-        String imageUrl = s3Uploader.upload(image, imageDirName);
+        String imageUrl;
+        try {
+            imageUrl = s3Uploader.upload(image, imageDirName);
+        }
+        catch(Exception err) {
+            imageUrl = "No Post Image";
+        }
+
 
         FreePost freePost = FreePost.builder()
                 .user(userDetails.getUser())
@@ -67,10 +66,9 @@ public class FreePostService {
     //region 자유 게시판 게시글 상세 조회
     @Transactional
     public ResponseEntity<FreePostDto.ResponseDto> getFreePost(
-            String skiResort,
             Long postId
     ) {
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         List<LikesDto.ResponseDto> likesResponseDtoList = freePost.getLikeList().stream()
@@ -99,31 +97,40 @@ public class FreePostService {
             UserDetailsImpl userDetails,
             FreePostDto.RequestDto requestDto,
             MultipartFile image,
-            String skiResort,
             Long postId
-            ) throws IOException {
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+    ) throws IOException {
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
         if(userDetails.getUser().getId() != freePost.getUser().getId()) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
-        String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-        s3Uploader.deleteFromS3(oldImageUrl);
-        String imageUrl = s3Uploader.upload(image, imageDirName);
+        String imageUrl;
+        try {
+            imageUrl = s3Uploader.upload(image, imageDirName);
+        } catch(Exception err) {
+            imageUrl = "No Post Image";
+        }
+        try {
+            String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldImageUrl);
+        } catch(Exception ignored) {}
         freePost.update(requestDto, imageUrl);
     }
     //endregion
 
     //region 자유 게시판 게시글 삭제
     @Transactional
-    public void deleteFreePost(UserDetailsImpl userDetails,
-                               Long postId,
-                               String skiResort) {
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+    public void deleteFreePost(
+            UserDetailsImpl userDetails,
+            Long postId
+    ) throws UnsupportedEncodingException {
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
         if(userDetails.getUser().getId() != freePost.getUser().getId()) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
+        String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+        s3Uploader.deleteFromS3(oldImageUrl);
         freePostRepository.deleteById(postId);
     }
     //endregion
@@ -133,13 +140,12 @@ public class FreePostService {
     public void writeComment(
             UserDetailsImpl userDetails,
             CommentDto.RequestDto requestDto,
-            String skiResort,
             Long postId
     ) {
         if(userDetails == null) {
             throw new IllegalArgumentException("회원가입 후 이용해주세요.");
         }
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
         Comment comment = Comment.builder()
@@ -184,30 +190,30 @@ public class FreePostService {
     //region HOT게시물 가져오기
     @Transactional
     public ResponseEntity<List<FreePostDto.ResortTabDto>> takeHotFreePosts() {
-
-        List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("highOne");
-        System.out.println(highOne);
-        List<FreePost> yongPyong = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("yongPyong");
-        List<FreePost> vivalDi = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("vivalDi");
-        List<FreePost> phoenix = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("phoenix");
-        List<FreePost> wellihilli = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("wellihilli");
-        List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("konJiam");
-
         List<FreePost> populatedResortPosts = new ArrayList<>();
-        populatedResortPosts.add(highOne.get(0));
-        populatedResortPosts.add(yongPyong.get(0));
-        populatedResortPosts.add(vivalDi.get(0));
-        populatedResortPosts.add(phoenix.get(0));
-        populatedResortPosts.add(wellihilli.get(0));
-        populatedResortPosts.add(konJiam.get(0));
-
+        List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("highOne");
+        extractHotFreePost(populatedResortPosts, highOne);
+        List<FreePost> yongPyong = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("yongPyong");
+        extractHotFreePost(populatedResortPosts, yongPyong);
+        List<FreePost> vivaldi = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("vivaldi");
+        extractHotFreePost(populatedResortPosts, vivaldi);
+        List<FreePost> phoenix = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("phoenix");
+        extractHotFreePost(populatedResortPosts, phoenix);
+        List<FreePost> wellihilli = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("wellihilli");
+        extractHotFreePost(populatedResortPosts, wellihilli);
+        List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("konJiam");
+        extractHotFreePost(populatedResortPosts, konJiam);
         List<FreePostDto.ResortTabDto> resortTabDtoList  = populatedResortPosts.stream()
                 .map(FreePost::toResortTabDto)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok().body(resortTabDtoList);
     }
 
-
+    //핫 게시물 nullCheck 후 resort별로 가장 인기있는 게시글 담기
+    private void extractHotFreePost(List<FreePost> populatedResortPosts, List<FreePost> skiResort) {
+        if (skiResort.size() != 0) {
+            populatedResortPosts.add(skiResort.get(0));
+        }
+    }
     //endregion
 }
