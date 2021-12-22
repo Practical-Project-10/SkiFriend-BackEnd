@@ -25,6 +25,15 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class LoginResponseDto{
+        private Long userId;
+        private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class updateRequestDto{
         private String password;
         private String nickname;
@@ -54,5 +63,14 @@ public class UserDto {
     @NoArgsConstructor
     public static class phoneNumDto{
         private String phoneNumber;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SmsCertificationDto{
+        private String phoneNumber;
+        private String randomNumber;
     }
 }

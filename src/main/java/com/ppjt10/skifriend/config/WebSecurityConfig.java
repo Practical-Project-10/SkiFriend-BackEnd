@@ -55,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**")
-                .antMatchers("/v2/api-docs", "/swagger-resources/**", "**/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**");
+                .antMatchers("/user/signup, /user/sms, /user/sms/check");
     }
 
     @Override
@@ -83,7 +83,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests()
-                .antMatchers("/v2/api-docs", "/swagger-resources/**", "**/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**").permitAll()
                 .anyRequest()
                 .permitAll()
                 .and()
@@ -126,7 +125,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/signup");
 
         // 문자 SMS 인증 요청
-        skipPathList.add("GET,/check/sendsms");
+        skipPathList.add("GET,/user/sms");
+        skipPathList.add("POST,/user/sms/check");
 
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(

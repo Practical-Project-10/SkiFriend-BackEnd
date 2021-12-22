@@ -14,7 +14,7 @@ public class CarpoolController {
     private final CarpoolService carpoolService;
 
     //카풀 게시물 작성
-    @PostMapping("/board/{skiResort}/carpool")
+    @PostMapping("/board/carpool/{skiResort}")
     public void createCarpool(@PathVariable String skiResort,
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -24,19 +24,17 @@ public class CarpoolController {
     }
 
     //카풀 게시뭏 수정
-    @PutMapping("/board/{skiResort}/carpool/{carpoolId}")
-    public void updateCarpool(@PathVariable String skiResort,
-                              @PathVariable Long carpoolId,
+    @PutMapping("/board/carpool/{carpoolId}")
+    public void updateCarpool(@PathVariable Long carpoolId,
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        carpoolService.updateCarpool(carpoolId, requestDto);
+        carpoolService.updateCarpool(carpoolId, requestDto); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
     }
 
     //카풀 게시글 삭제
-    @DeleteMapping("/board/{skiResort}/carpool/{carpoolId}")
-    public void deleteCarpool(@PathVariable String skiResort,
-                              @PathVariable Long carpoolId,
+    @DeleteMapping("/board/carpool/{carpoolId}")
+    public void deleteCarpool(@PathVariable Long carpoolId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         carpoolService.deleteCarpool(carpoolId);
