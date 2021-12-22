@@ -22,6 +22,6 @@ public enum CareerType {
         return Arrays.stream(CareerType.values())
                 .filter(e->e.getCareerType().equals(type))
                 .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 ageRange Type이 아닙니다."));
+                .orElseThrow(()-> new IllegalArgumentException("올바른 Career Type이 아닙니다."));
     }
 }
