@@ -51,7 +51,7 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResult) {
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;
