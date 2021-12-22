@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,7 +53,7 @@ public class CarpoolController {
 
     //region 카풀 카테고리 분류
     @GetMapping("/board/carpool/category")
-    public ResponseEntity<Page<CarpoolDto.CategoryResponseDto>> sortCategories(
+    public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCategories(
             @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto,
             @RequestParam("page") int page,
             @RequestParam("size") int size
