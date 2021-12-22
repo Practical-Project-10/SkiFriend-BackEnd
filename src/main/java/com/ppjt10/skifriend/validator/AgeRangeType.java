@@ -22,6 +22,6 @@ public enum AgeRangeType {
         return Arrays.stream(AgeRangeType.values())
                 .filter(e->e.getageRangeType().equals(type))
                 .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 ageRange Type이 아닙니다."));
+                .orElseThrow(()-> new IllegalArgumentException("올바른 AgeRange Type이 아닙니다."));
     }
 }

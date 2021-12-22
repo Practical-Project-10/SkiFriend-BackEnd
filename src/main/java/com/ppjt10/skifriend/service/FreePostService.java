@@ -12,6 +12,7 @@ import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
+import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 public class FreePostService {
     private final FreePostRepository freePostRepository;
     private final S3Uploader s3Uploader;
-    private final CommentRepository commentRepository;
     private final String imageDirName = "freepost";
 
     //region 자유 게시판 게시글 작성
@@ -40,6 +40,7 @@ public class FreePostService {
             String skiResort,
             FreePostDto.RequestDto requestDto
     ) throws IOException {
+        SkiResortType.findBySkiResortType(skiResort);
         if(userDetails == null) {
             throw new IllegalArgumentException("회원가입 후 이용해주세요.");
         }
@@ -50,8 +51,6 @@ public class FreePostService {
         catch(Exception err) {
             imageUrl = "No Post Image";
         }
-
-
         FreePost freePost = FreePost.builder()
                 .user(userDetails.getUser())
                 .skiResort(skiResort)
@@ -141,20 +140,20 @@ public class FreePostService {
     @Transactional
     public ResponseEntity<List<FreePostDto.ResortTabDto>> takeHotFreePosts() {
         List<FreePost> populatedResortPosts = new ArrayList<>();
-        List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("highOne");
+        List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.HIGHONE.getSkiResortType());
         extractHotFreePost(populatedResortPosts, highOne);
-        List<FreePost> yongPyong = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("yongPyong");
+        List<FreePost> yongPyong = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.YONGPYONG.getSkiResortType());
         extractHotFreePost(populatedResortPosts, yongPyong);
-        List<FreePost> vivaldi = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("vivaldi");
+        List<FreePost> vivaldi = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.VIVALDIPARK.getSkiResortType());
         extractHotFreePost(populatedResortPosts, vivaldi);
-        List<FreePost> phoenix = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("phoenix");
+        List<FreePost> phoenix = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.PHOENIX.getSkiResortType());
         extractHotFreePost(populatedResortPosts, phoenix);
-        List<FreePost> wellihilli = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("wellihilli");
+        List<FreePost> wellihilli = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.WELLIHILLIPARK.getSkiResortType());
         extractHotFreePost(populatedResortPosts, wellihilli);
-        List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("konJiam");
+        List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc(SkiResortType.KONJIAM.getSkiResortType());
         extractHotFreePost(populatedResortPosts, konJiam);
         List<FreePostDto.ResortTabDto> resortTabDtoList  = populatedResortPosts.stream()
-                .map(FreePost::toResortTabDto)
+                .map(e->toResortTabDto(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(resortTabDtoList);
     }
@@ -166,4 +165,19 @@ public class FreePostService {
         }
     }
     //endregion
+
+    private FreePostDto.ResortTabDto toResortTabDto(FreePost freePost) {
+        return FreePostDto.ResortTabDto.builder()
+                .postId(freePost.getId())
+                .resortName(freePost.getSkiResort())
+                .nickname(freePost.getUser().getNickname())
+                .title(freePost.getTitle())
+                .content(freePost.getContent())
+                .image(freePost.getImage())
+                .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
+                .likeCnt(freePost.getLikeCnt())
+                .commentCnt(freePost.getCommentCnt())
+                .build();
+    }
+
 }

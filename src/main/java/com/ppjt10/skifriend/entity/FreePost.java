@@ -57,17 +57,5 @@ public class FreePost extends Timestamped {
         this.Image = image;
     }
 
-    public FreePostDto.ResortTabDto toResortTabDto() {
-        return FreePostDto.ResortTabDto.builder()
-                .postId(id)
-                .resortName(skiResort)
-                .nickname(user.getNickname())
-                .title(title)
-                .content(content)
-                .image(Image)
-                .createdAt(TimeConversion.timeConversion(getCreateAt()))
-                .likeCnt(likeCnt)
-                .commentCnt(commentList.size())
-                .build();
-    }
+
 }
