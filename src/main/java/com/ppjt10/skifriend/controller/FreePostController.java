@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,25 +33,23 @@ public class FreePostController {
     //endregion
 
     //region 자유 게시판 게시글 상세조회
-    @GetMapping("/board/{skiResort}/freeBoard/{postId}")
+    @GetMapping("/board/freeBoard/{postId}")
     public ResponseEntity<FreePostDto.ResponseDto> readFreePost(
-            @PathVariable String skiResort,
             @PathVariable Long postId
     ) {
-        return freePostService.getFreePost(skiResort, postId);
+        return freePostService.getFreePost(postId);
     }
     //endregion
 
     //region 자유 게시판 게시글 수정
-    @PutMapping("/board/{skiResort}/freeBoard/{postId}")
+    @PutMapping("/board/freeBoard/{postId}")
     public void editFreePost(
-            @PathVariable String skiResort,
             @PathVariable Long postId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart("image") MultipartFile image,
             @RequestPart("requestDto") FreePostDto.RequestDto requestDto
     ) throws IOException {
-        freePostService.modifyFreePost(userDetails, requestDto, image, skiResort, postId);
+        freePostService.modifyFreePost(userDetails, requestDto, image, postId);
 
     }
 
@@ -59,34 +58,31 @@ public class FreePostController {
     //endregion
 
     //region 자유 게시판 게시글 삭제
-    @DeleteMapping("/board/{skiResort}/freeBoard/{postId}")
+    @DeleteMapping("/board/freeBoard/{postId}")
     public void deleteFreePost(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable String skiResort,
             @PathVariable Long postId
-    ) {
-        freePostService.deleteFreePost(userDetails, postId, skiResort);
+    ) throws UnsupportedEncodingException {
+        freePostService.deleteFreePost(userDetails, postId);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 작성
-    @PostMapping("/board/{skiResort}/freeBoard/{postId}/comments")
+    @PostMapping("/board/freeBoard/{postId}/comments")
     public void writeFreePostComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CommentDto.RequestDto requestDto,
-            @PathVariable String skiResort,
             @PathVariable Long postId
     ) {
-        freePostService.writeComment(userDetails, requestDto, skiResort, postId);
+        freePostService.writeComment(userDetails, requestDto, postId);
     }
     //endregion
 
     //region 자유 게시판 게시글 댓글 수정
-    @PutMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
+    @PutMapping("/board/freeBoard/comments/{commentId}")
     public void editFreePostComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CommentDto.RequestDto requestDto,
-//            @PathVariable String skiResort,
             @PathVariable Long commentId
 
     ) {
@@ -95,7 +91,7 @@ public class FreePostController {
     //endregion
 
     //region 자유 게시판 게시글 댓글 삭제
-    @DeleteMapping("/board/{skiResort}/freeBoard/{postId}/comments/{commentId}")
+    @DeleteMapping("/board/freeBoard/comments/{commentId}")
     public void deleteFreePostComment(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long commentId

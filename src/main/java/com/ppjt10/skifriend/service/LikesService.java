@@ -23,14 +23,13 @@ public class LikesService {
     @Transactional
     public void changeLike(
             UserDetailsImpl userDetails,
-            String skiResort,
             Long postId
     )
     {
         if(userDetails == null) {
            throw new IllegalArgumentException("회원가입 후 이용하실 수 있습니다");
         }
-        FreePost freePost = freePostRepository.findByIdAndSkiResort(postId, skiResort).orElseThrow(
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()->new IllegalArgumentException("해당하는 게시물이 없습니다")
         );
         Long userId = userDetails.getUser().getId();
