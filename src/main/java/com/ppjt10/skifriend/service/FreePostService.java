@@ -16,14 +16,18 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.NotActiveException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -175,5 +179,35 @@ public class FreePostService {
         }
         commentRepository.deleteById(commentId);
     }
+    //endregion
+
+    //region HOT게시물 가져오기
+    @Transactional
+    public ResponseEntity<List<FreePostDto.ResortTabDto>> takeHotFreePosts() {
+
+        List<FreePost> highOne = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("highOne");
+        System.out.println(highOne);
+        List<FreePost> yongPyong = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("yongPyong");
+        List<FreePost> vivalDi = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("vivalDi");
+        List<FreePost> phoenix = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("phoenix");
+        List<FreePost> wellihilli = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("wellihilli");
+        List<FreePost> konJiam = freePostRepository.findAllBySkiResortOrderByLikeCntDesc("konJiam");
+
+        List<FreePost> populatedResortPosts = new ArrayList<>();
+        populatedResortPosts.add(highOne.get(0));
+        populatedResortPosts.add(yongPyong.get(0));
+        populatedResortPosts.add(vivalDi.get(0));
+        populatedResortPosts.add(phoenix.get(0));
+        populatedResortPosts.add(wellihilli.get(0));
+        populatedResortPosts.add(konJiam.get(0));
+
+        List<FreePostDto.ResortTabDto> resortTabDtoList  = populatedResortPosts.stream()
+                .map(FreePost::toResortTabDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(resortTabDtoList);
+    }
+
+
     //endregion
 }
