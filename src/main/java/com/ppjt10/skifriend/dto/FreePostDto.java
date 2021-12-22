@@ -40,6 +40,7 @@ public class FreePostDto {
     @NoArgsConstructor
     public static class ResortTabDto{
         private Long postId;
+        private String resortName;
         private String nickname;
         private String title;
         private String content;
