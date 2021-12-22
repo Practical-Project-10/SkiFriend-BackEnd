@@ -38,4 +38,41 @@ public class CarpoolDto {
         private int memberNum;
         private String notice;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CategoryRequestDto{
+        private String carpoolType;
+        private int maxMemberNum;
+        private String startLocation;
+        private String endLocation;
+        private String date;
+    }
+
+
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CategoryResponseDto{
+        private Long postId;
+        private Long userId;
+        private String nickname;
+        private String createdAt;
+        private String carpoolType;
+        private String startLocation;
+        private String endLocation;
+        private String skiResort;
+        private String date;
+        private String time;
+        private int price;
+        private int memberNum;
+        private String notice;
+    }
+
+
+
 }

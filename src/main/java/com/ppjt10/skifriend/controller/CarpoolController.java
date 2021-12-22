@@ -5,8 +5,11 @@ import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CarpoolService;
 import com.ppjt10.skifriend.dto.CarpoolDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,4 +42,13 @@ public class CarpoolController {
     ) {
         carpoolService.deleteCarpool(carpoolId);
     }
+
+    //region 카풀 카테고리 분류
+    @GetMapping("/board/carpool/category")
+    public ResponseEntity<List<CarpoolDto.CategoryResponseDto>> sortCategories(
+            @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto
+    ) {
+        return carpoolService.sortCarpools(categoryRequestDto);
+    }
+    //endregion
 }

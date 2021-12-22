@@ -1,7 +1,9 @@
 package com.ppjt10.skifriend.entity;
 
 import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
+import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
 import com.ppjt10.skifriend.validator.CarpoolTypeEnum;
 import lombok.Getter;
@@ -70,5 +72,23 @@ public class Carpool extends Timestamped {
         this.price = requestDto.getPrice();
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
+    }
+
+    public CarpoolDto.CategoryResponseDto toCatogoryResponseDto() {
+        return CarpoolDto.CategoryResponseDto.builder()
+                .postId(id)
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .createdAt(TimeConversion.timeConversion(getCreateAt()))
+                .carpoolType(carpoolType)
+                .startLocation(startLocation)
+                .endLocation(endLocation)
+                .skiResort(skiResult)
+                .date(date)
+                .time(time)
+                .price(price)
+                .memberNum(memberNum)
+                .notice(notice)
+                .build();
     }
 }
