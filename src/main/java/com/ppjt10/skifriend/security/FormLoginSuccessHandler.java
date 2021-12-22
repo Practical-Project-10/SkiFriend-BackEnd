@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.security.jwt.JwtTokenUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -24,15 +25,14 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
 
-        // UserId 내려주기
-//        response.setContentType("application/json");
-//        SignupDto.ResponseDto responseDto = SignupDto.ResponseDto.builder()
-//                .userId(userDetails.getUser().getId())
-//                .email(userDetails.getUsername())
-//                .nickname(userDetails.getUser().getNickname())
-//                .build();
-//
-//        String result = mapper.writeValueAsString(responseDto);
-//        response.getWriter().write(result);
+        //UserId, Nickname 내려주기
+        response.setContentType("application/json");
+        UserDto.LoginResponseDto responseDto = UserDto.LoginResponseDto.builder()
+                .userId(userDetails.getUser().getId())
+                .nickname(userDetails.getUser().getNickname())
+                .build();
+
+        String result = mapper.writeValueAsString(responseDto);
+        response.getWriter().write(result);
     }
 }
