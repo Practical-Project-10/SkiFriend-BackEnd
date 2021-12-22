@@ -74,25 +74,7 @@ public class Carpool extends Timestamped {
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
     }
-
-
-    public CarpoolDto.CategoryResponseDto toCatogoryResponseDto() {
-        return CarpoolDto.CategoryResponseDto.builder()
-                .postId(id)
-                .userId(user.getId())
-                .nickname(user.getNickname())
-                .createdAt(TimeConversion.timeConversion(getCreateAt()))
-                .carpoolType(carpoolType)
-                .startLocation(startLocation)
-                .endLocation(endLocation)
-                .skiResort(skiResort)
-                .date(date)
-                .time(time)
-                .price(price)
-                .memberNum(memberNum)
-                .notice(notice)
-                .build();
-        }
+    
     public void changeStatus(){
         this.status = false;
     }

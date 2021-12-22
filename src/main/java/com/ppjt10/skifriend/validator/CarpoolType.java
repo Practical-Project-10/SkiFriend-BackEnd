@@ -20,6 +20,6 @@ public enum CarpoolType {
         return Arrays.stream(CarpoolType.values())
                 .filter(e->e.getCarpoolType().equals(type))
                 .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 ageRange Type이 아닙니다."));
+                .orElseThrow(()-> new IllegalArgumentException("올바른 Carpool Type이 아닙니다."));
     }
 }

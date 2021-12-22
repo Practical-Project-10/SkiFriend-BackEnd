@@ -30,6 +30,7 @@ public class HomeController {
                                                           @RequestParam int page,
                                                           @RequestParam int size
     ){
+        page = page - 1;
         BoardListResponseDto boardListResponseDto = homeService.getBoards(skiResort,page,size);
         return ResponseEntity.ok()
                 .body(boardListResponseDto);
