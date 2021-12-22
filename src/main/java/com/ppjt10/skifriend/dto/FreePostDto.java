@@ -37,13 +37,9 @@ public class FreePostDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ResortTabDto{
+    public static class HotResponseDto{
         private Long postId;
-        private String resortName;
-        private String nickname;
         private String title;
-        private String content;
-        private String image;
         private String createdAt;
         private int likeCnt;
         private int commentCnt;

@@ -22,7 +22,7 @@ public class UserController {
 
     // 문자 SMS 인증
     @GetMapping("/user/sms")
-    public ResponseEntity<String> sendSMS(@RequestBody UserDto.phoneNumDto phoneNumber) {
+    public ResponseEntity<String> sendSMS(@RequestBody UserDto.PhoneNumDto phoneNumber) {
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
 
@@ -35,7 +35,7 @@ public class UserController {
 
     // 유저 핸드폰 번호 공개하기
     @GetMapping("/user/Info/phoneNum")
-    public ResponseEntity<UserDto.phoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<UserDto.PhoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.getPhoneNum(userDetails.getUser().getId()));
     }
 
@@ -58,7 +58,7 @@ public class UserController {
     @PutMapping("/user/Info")
     public ResponseEntity<UserDto.ResponseDto> updateUserInfo(@RequestPart("profileImg") MultipartFile profileImg,
                                                               @RequestPart("vacImg") MultipartFile vacImg,
-                                                              @RequestPart("requestDto") UserDto.updateRequestDto requestDto,
+                                                              @RequestPart("requestDto") UserDto.UpdateRequestDto requestDto,
                                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.ok().body(userService.updateUserInfo(profileImg, vacImg, requestDto, userDetails.getUser().getId()));

@@ -56,7 +56,7 @@ public class CarpoolService {
     
     //region 카풀 카테고리 분류
     @Transactional
-    public ResponseEntity<Page<CarpoolDto.CategoryResponseDto>> sortCarpools(
+    public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCarpools(
             CarpoolDto.CategoryRequestDto categoryRequestDto,
             int page,
             int size
@@ -72,10 +72,10 @@ public class CarpoolService {
                 categoryRequestDto.getMaxMemberNum(), // 빈 값은 숫자 맥스로
                 pageable
         );
-        List<CarpoolDto.CategoryResponseDto> categoryResponseDto = sortedCategories.stream()
+        List<CarpoolDto.ResponseDto> categoryResponseDto = sortedCategories.stream()
                 .map(e->toCategoryResponseDto(e))
                 .collect(Collectors.toList());
-        Page<CarpoolDto.CategoryResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
+        Page<CarpoolDto.ResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
         return ResponseEntity.ok().body(categoryResponseDtoPage);
     }
     //endregion
@@ -91,8 +91,8 @@ public class CarpoolService {
         carpool.changeStatus();
     }
 
-    private CarpoolDto.CategoryResponseDto toCategoryResponseDto(Carpool carpool) {
-        return CarpoolDto.CategoryResponseDto.builder()
+    private CarpoolDto.ResponseDto toCategoryResponseDto(Carpool carpool) {
+        return CarpoolDto.ResponseDto.builder()
                 .postId(carpool.getId())
                 .userId(carpool.getUser().getId())
                 .nickname(carpool.getUser().getNickname())

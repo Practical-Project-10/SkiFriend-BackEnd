@@ -21,7 +21,7 @@ public class HomeController {
     private final HomeService homeService;
 
     @GetMapping("/main")
-    public ResponseEntity<List<FreePostDto.ResortTabDto>> takeHotFreePosts() {
+    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
         return freePostService.takeHotFreePosts();
     }
 
