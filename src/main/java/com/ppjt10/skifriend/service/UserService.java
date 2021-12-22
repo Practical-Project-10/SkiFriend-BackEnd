@@ -87,17 +87,7 @@ public class UserService {
     @Transactional
     public UserDto.ResponseDto getUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
-        return UserDto.ResponseDto.builder()
-                .username(user.getUsername())
-                .phoneNum(user.getPhoneNum())
-                .nickname(user.getNickname())
-                .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
-                .gender(user.getGender())
-                .ageRange(user.getAgeRange())
-                .career(user.getCareer())
-                .selfIntro(user.getSelfIntro())
-                .build();
+        return createUserResponseDto(user);
     }
 
     @Transactional
@@ -130,17 +120,7 @@ public class UserService {
             user.setVacImg("이미지 미설정");
         }
 
-        return UserDto.ResponseDto.builder()
-                .username(user.getUsername())
-                .phoneNum(user.getPhoneNum())
-                .nickname(user.getNickname())
-                .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
-                .gender(user.getGender())
-                .ageRange(user.getAgeRange())
-                .career(user.getCareer())
-                .selfIntro(user.getSelfIntro())
-                .build();
+        return createUserResponseDto(user);
     }
 
     @Transactional
@@ -163,21 +143,39 @@ public class UserService {
 
         List<CarpoolDto.ResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
-            carpoolListDto.add(CarpoolDto.ResponseDto.builder()
-                    .userId(carpool.getUser().getId())
-                    .postId(carpool.getId())
-                    .carpoolType(carpool.getCarpoolType())
-                    .startLocation(carpool.getStartLocation())
-                    .endLocation(carpool.getEndLocation())
-                    .date(carpool.getDate())
-                    .time(carpool.getTime())
-                    .price(carpool.getPrice())
-                    .memberNum(carpool.getMemberNum())
-                    .notice(carpool.getNotice())
-                    .status(carpool.isStatus())
-                    .build());
+            carpoolListDto.add(createCarpoolResponseDto(carpool));
         }
 
         return carpoolListDto;
+    }
+
+    private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
+        return CarpoolDto.ResponseDto.builder()
+                .userId(carpool.getUser().getId())
+                .postId(carpool.getId())
+                .carpoolType(carpool.getCarpoolType())
+                .startLocation(carpool.getStartLocation())
+                .endLocation(carpool.getEndLocation())
+                .date(carpool.getDate())
+                .time(carpool.getTime())
+                .price(carpool.getPrice())
+                .memberNum(carpool.getMemberNum())
+                .notice(carpool.getNotice())
+                .status(carpool.isStatus())
+                .build();
+    }
+
+    private UserDto.ResponseDto createUserResponseDto(User user) {
+        return UserDto.ResponseDto.builder()
+                .username(user.getUsername())
+                .phoneNum(user.getPhoneNum())
+                .nickname(user.getNickname())
+                .profileImg(user.getProfileImg())
+                .vacImg(user.getVacImg())
+                .gender(user.getGender())
+                .ageRange(user.getAgeRange())
+                .career(user.getCareer())
+                .selfIntro(user.getSelfIntro())
+                .build();
     }
 }
