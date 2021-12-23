@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.time;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TimeConversion {
     public static String timeConversion(LocalDateTime createdAt) {
@@ -10,8 +11,9 @@ public class TimeConversion {
         String resultConversion = "";
 
         // 몇 개월 전 만들기
-
-        if ((timeDiff / 86400) > 0) { // 일
+        if ((timeDiff / 86400) > 1) {
+            resultConversion = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        } else if ((timeDiff / 86400) > 0) { // 1 일
             resultConversion = timeDiff / 86400 + "일 전";
         } else if ((timeDiff / 3600) > 0) { // 시간
             resultConversion = timeDiff / 3600 + "시간 전";
