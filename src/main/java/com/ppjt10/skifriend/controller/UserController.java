@@ -48,6 +48,18 @@ public class UserController {
         userService.createUser(profileImg, vacImg, requestDto);
     }
 
+    // 아이디 중복 체크
+    @PostMapping("/user/signup/idcheck")
+    public void checkIsUsername(@RequestBody UserDto.IdCheckDto idCheckDto){
+        userService.checkIsId(idCheckDto.getUsername());
+    }
+
+    // 닉네임 중복 체크
+    @PostMapping("/user/signup/nicknamecheck")
+    public void checkIsNickname(@RequestBody UserDto.NicknameCheckDto nicknameCheckDto){
+        userService.checkIsNickname(nicknameCheckDto.getNickname());
+    }
+
     // 유저 정보 조회하기
     @GetMapping("/user/Info")
     public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {

@@ -25,6 +25,22 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class IdCheckDto{
+        private String username;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NicknameCheckDto{
+        private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class LoginResponseDto{
         private Long userId;
         private String nickname;
