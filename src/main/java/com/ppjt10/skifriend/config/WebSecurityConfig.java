@@ -55,6 +55,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**")
+                .antMatchers("/board/{skiResort}")
+                .antMatchers("/main")
+                .antMatchers("/board/carpool/category")
                 .antMatchers("/user/signup, /user/sms, /user/sms/check");
     }
 
@@ -84,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .anyRequest()
-                .authenticated()
+                .permitAll()
                 .and()
                 // [로그아웃 기능]
                 .logout()
@@ -128,6 +131,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/sms");
         skipPathList.add("POST,/user/sms/check");
 
+        // 자유게시판 상세조회
+        skipPathList.add("GET,/board/freeBoard/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
