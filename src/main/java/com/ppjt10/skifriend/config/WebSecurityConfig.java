@@ -56,9 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers("/h2-console/**")
                 .antMatchers("/board/{skiResort}")
-                .antMatchers("/main")
+                .antMatchers("/main", "/skiResort/{skiResort}")
                 .antMatchers("/board/carpool/category")
-                .antMatchers("/user/signup, /user/sms, /user/sms/check");
+                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
     @Override
@@ -126,6 +126,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 회원 관리 API 허용
         skipPathList.add("POST,/user/signup");
+        skipPathList.add("POST,/user/signup/idcheck");
+        skipPathList.add("POST,/user/signup/nicknamecheck");
 
         // 문자 SMS 인증 요청
         skipPathList.add("GET,/user/sms");
