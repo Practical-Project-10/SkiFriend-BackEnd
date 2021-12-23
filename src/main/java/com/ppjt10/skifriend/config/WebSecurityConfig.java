@@ -84,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .anyRequest()
-                .permitAll()
+                .authenticated()
                 .and()
                 // [로그아웃 기능]
                 .logout()
