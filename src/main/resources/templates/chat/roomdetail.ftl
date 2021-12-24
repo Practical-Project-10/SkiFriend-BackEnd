@@ -53,11 +53,12 @@
             room: {},
             sender: '',
             message: '',
-            messages: []
+            messages: [],
+            token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJFWFBJUkVEX0RBVEUiOjE2NDA2MDA3NTksImlzcyI6InNwYXJ0YSIsIlVTRVJfTkFNRSI6ImJlb21pbjEyMyJ9.UxhFUln3xQmER4A_hPQtorxFUSe7Hw685Nd9FqMXy6w'
         },
         created() {
             this.roomId = localStorage.getItem('wschat.roomId');
-            this.sender = localStorage.getItem('wschat.sender');
+            // this.sender = localStorage.getItem('wschat.sender');
             this.findRoom();
         },
         methods: {
@@ -65,7 +66,7 @@
                 axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
+                ws.send("/pub/chat/message",{"token":this.token},JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -73,21 +74,19 @@
             },
             getPreviousMessages: function() {
                 axios.get('/chat/message/' + this.roomId).then(response => {
-                    // console.log('getpreviousmessages : ', {response});
-                    // console.log('mapped array : ', response.map(recv => ({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})))
                     this.messages = [...response.data, ...this.messages]
                 });
             }
         }
     });
     // pub/sub event
-    ws.connect({}, function(frame) {
+    ws.connect({"token":vm.$data.token}, function(frame) {
         ws.subscribe("/sub/chat/room/"+vm.$data.roomId, (message) => {
             var recv = JSON.parse(message.body);
             vm.recvMessage(recv);
             console.log({ recv });
         });
-        ws.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
+        ws.send("/pub/chat/message",{token:vm.$data.token} ,JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
         vm.getPreviousMessages();
     }, function(error) {
         alert("error "+error);

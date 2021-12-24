@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,14 +57,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/board/{skiResort}")
                 .antMatchers("/main", "/skiResort/{skiResort}")
                 .antMatchers("/board/carpool/category")
-                .antMatchers("/**")
-                .antMatchers("/user/signup, /user/sms, /user/sms/check")
+                .antMatchers("/webjars/**")
+                .antMatchers("/ws-stomp/**")
+                .antMatchers("/chat/user")
                 .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        http.csrf().disable()
+                .headers()
+                .frameOptions().sameOrigin(); // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
 
         // cors설정 추가
         http

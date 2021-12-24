@@ -1,13 +1,12 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.ChatMessageDto;
-import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,8 +31,11 @@ public class ChatController {
     //region 채팅방 구독 및 메시지 보내기
     @MessageMapping("/chat/message")
 //    @SendTo("/chat/room/roomId")
-    public void chatMessage(ChatMessageDto.RequestDto requestDto) {
-        chatMessageService.sendChatMessage(requestDto);
+    public void chatMessage(
+            ChatMessageDto.RequestDto requestDto,
+            @Header("token") String token
+            ) {
+        chatMessageService.sendChatMessage(requestDto, token);
     }
     //endregion
 

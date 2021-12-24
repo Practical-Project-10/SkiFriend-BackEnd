@@ -4,6 +4,7 @@ package com.ppjt10.skifriend.service;
 import com.ppjt10.skifriend.dto.ChatMessageDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
+import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final SimpMessageSendingOperations messaging;
+    private final JwtDecoder jwtDecoder;
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -40,8 +42,10 @@ public class ChatMessageService {
     //endregion
 
     //region 채팅방 구독하기/ 메시지 보내기
-    public void sendChatMessage(ChatMessageDto.RequestDto requestDto) {
-        ChatMessage message = new ChatMessage(requestDto.getType(), requestDto.getRoomId(),requestDto.getSender() , requestDto.getMessage());
+    public void sendChatMessage(ChatMessageDto.RequestDto requestDto, String token) {
+        String nickname = jwtDecoder.decodeUsername(token);
+//        ChatMessage message = new ChatMessage(requestDto.getType(), requestDto.getRoomId(),requestDto.getSender() , requestDto.getMessage());
+        ChatMessage message = new ChatMessage(requestDto.getType(), requestDto.getRoomId(),nickname , requestDto.getMessage());
         if (ChatMessage.MessageType.ENTER.equals(message.getType()))
             message.setMessage(message.getSender() + "님이 입장하셨습니다.");
         else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
