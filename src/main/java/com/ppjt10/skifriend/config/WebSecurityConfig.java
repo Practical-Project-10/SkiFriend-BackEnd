@@ -58,6 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/board/{skiResort}")
                 .antMatchers("/main")
                 .antMatchers("/board/carpool/category")
+                .antMatchers("/**")
                 .antMatchers("/user/signup, /user/sms, /user/sms/check");
     }
 
@@ -133,6 +134,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 자유게시판 상세조회
         skipPathList.add("GET,/board/freeBoard/**");
+
+        skipPathList.add("GET,/chat/**");
+        skipPathList.add("POST,/chat/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
