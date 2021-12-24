@@ -1,6 +1,8 @@
 package com.ppjt10.skifriend.certification;
 
 import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.entity.User;
+import com.ppjt10.skifriend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -16,6 +19,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MessageService {
     private final SmsCertification smsCertification;
+    private final UserRepository userRepository;
 
     @Value("${coolsms.apikey}")
     private String apiKey;
@@ -48,7 +52,11 @@ public class MessageService {
     }
 
     // 인증번호 전송하기
-    public String sendSMS(String phonNumber) {
+    public String sendSMS(String phoneNumber) {
+
+        // 중복 검사
+        checkDuplicatoin(phoneNumber);
+
         Message coolsms = new Message(apiKey, apiSecret);
 
         // 랜덤한 인증 번호 생성
@@ -56,7 +64,7 @@ public class MessageService {
         System.out.println(randomNum);
 
         // 발신 정보 설정
-        HashMap<String, String> params = makeParams(phonNumber, randomNum);
+        HashMap<String, String> params = makeParams(phoneNumber, randomNum);
 
         try {
             JSONObject obj = (JSONObject) coolsms.send(params);
@@ -67,9 +75,16 @@ public class MessageService {
         }
 
         // DB에 발송한 인증번호 저장
-        smsCertification.createSmsCertification(phonNumber,randomNum);
+        smsCertification.createSmsCertification(phoneNumber,randomNum);
 
         return "문자 전송이 완료되었습니다.";
+    }
+
+    private void checkDuplicatoin(String phoneNum) {
+        Optional<User> isPhoneNum = userRepository.findByPhoneNum(phoneNum);
+        if (isPhoneNum.isPresent()) {
+            throw new IllegalArgumentException("중복된 번호가 존재합니다.");
+        }
     }
 
     // 인증 번호 검증
