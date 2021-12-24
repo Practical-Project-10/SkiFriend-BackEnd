@@ -54,11 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
-                .antMatchers("/h2-console/**")
-                .antMatchers("/board/{skiResort}")
-                .antMatchers("/main", "/skiResort/{skiResort}")
-                .antMatchers("/board/carpool/category")
-                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
+                .antMatchers("/h2-console/**");
     }
 
     @Override
@@ -124,6 +120,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
 
+        // Home
+        skipPathList.add("GET,/main");
+
         // 회원 관리 API 허용
         skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/signup/idcheck");
@@ -133,8 +132,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/sms");
         skipPathList.add("POST,/user/sms/check");
 
-        // 자유게시판 상세조회
+        // 상세 탭
+        skipPathList.add("GET,/board/{skiResort}");
+        skipPathList.add("GET,/board/carpool/category");
         skipPathList.add("GET,/board/freeBoard/**");
+        skipPathList.add("GET,/skiResort/{skiResort}");
+
+        skipPathList.add("GET,/chat/**");
+        skipPathList.add("POST,/chat/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
@@ -159,7 +164,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        //configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
