@@ -1,7 +1,6 @@
 package com.ppjt10.skifriend.controller;
 
-
-
+import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.FreePostService;
@@ -13,11 +12,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class FreePostController {
     private final FreePostService freePostService;
+
+    //자유게시판 전체 조회
+    @GetMapping("/board/freeBoard/{skiResort}")
+    public ResponseEntity<List<FreePostDto.AllResponseDto>> getFreePosts(@PathVariable String skiResort,
+                                                                         @RequestParam int page,
+                                                                         @RequestParam int size
+    ) {
+        page = page - 1;
+        List<FreePostDto.AllResponseDto> allResponseDtoList = freePostService.getFreePosts(skiResort, page, size);
+        return ResponseEntity.ok()
+                .body(allResponseDtoList);
+    }
 
     //region 자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
@@ -33,7 +45,7 @@ public class FreePostController {
     //endregion
 
     //region 자유 게시판 게시글 상세조회
-    @GetMapping("/board/freeBoard/{postId}")
+    @GetMapping("/board/freeBoard/{postId}/detail")
     public ResponseEntity<FreePostDto.ResponseDto> readFreePost(
             @PathVariable Long postId
     ) {
@@ -63,5 +75,4 @@ public class FreePostController {
         freePostService.deleteFreePost(userDetails, postId);
     }
     //endregion
-
 }

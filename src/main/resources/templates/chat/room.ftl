@@ -73,8 +73,8 @@
                 }
             },
             enterRoom: function(roomId) {
-                var sender = prompt('대화명을 입력해 주세요.');
-                localStorage.setItem('wschat.sender',sender);
+                // var sender = prompt('대화명을 입력해 주세요.');
+                // localStorage.setItem('wschat.sender',sender);
                 localStorage.setItem('wschat.roomId',roomId);
                 location.href="/chat/room/enter/"+roomId;
             }

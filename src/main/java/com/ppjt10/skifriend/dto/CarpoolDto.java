@@ -22,6 +22,7 @@ public class CarpoolDto {
         private String notice;
     }
 
+    //조회용
     @Builder
     @Getter
     @AllArgsConstructor
