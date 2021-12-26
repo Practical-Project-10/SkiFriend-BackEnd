@@ -60,6 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**")
                 .antMatchers("/ws-stomp/**")
                 .antMatchers("/chat/user")
+                .antMatchers("/favicon.ico")
                 .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
