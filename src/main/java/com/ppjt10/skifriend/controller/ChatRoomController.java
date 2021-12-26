@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.ChatRoomDto;
-import com.ppjt10.skifriend.entity.ChatRoom;
+
 import com.ppjt10.skifriend.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

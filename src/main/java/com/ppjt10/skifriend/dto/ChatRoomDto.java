@@ -14,5 +14,6 @@ public class ChatRoomDto {
     public static class ResponseDto{
         private String name;
         private String roomId;
+        private long userCount;
     }
 }

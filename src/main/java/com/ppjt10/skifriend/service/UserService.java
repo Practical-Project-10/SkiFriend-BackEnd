@@ -150,6 +150,13 @@ public class UserService {
         return carpoolListDto;
     }
 
+    //region 채팅을 위한 유저 찾기
+    @Transactional
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                ()-> new IllegalArgumentException("회원이 아닙니다."));
+    }
+    //endregion
     private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
         return CarpoolDto.ResponseDto.builder()
                 .userId(carpool.getUser().getId())

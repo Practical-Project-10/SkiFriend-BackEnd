@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,12 +53,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
-                .antMatchers("/h2-console/**");
+                .antMatchers("/h2-console/**")
+                .antMatchers("/board/{skiResort}")
+                .antMatchers("/main", "/skiResort/{skiResort}")
+                .antMatchers("/board/carpool/category")
+                .antMatchers("/webjars/**")
+                .antMatchers("/ws-stomp/**")
+                .antMatchers("/chat/user")
+                .antMatchers("/favicon.ico")
+                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        http.csrf().disable()
+                .headers()
+                .frameOptions().sameOrigin(); // SockJS는 기본적으로 HTML iframe 요소를 통한 전송을 허용하지 않도록 설정되는데 해당 내용을 해제한다.
 
         // cors설정 추가
         http
@@ -120,9 +129,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
 
-        // Home
-        skipPathList.add("GET,/main");
-
         // 회원 관리 API 허용
         skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/signup/idcheck");
@@ -132,11 +138,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/sms");
         skipPathList.add("POST,/user/sms/check");
 
-        // 상세 탭
-        skipPathList.add("GET,/board/{skiResort}");
-        skipPathList.add("GET,/board/carpool/category");
+        // 자유게시판 상세조회
         skipPathList.add("GET,/board/freeBoard/**");
-        skipPathList.add("GET,/skiResort/{skiResort}");
 
         skipPathList.add("GET,/chat/**");
         skipPathList.add("POST,/chat/**");
@@ -164,7 +167,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        //configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");

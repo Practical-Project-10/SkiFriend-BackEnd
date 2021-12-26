@@ -4,6 +4,7 @@ package com.ppjt10.skifriend.service;
 import com.ppjt10.skifriend.dto.ChatRoomDto;
 import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
+import com.ppjt10.skifriend.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,14 @@ import java.util.stream.Collectors;
 @Service
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
+    private final RedisRepository redisRepository;
 
     //region 전체 채팅방 조회 메소드
     public ResponseEntity<List<ChatRoomDto.ResponseDto>> findAllRoom() {
         // 채팅방 생성순서 최근 순으로 반환으로 변경해야함
         List<ChatRoom> chatRooms = chatRoomRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        chatRooms.stream()
+                .forEach(chatRoom -> chatRoom.setUserCount(redisRepository.getUserCount(chatRoom.getRoomId())));
         List<ChatRoomDto.ResponseDto> chatRoomResponseDtos = chatRooms.stream()
                 .map(e->toChatRoomResponseDto(e))
                 .collect(Collectors.toList());

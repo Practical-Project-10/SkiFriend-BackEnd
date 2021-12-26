@@ -24,6 +24,9 @@ public class ChatRoom extends Timestamped {
     @Column
     private String name;
 
+    @Column
+    private long userCount;
+
     public ChatRoom (String name) {
         this.name = name;
         this.roomId = UUID.randomUUID().toString();
