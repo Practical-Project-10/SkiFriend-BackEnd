@@ -35,5 +35,4 @@ public class HomeController {
         return ResponseEntity.ok()
                 .body(boardListResponseDto);
     }
-
 }
