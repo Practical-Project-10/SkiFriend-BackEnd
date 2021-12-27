@@ -55,7 +55,7 @@ public class MessageService {
     public String sendSMS(String phoneNumber) {
 
         // 중복 검사
-        // checkDuplicatoin(phoneNumber);
+        checkDuplicatoin(phoneNumber);
 
         Message coolsms = new Message(apiKey, apiSecret);
 
@@ -83,7 +83,7 @@ public class MessageService {
     private void checkDuplicatoin(String phoneNum) {
         Optional<User> isPhoneNum = userRepository.findByPhoneNum(phoneNum);
         if (isPhoneNum.isPresent()) {
-            throw new IllegalArgumentException("중복된 번호가 존재합니다.");
+            throw new IllegalArgumentException("이미 가입된 전화번호입니다.");
         }
     }
 
