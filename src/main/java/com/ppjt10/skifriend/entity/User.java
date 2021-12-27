@@ -44,6 +44,18 @@ public class User {
     @Column(nullable = false)
     private String selfIntro;
 
+    // 태스트용 생성자
+    public User(UserDto.testRequestDto requestDto, String enPassword){
+        this.username = requestDto.getUsername();
+        this.nickname = requestDto.getNickname();
+        this.phoneNum = requestDto.getPhoneNum();
+        this.password = enPassword;
+        this.gender = "남";
+        this.ageRange = "10대";
+        this.career = "초보";
+        this.selfIntro = "test";
+    }
+
     public User(UserDto.RequestDto requestDto, String enPassword){
         this.username = requestDto.getUsername();
         this.nickname = requestDto.getNickname();

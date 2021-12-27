@@ -34,6 +34,23 @@ public class UserService {
     private final String profileImgDirName = "Profile";
     private final String vacImgDirName = "Vaccine";
 
+    // 임시 1차 회원가입용 함수
+    @Transactional
+    public void testSignup(UserDto.testRequestDto requestDto) {
+        String username = requestDto.getUsername();
+        String nickname = requestDto.getNickname();
+        String password = requestDto.getPassword();
+
+        // 유효성 검사
+        UserInfoValidator.validateUserInfoInput(username, nickname, password, requestDto.getPhoneNum(), "test");
+
+        // 민감 정보 암호화
+        String enPassword = passwordEncoder.encode(password);
+        User user = new User(requestDto, enPassword);
+
+        userRepository.save(user);
+    }
+
     @Transactional
     public void createUser(MultipartFile profileImg, MultipartFile vacImg, UserDto.RequestDto requestDto) throws IOException {
         String username = requestDto.getUsername();

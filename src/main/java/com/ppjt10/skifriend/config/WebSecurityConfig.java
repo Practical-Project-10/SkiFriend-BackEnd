@@ -53,15 +53,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
-                .antMatchers("/h2-console/**")
-                .antMatchers("/board/{skiResort}")
-                .antMatchers("/main", "/skiResort/{skiResort}")
-                .antMatchers("/board/carpool/category")
-                .antMatchers("/webjars/**")
-                .antMatchers("/ws-stomp/**")
-                .antMatchers("/chat/user")
-                .antMatchers("/favicon.ico")
-                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
+                .antMatchers("/h2-console/**");
+//                .antMatchers("/board/{skiResort}")
+//                .antMatchers("/main", "/skiResort/{skiResort}")
+//                .antMatchers("/board/carpool/category")
+//                .antMatchers("/webjars/**")
+//                .antMatchers("/ws-stomp/**")
+//                .antMatchers("/chat/user")
+//                .antMatchers("/favicon.ico")
+//                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
     @Override
@@ -130,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/h2-console/**");
 
         // 회원 관리 API 허용
+        skipPathList.add("POST,/user/test/signup");
         skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/signup/idcheck");
         skipPathList.add("POST,/user/signup/nicknamecheck");
@@ -139,10 +140,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/sms/check");
 
         // 자유게시판 상세조회
+        skipPathList.add("GET,/main");
         skipPathList.add("GET,/board/freeBoard/**");
+        skipPathList.add("GET,/skiResort/{skiResort}");
+        skipPathList.add("GET,/board/{skiResort}");
+        skipPathList.add("GET,/board/carpool/category");
 
+        skipPathList.add("GET,/webjars/**");
+        skipPathList.add("GET,/ws-stomp/**");
         skipPathList.add("GET,/chat/**");
         skipPathList.add("POST,/chat/**");
+        skipPathList.add("GET,/chat/user");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
@@ -167,7 +175,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        //configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        configuration.setAllowCredentials(true);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");

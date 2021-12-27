@@ -55,7 +55,7 @@ public class MessageService {
     public String sendSMS(String phoneNumber) {
 
         // 중복 검사
-        checkDuplicatoin(phoneNumber);
+        // checkDuplicatoin(phoneNumber);
 
         Message coolsms = new Message(apiKey, apiSecret);
 
@@ -64,15 +64,15 @@ public class MessageService {
         System.out.println(randomNum);
 
         // 발신 정보 설정
-        HashMap<String, String> params = makeParams(phoneNumber, randomNum);
-
-        try {
-            JSONObject obj = (JSONObject) coolsms.send(params);
-            System.out.println(obj.toString());
-        } catch (CoolsmsException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCode());
-        }
+//        HashMap<String, String> params = makeParams(phoneNumber, randomNum);
+//
+//        try {
+//            JSONObject obj = (JSONObject) coolsms.send(params);
+//            System.out.println(obj.toString());
+//        } catch (CoolsmsException e) {
+//            System.out.println(e.getMessage());
+//            System.out.println(e.getCode());
+//        }
 
         // DB에 발송한 인증번호 저장
         smsCertification.createSmsCertification(phoneNumber,randomNum);

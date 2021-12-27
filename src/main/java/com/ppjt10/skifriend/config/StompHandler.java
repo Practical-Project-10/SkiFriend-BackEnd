@@ -58,8 +58,8 @@ public class StompHandler implements ChannelInterceptor {
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             chatMessageService.sendChatMessage(ChatMessageDto.RequestDto.builder()
                     .type(ChatMessage.MessageType.QUIT)
-                    .roomId(roomId).
-                    sender(name)
+                    .roomId(roomId)
+                    .sender(name)
                     .build());
             redisRepository.removeUserEnterInfo(sessionId);
         }

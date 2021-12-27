@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserInfoValidator {
     public static void validateUserInfoInput(String username, String nickname, String password, String phoneNum, String selfIntro) {
-        String patternUsername = "(?=.*[a-zA-Z])(?=.*[0-9])[^@$!%*#?&].{5,}$";
+        String patternUsername = "(?=.*[a-zA-Z])(?=.*[0-9])[^@$!%*#?&].{4,}$";
         String patternPassword = "[A-Za-z\\d$@$!%*#?&]{8,}$";
         String patternPhoneNum = "(?=.*[0-9]).{11}$";
 
