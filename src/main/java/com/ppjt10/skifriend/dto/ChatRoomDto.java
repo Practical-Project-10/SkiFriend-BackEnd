@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class ChatRoomDto {
-
+    //    Carpool carpool, List<ChatMessage> chatMessageList, Long senderId, List<ChatUserInfo> chatUserInfoList
     @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseDto{
-        private String name;
+        private String roomName;
         private String roomId;
-        private long userCount;
     }
 }

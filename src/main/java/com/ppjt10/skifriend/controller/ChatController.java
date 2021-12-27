@@ -3,6 +3,7 @@ package com.ppjt10.skifriend.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.dto.ChatMessageDto;
 import com.ppjt10.skifriend.repository.RedisRepository;
+import com.ppjt10.skifriend.security.jwt.HeaderTokenExtractor;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -28,19 +29,19 @@ public class ChatController {
     //region 해당 방에서 했던 모든 메시지 가져오기
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public ResponseEntity<List<ChatMessageDto.ResponseDto>> getAllMessages(@PathVariable String roomId) {
+    public ResponseEntity<ChatMessageDto.InChatRoomResponseDto> getAllMessages(@PathVariable String roomId) {
         return chatMessageService.takeAllChatMessages(roomId);
     }
     //endregion
 
     //region 채팅방 구독 및 메시지 보내기
     @MessageMapping("/chat/message")
-//    @SendTo("/chat/room/roomId")
     public void chatMessage(
             @Payload ChatMessageDto.RequestDto requestDto,
-            @Header("token") String token
+            @Header("Authorization") String token
             ) throws ParseException, JsonProcessingException {
-        requestDto.setUserCount(redisRepository.getUserCount(requestDto.getRoomId()));
+//        requestDto.setUserCount(redisRepository.getUserCount(requestDto.getRoomId()));
+        token = token.substring(7);
         requestDto.setSender(jwtDecoder.decodeUsername(token));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + requestDto.getMessage());
         chatMessageService.sendChatMessage(requestDto);

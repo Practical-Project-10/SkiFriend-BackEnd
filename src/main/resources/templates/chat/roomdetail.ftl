@@ -57,7 +57,7 @@
             roomName: '',
             message: '',
             messages: [],
-            token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJFWFBJUkVEX0RBVEUiOjE2NDA3NjAwODAsImlzcyI6InNwYXJ0YSIsIlVTRVJfTkFNRSI6ImJlb21pbjEyMyJ9.hgSHheTqu0LCJcdz8bUSS7byB6JyQjSdilhOnvKwqUg',
+            token: 'BEARER eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJFWFBJUkVEX0RBVEUiOjE2NDA4NjE2NTUsImlzcyI6InNwYXJ0YSIsIlVTRVJfTkFNRSI6ImJlb21pbjEyIn0.aivy_nNhYU2_HeNmStiWnHNEGRngxPqjced6L1wj9cE',
             userCount: 0
         },
         created() {
@@ -69,7 +69,7 @@
             // callback function
             // });
 
-            ws.connect({"token":_this.token}, function(frame) {
+            ws.connect({"Authorization":_this.token}, function(frame) {
                 ws.subscribe("/sub/chat/room/"+_this.roomId, function(message) {
                     var recv = JSON.parse(message.body);
                     _this.recvMessage(recv);
@@ -81,7 +81,7 @@
         },
         methods: {
             sendMessage: function(type) {
-                ws.send("/pub/chat/message", {"token":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
+                ws.send("/pub/chat/message", {"Authorization":this.token}, JSON.stringify({type:type, roomId:this.roomId, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {

@@ -3,9 +3,13 @@ package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.dto.ChatMessageDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
+import com.ppjt10.skifriend.entity.ChatRoom;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
+import com.ppjt10.skifriend.repository.ChatRoomRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
+import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -20,9 +24,11 @@ import java.util.stream.Collectors;
 @Service
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 //    private final SimpMessageSendingOperations messaging;
     private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
+    private final UserRepository userRepository;
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -36,33 +42,40 @@ public class ChatMessageService {
 
 
     //region 해당 채팅방 모든 채팅 내용 불러오기
-    public ResponseEntity<List<ChatMessageDto.ResponseDto>> takeAllChatMessages(String roomId) {
-        List<ChatMessage> chatMessages = chatMessageRepository.findAllByRoomId(roomId);
+    public ResponseEntity<ChatMessageDto.InChatRoomResponseDto> takeAllChatMessages(String roomId) {
+        List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         List<ChatMessageDto.ResponseDto> chatMessageResponseDtos = chatMessages.stream()
                 .map(e->toChatMessageResponseDto(e))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(chatMessageResponseDtos);
+        ChatMessageDto.InChatRoomResponseDto inChatRoomResponseDto = ChatMessageDto.InChatRoomResponseDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .roomName(chatRoom.getCarpool().getNotice())
+                .roomContents(chatMessageResponseDtos)
+                .build();
+        return ResponseEntity.ok().body(inChatRoomResponseDto);
     }
     //endregion
 
     //region 채팅방 구독하기/ 메시지 보내기
     public void sendChatMessage(ChatMessageDto.RequestDto requestDto) {
-//        String nickname = jwtDecoder.decodeUsername(token);
-
-        ChatMessage message = new ChatMessage(requestDto.getType(),
-                requestDto.getRoomId(),
-                requestDto.getSender(),
-                requestDto.getMessage(),
-                requestDto.getUserCount());
-//        ChatMessage message = new ChatMessage(requestDto.getType(), requestDto.getRoomId(),nickname , requestDto.getMessage());
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+        User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
+        );
+        ChatMessage message = ChatMessage.builder()
+                .type(requestDto.getType())
+                .chatRoom(chatRoom)
+                .user(user)
+                .message(requestDto.getMessage())
+                .build();
         if (ChatMessage.MessageType.ENTER.equals(message.getType()))
-            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
+            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
         else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
-            message.setMessage(message.getSender() + "님이 퇴장하셨습니다.");
+            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
         }
         chatMessageRepository.save(message);
         System.out.println("전송");
-//        messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
         redisPublisher.publish(message);
         System.out.println("성공");
     }
@@ -71,8 +84,8 @@ public class ChatMessageService {
     private ChatMessageDto.ResponseDto toChatMessageResponseDto(ChatMessage chatMessage) {
         return ChatMessageDto.ResponseDto.builder()
                 .type(chatMessage.getType())
-                .roomId(chatMessage.getRoomId())
-                .sender(chatMessage.getSender())
+                .roomId(chatMessage.getChatRoom().getRoomId())
+                .sender(chatMessage.getUser().getNickname())
                 .message(chatMessage.getMessage())
                 .build();
     }

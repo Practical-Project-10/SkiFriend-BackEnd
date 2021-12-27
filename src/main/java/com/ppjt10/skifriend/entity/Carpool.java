@@ -25,9 +25,8 @@ public class Carpool extends Timestamped {
     @OneToMany(mappedBy = "carpool", cascade = CascadeType.ALL)
     private List<ChatRoom> chatRoomList = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private SkiResort skiResort;
+    @Column
+    private String skiResort;
 
     @Column(nullable = false)
     private String carpoolType;
@@ -56,7 +55,7 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, SkiResort skiResort) {
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;

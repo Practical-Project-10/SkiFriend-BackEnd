@@ -25,9 +25,8 @@ public class FreePost extends Timestamped {
     @JoinColumn
     private User user;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private SkiResort skiResort;
+    @Column(nullable = false)
+    private String skiResort;
 
     @Column(nullable = false)
     private String title;

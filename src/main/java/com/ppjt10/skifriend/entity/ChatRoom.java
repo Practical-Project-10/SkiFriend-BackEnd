@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.time.Timestamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,9 @@ public class ChatRoom extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String roomId;
+
     @ManyToOne
     @JoinColumn(nullable = false)
     private Carpool carpool;
@@ -36,8 +40,12 @@ public class ChatRoom extends Timestamped {
     @JsonIgnoreProperties({"chatRoom"})
     private List<ChatUserInfo> chatUserInfoList = new ArrayList<>();
 
-    public ChatRoom (Carpool carpool, Long senderId) {
+    @Builder
+    public ChatRoom (Carpool carpool, List<ChatMessage> chatMessageList, Long senderId, List<ChatUserInfo> chatUserInfoList) {
         this.carpool = carpool;
+        this.roomId = UUID.randomUUID().toString();
+        this.chatMessageList = chatMessageList;
         this.senderId = senderId;
+        this.chatUserInfoList = chatUserInfoList;
     }
 }
