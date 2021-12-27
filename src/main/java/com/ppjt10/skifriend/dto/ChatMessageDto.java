@@ -2,10 +2,8 @@ package com.ppjt10.skifriend.dto;
 
 
 import com.ppjt10.skifriend.entity.ChatMessage;
-import com.ppjt10.skifriend.entity.User;
 import lombok.*;
 
-import java.util.List;
 
 
 @Getter
@@ -16,7 +14,7 @@ public class ChatMessageDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class RequestDto{
+    public static class RequestDto {
         private ChatMessage.MessageType type;
         private String roomId;
         private String sender;
@@ -28,22 +26,12 @@ public class ChatMessageDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ResponseDto{
+    public static class ResponseDto {
         private ChatMessage.MessageType type;
+        private Long messageId;
         private String roomId;
         private String sender;
         private String message;
         private String createdAt;
     }
-
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class InChatRoomResponseDto{
-        private String  roomId;
-        private String roomName;
-        private List<ChatMessageDto.ResponseDto> roomContents;
-    }
-
 }
