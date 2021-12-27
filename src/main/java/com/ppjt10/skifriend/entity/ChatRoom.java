@@ -1,11 +1,14 @@
 package com.ppjt10.skifriend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,17 +21,23 @@ public class ChatRoom extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String roomId;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Carpool carpool;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"chatRoom"})
+    private List<ChatMessage> chatMessageList = new ArrayList<>();
 
     @Column
-    private String name;
+    private Long senderId;
 
-    @Column
-    private long userCount;
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"chatRoom"})
+    private List<ChatUserInfo> chatUserInfoList = new ArrayList<>();
 
-    public ChatRoom (String name) {
-        this.name = name;
-        this.roomId = UUID.randomUUID().toString();
+    public ChatRoom (Carpool carpool, Long senderId) {
+        this.carpool = carpool;
+        this.senderId = senderId;
     }
 }

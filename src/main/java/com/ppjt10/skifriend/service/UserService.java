@@ -57,6 +57,9 @@ public class UserService {
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
 
+        checkIsNickname(nickname);
+        checkIsId(username);
+
         // 유효성 검사
         UserInfoValidator.validateUserInfoInput(username, nickname, password, requestDto.getPhoneNum(), requestDto.getSelfIntro());
         GenderType.findByGenderType(requestDto.getGender());
