@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-//    private final SimpMessageSendingOperations messaging;
+    //    private final SimpMessageSendingOperations messaging;
     private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
@@ -31,8 +31,7 @@ public class ChatMessageService {
         int lastIndex = destination.lastIndexOf('/');
         if (lastIndex != -1) {
             return destination.substring(lastIndex + 1);
-        }
-        else {
+        } else {
             return "";
         }
     }
@@ -43,7 +42,7 @@ public class ChatMessageService {
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         List<ChatMessageDto.ResponseDto> chatMessageResponseDtos = chatMessages.stream()
-                .map(e->toChatMessageResponseDto(e))
+                .map(e -> toChatMessageResponseDto(e))
                 .collect(Collectors.toList());
         ChatMessageDto.InChatRoomResponseDto inChatRoomResponseDto = ChatMessageDto.InChatRoomResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
@@ -60,17 +59,7 @@ public class ChatMessageService {
         User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
-        ChatMessage message = ChatMessage.builder()
-                .type(requestDto.getType())
-                .chatRoom(chatRoom)
-                .user(user)
-                .message(requestDto.getMessage())
-                .build();
-//        MessageDto message = MessageDto.builder()
-//                .type(requestDto.getType())
-//                .nickname(user.getNickname())
-//                .message(requestDto.getMessage())
-//                .build();
+        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
 //        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
 //            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");

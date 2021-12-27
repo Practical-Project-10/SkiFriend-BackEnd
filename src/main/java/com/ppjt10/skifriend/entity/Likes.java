@@ -1,13 +1,10 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.dto.LikesDto;
 import com.ppjt10.skifriend.time.Timestamped;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Time;
 
 @Entity
 @Getter
@@ -17,15 +14,13 @@ public class Likes extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private FreePost freePost;
-
-
 
     public Likes(User user, FreePost freePost) {
         this.user = user;

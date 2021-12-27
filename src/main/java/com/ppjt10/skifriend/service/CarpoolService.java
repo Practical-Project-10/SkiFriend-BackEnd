@@ -1,16 +1,14 @@
 package com.ppjt10.skifriend.service;
 
-import com.ppjt10.skifriend.dto.BoardListResponseDto;
 import com.ppjt10.skifriend.dto.CarpoolDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.entity.Carpool;
-import com.ppjt10.skifriend.entity.FreePost;
+import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
+import com.ppjt10.skifriend.repository.SkiResortRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
-import com.ppjt10.skifriend.validator.SkiResortType;
 import com.ppjt10.skifriend.validator.TimeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -46,10 +44,8 @@ public class CarpoolService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
-//        if(carpool.getUser().getId() != userid){
-//            throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
-//        }
-        if(carpool.getUserId() != userid){
+
+        if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
         carpool.update(requestDto);
@@ -60,10 +56,8 @@ public class CarpoolService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
-//        if(carpool.getUser().getId() != userid){
-//            throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
-//        }
-        if(carpool.getUserId() != userid){
+
+        if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
         carpoolRepository.deleteById(carpoolId);
@@ -101,34 +95,11 @@ public class CarpoolService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
-//        if(carpool.getUser().getId() != userid){
-//            throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
-//        }
-        if(carpool.getUserId() != userid){
+
+        if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
         carpool.changeStatus();
-    }
-
-    private CarpoolDto.ResponseDto toCategoryResponseDto(Carpool carpool) {
-        return CarpoolDto.ResponseDto.builder()
-                .postId(carpool.getId())
-//                .userId(carpool.getUser().getId())
-//                .nickname(carpool.getUser().getNickname())
-                .userId(carpool.getUserId())
-                .nickname("")
-                .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
-                .carpoolType(carpool.getCarpoolType())
-                .startLocation(carpool.getStartLocation())
-                .endLocation(carpool.getEndLocation())
-                .skiResort(carpool.getSkiResort())
-                .date(carpool.getDate())
-                .time(carpool.getTime())
-                .price(carpool.getPrice())
-                .memberNum(carpool.getMemberNum())
-                .notice(carpool.getNotice())
-                .status(carpool.isStatus())
-                .build();
     }
 
 
@@ -150,10 +121,8 @@ public class CarpoolService {
         private CarpoolDto.ResponseDto generateCarpoolResponseDto(Carpool carpool) {
             return CarpoolDto.ResponseDto.builder()
                     .postId(carpool.getId())
-                    //.userId(carpool.getUser().getId())
-                    //.nickname(carpool.getUser().getNickname())
-                    .userId(carpool.getUserId())
-                    .nickname("a")
+                    .userId(carpool.getUser().getId())
+                    .nickname(carpool.getUser().getNickname())
                     .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
                     .carpoolType(carpool.getCarpoolType())
                     .startLocation(carpool.getStartLocation())

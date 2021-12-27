@@ -41,6 +41,9 @@ public class UserService {
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
 
+        checkIsNickname(nickname);
+        checkIsId(username);
+
         // 유효성 검사
         UserInfoValidator.validateUserInfoInput(username, nickname, password, requestDto.getPhoneNum(), "test");
 
@@ -89,6 +92,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 아이디 중복 체크
     @Transactional
     public void checkIsId(String username){
         Optional<User> isUsername = userRepository.findByUsername(username);
@@ -97,6 +101,7 @@ public class UserService {
         }
     }
 
+    // 닉네임 중복 체크
     @Transactional
     public void checkIsNickname(String nickname){
         Optional<User> isNickname = userRepository.findByNickname(nickname);
@@ -105,12 +110,14 @@ public class UserService {
         }
     }
 
+    // 유저 프로필 조회
     @Transactional
     public UserDto.ResponseDto getUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
         return createUserResponseDto(user);
     }
 
+    // 유저 프로필 수정
     @Transactional
     public UserDto.ResponseDto updateUserInfo(MultipartFile profileImg, MultipartFile vacImg, UserDto.UpdateRequestDto requestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
@@ -144,11 +151,13 @@ public class UserService {
         return createUserResponseDto(user);
     }
 
+    // 유저 탈퇴
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
+    // 내 폰 번호 공개
     @Transactional
     public UserDto.PhoneNumDto getPhoneNum(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
@@ -158,10 +167,10 @@ public class UserService {
                 .build();
     }
 
+    // 내가 쓴 카풀 게시물 목록 조회
     @Transactional
     public List<CarpoolDto.ResponseDto> findMyCarpools(User user) {
-        //List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
-        List<Carpool> carpoolList = carpoolRepository.findAllByUserId(user.getId());
+        List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
 
         List<CarpoolDto.ResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
@@ -171,17 +180,17 @@ public class UserService {
         return carpoolListDto;
     }
 
-    //region 채팅을 위한 유저 찾기
+    // 채팅을 위한 유저 찾기
     @Transactional
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 ()-> new IllegalArgumentException("회원이 아닙니다."));
     }
-    //endregion
+
 
     private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
         return CarpoolDto.ResponseDto.builder()
-                //.userId(carpool.getUser().getId())
+                .userId(carpool.getUser().getId())
                 .postId(carpool.getId())
                 .carpoolType(carpool.getCarpoolType())
                 .startLocation(carpool.getStartLocation())

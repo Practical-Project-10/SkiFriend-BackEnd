@@ -18,6 +18,12 @@ import java.util.List;
 public class FreePostController {
     private final FreePostService freePostService;
 
+    // 핫 게시물 내려주기
+    @GetMapping("/main")
+    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
+        return freePostService.takeHotFreePosts();
+    }
+
     //자유게시판 전체 조회
     @GetMapping("/board/freeBoard/{skiResort}")
     public ResponseEntity<List<FreePostDto.AllResponseDto>> getFreePosts(@PathVariable String skiResort,

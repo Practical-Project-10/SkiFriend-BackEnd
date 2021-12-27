@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -49,8 +50,7 @@ public class FreePostService {
         String imageUrl;
         try {
             imageUrl = s3Uploader.upload(image, imageDirName);
-        }
-        catch(Exception err) {
+        } catch (Exception err) {
             imageUrl = "No Post Image";
         }
         FreePost freePost = FreePost.builder()
@@ -119,23 +119,24 @@ public class FreePostService {
             Long postId
     ) throws IOException {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
-        if(userDetails.getUser().getId() != freePost.getUser().getId()) {
+        if (userDetails.getUser().getId() != freePost.getUser().getId()) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
         String imageUrl;
         try {
             imageUrl = s3Uploader.upload(image, imageDirName);
-        } catch(Exception err) {
+        } catch (Exception err) {
             imageUrl = "No Post Image";
         }
 
         try {
             String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
             s3Uploader.deleteFromS3(oldImageUrl);
-        } catch(Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         freePost.update(requestDto, imageUrl);
     }
@@ -148,8 +149,8 @@ public class FreePostService {
             Long postId
     ) throws UnsupportedEncodingException {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
-        if(userDetails.getUser().getId() != freePost.getUser().getId()) {
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
+        if (userDetails.getUser().getId() != freePost.getUser().getId()) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
         String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
@@ -174,14 +175,15 @@ public class FreePostService {
         exceptionProcessHotFreePost(populatedResortPosts, phoenix);
         exceptionProcessHotFreePost(populatedResortPosts, wellihilli);
         exceptionProcessHotFreePost(populatedResortPosts, konJiam);
-        List<FreePostDto.HotResponseDto> resortTabDtoList  = populatedResortPosts.stream()
-                .map(e->toHotResponseDto(e))
+        List<FreePostDto.HotResponseDto> resortTabDtoList = populatedResortPosts.stream()
+                .map(e -> toHotResponseDto(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(resortTabDtoList);
     }
+
     // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
     private FreePost extractHotFreePost(String skiResort) {
-       try {
+        try {
             List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResort(LocalDateTime.now().minusHours(3), skiResort);
             HashMap<Long, Integer> duplicatedCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
@@ -195,9 +197,8 @@ public class FreePostService {
             }
             Long findId = Collections.max(duplicatedCount.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
             return freePostRepository.findById(findId).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 존재하지 않습니다"));
-        }
-       catch(Exception e){
-           return null;
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -225,15 +226,16 @@ public class FreePostService {
             //해당 스키장의 자유게시글 리스트 가져오기
             Page<FreePost> freePostPage = freePostRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
 
-            //게시글 리스트
-            if (freePostPage.hasContent()){
-                for (FreePost freePost : freePostPage.toList()){
-                    freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
-                }
+        //게시글 리스트
+        if (freePostPage.hasContent()) {
+            for (FreePost freePost : freePostPage.toList()) {
+                freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
             }
-            return freePostResponseDtoList;
+        }
+        return freePostResponseDtoList;
     }
-    private FreePostDto.AllResponseDto generateFreePostResponseDto(FreePost freePost){
+
+    private FreePostDto.AllResponseDto generateFreePostResponseDto(FreePost freePost) {
         return FreePostDto.AllResponseDto.builder()
                 .postId(freePost.getId())
                 .userId(freePost.getUser().getId())

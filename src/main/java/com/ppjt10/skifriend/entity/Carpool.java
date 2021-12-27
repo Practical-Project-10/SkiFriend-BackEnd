@@ -1,15 +1,11 @@
 package com.ppjt10.skifriend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.dto.CarpoolDto;
-import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -19,17 +15,13 @@ public class Carpool extends Timestamped {
     @Id
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(nullable = false)
-    @Column
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private User user;
 
-    @OneToMany(mappedBy = "carpool", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"carpool"})
-    private List<ChatRoom> chatRoomList = new ArrayList<>();
-
-    @Column
-    private String skiResort;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private SkiResort skiResort;
 
     @Column(nullable = false)
     private String carpoolType;
@@ -58,8 +50,8 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
-        this.userId = user.getId();
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, SkiResort skiResort) {
+        this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;
         this.startLocation = requestDto.getStartLocation();

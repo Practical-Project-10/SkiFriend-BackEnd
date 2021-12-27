@@ -17,13 +17,13 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phoneNum;
 
     @Column
@@ -32,16 +32,16 @@ public class User {
     @Column
     private String vacImg;
 
-    @Column(nullable = false)
+    @Column
     private String gender;
 
-    @Column(nullable = false)
+    @Column
     private String ageRange;
 
-    @Column(nullable = false)
+    @Column
     private String career;
 
-    @Column(nullable = false)
+    @Column
     private String selfIntro;
 
     // 태스트용 생성자
@@ -50,10 +50,6 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.phoneNum = requestDto.getPhoneNum();
         this.password = enPassword;
-        this.gender = "남";
-        this.ageRange = "10대";
-        this.career = "초보";
-        this.selfIntro = "test";
     }
 
     public User(UserDto.RequestDto requestDto, String enPassword){

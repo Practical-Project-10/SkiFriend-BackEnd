@@ -24,29 +24,26 @@ public class LikesService {
     public void changeLike(
             UserDetailsImpl userDetails,
             Long postId
-    )
-    {
-        if(userDetails == null) {
-           throw new IllegalArgumentException("회원가입 후 이용하실 수 있습니다");
+    ) {
+        if (userDetails == null) {
+            throw new IllegalArgumentException("회원가입 후 이용하실 수 있습니다");
         }
+
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                ()->new IllegalArgumentException("해당하는 게시물이 없습니다")
+                () -> new IllegalArgumentException("해당하는 게시물이 없습니다")
         );
+
         Long userId = userDetails.getUser().getId();
         Optional<Likes> foundLikes = likesRepository.findByUserIdAndFreePostId(userId, postId);
-        if(foundLikes.isPresent()) {
+        if (foundLikes.isPresent()) {
             likesRepository.deleteById(foundLikes.get().getId());
-            freePost.setLikeCnt(freePost.getLikeCnt()-1);
+            freePost.setLikeCnt(freePost.getLikeCnt() - 1);
             System.out.println("좋아요가 삭제되었습니다");
-        }
-        else {
+        } else {
             likesRepository.save(new Likes(userDetails.getUser(), freePost));
-            freePost.setLikeCnt(freePost.getLikeCnt()+1);
+            freePost.setLikeCnt(freePost.getLikeCnt() + 1);
             System.out.println("좋아요가 클릭되었습니다");
 
         }
     }
-    //endregion
-
-
 }

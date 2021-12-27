@@ -1,19 +1,15 @@
 package com.ppjt10.skifriend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.dto.FreePostDto;
-import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
-@Builder
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FreePost extends Timestamped {
@@ -21,12 +17,13 @@ public class FreePost extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private String skiResort;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private SkiResort skiResort;
 
     @Column(nullable = false)
     private String title;
@@ -34,16 +31,8 @@ public class FreePost extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column
     private String Image;
-
-    @OneToMany(mappedBy = "freePost", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"freePost"})
-    List<Comment> commentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "freePost", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"freePost"})
-    List<Likes> likeList = new ArrayList<>();
 
     @Column
     private int likeCnt;
@@ -57,5 +46,19 @@ public class FreePost extends Timestamped {
         this.Image = image;
     }
 
+    public FreePost(User user, SkiResort skiResort, String title, String content, String image) {
+        this.user = user;
+        this.skiResort = skiResort;
+        this.title = title;
+        this.content = content;
+        this.Image = image;
+    }
 
+    public void setLikeCnt(int likeCnt){
+        this.likeCnt = likeCnt;
+    }
+
+    public void setCommentCnt(int commentCnt){
+        this.commentCnt = commentCnt;
+    }
 }

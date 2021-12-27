@@ -64,28 +64,25 @@ public class ChatRoomService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 ()->new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
-//        if (carpool.getUser().getId() == userDetails.getUser().getId()) {
-//            throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
-//        }
+
+        if (carpool.getUser().getId() == userDetails.getUser().getId()) {
+            throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
+        }
+
         Long senderId = userDetails.getUser().getId();
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
         List<Long> userIds = chatUserInfoList.stream()
                 .map(e->e.getUser().getId())
                 .collect(Collectors.toList());
+
         if(userIds.contains(senderId)) {
             ChatRoom existedChatRoom = chatRoomRepository.findByCarpoolIdAndSenderId(carpoolId, senderId);
             return ResponseEntity.ok().body(toChatRoomResponseDto(existedChatRoom));
         }
-        ChatRoom chatRoom = ChatRoom.builder()
-                        .carpool(carpool)
-                        .senderId(senderId)
-                        .chatUserInfoList(chatUserInfoList)
-                        .build();
+        ChatRoom chatRoom = new ChatRoom(carpool, senderId);
 
-        ChatUserInfo chatUserInfo = ChatUserInfo.builder()
-                .user(userDetails.getUser())
-                .chatRoom(chatRoom)
-                .build();
+        ChatUserInfo chatUserInfo = new ChatUserInfo(userDetails.getUser(), chatRoom);
+
         chatUserInfoRepository.save(chatUserInfo);
         return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
     }

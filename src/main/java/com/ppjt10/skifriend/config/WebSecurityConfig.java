@@ -54,14 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**")
-//                .antMatchers("/board/{skiResort}")
-//                .antMatchers("/main", "/skiResort/{skiResort}")
-//                .antMatchers("/board/carpool/category")
-//                .antMatchers("/webjars/**")
-//                .antMatchers("/ws-stomp/**")
-//                .antMatchers("/chat/user")
                 .antMatchers("/favicon.ico");
-//                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 
     @Override
@@ -129,8 +122,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
 
-        // Home
-        skipPathList.add("GET,/main");
 
         // 회원 관리 API 허용
         skipPathList.add("POST,/user/test/signup");
@@ -143,11 +134,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/sms/check");
 
         // 상세 탭
+        skipPathList.add("GET,/main");
         skipPathList.add("GET,/board/carpool/{skiResort}");
         skipPathList.add("GET,/board/carpool/category");
         skipPathList.add("GET,/board/freeBoard/**");
         skipPathList.add("GET,/skiResort/{skiResort}");
 
+        // 채팅
         skipPathList.add("GET,/webjars/**");
         skipPathList.add("GET,/ws-stomp/**");
         skipPathList.add("GET,/chat/room");

@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,15 +13,14 @@ public class ChatUserInfo {
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private ChatRoom chatRoom;
 
-    @Builder
     public ChatUserInfo(User user, ChatRoom chatRoom) {
         this.user = user;
         this.chatRoom = chatRoom;

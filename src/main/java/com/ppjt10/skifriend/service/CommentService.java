@@ -28,14 +28,11 @@ public class CommentService {
         if(userDetails == null) {
             throw new IllegalArgumentException("회원가입 후 이용해주세요.");
         }
+
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
-        Comment comment = Comment.builder()
-                .freePost(freePost)
-                .user(userDetails.getUser())
-                .content(requestDto.getContent())
-                .build();
+        Comment comment = new Comment(userDetails.getUser(), freePost, requestDto.getContent());
 
         commentRepository.save(comment);
     }
@@ -50,25 +47,25 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
+
         if(userDetails.getUser().getId() != comment.getUser().getId()) {
             throw new IllegalArgumentException("댓글 작성자만 댓글을 수정할 수 있습니다");
         }
+
         comment.update(requestDto);
     }
-    //endregion
 
-    //region 자유 게시판 게시글 댓글 삭제
+    // 자유 게시판 게시글 댓글 삭제
     @Transactional
     public void deleteComment(UserDetailsImpl userDetails, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
+
         if(userDetails.getUser().getId() != comment.getUser().getId()) {
             throw new IllegalArgumentException("댓글 작성자만 댓글을 삭제할 수 있습니다");
         }
+
         commentRepository.deleteById(commentId);
     }
-    //endregion
-
-
 }

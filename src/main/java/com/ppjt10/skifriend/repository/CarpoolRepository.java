@@ -19,8 +19,7 @@ public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
             Pageable pageable
     );
 
-    //List<Carpool> findAllByUser(User user);
-    List<Carpool> findAllByUserId(Long userId);
+    List<Carpool> findAllByUser(User user);
 
     Page<Carpool> findAllBySkiResort(String skiResort, Pageable pageable);
 

@@ -9,28 +9,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-@Builder
+
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private FreePost freePost;
 
     @Column(nullable = false)
     private String content;
 
-
+    public Comment(User user, FreePost freePost, String content){
+        this.user = user;
+        this.freePost = freePost;
+        this.content = content;
+    }
 
     public void update(CommentDto.RequestDto requestDto) {
         this.content = requestDto.getContent();
