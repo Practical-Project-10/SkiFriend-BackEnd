@@ -197,7 +197,11 @@ public class FreePostService {
     // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
     private FreePost extractHotFreePost(String skiResort) {
         try {
-            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResort(LocalDateTime.now().minusHours(3), skiResort);
+            SkiResort foundSkiResort = skiResortRepository.findByResortName(skiResort).orElseThrow(
+                    () -> new IllegalArgumentException("해당하는 skiResort가 없습니다")
+            );
+            Long skiResortId = foundSkiResort.getId();
+            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(3), skiResortId);
             HashMap<Long, Integer> duplicatedCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
                 Long postId = likes.getFreePost().getId();

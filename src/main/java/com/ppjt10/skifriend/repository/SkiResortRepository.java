@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface SkiResortRepository extends JpaRepository<SkiResort, Long> {
     Optional<SkiResort> findByResortName(String resortName);
+
+
 }
