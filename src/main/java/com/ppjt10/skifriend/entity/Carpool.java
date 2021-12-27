@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,11 +22,15 @@ public class Carpool extends Timestamped {
     @JoinColumn(nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private String carpoolType;
+    @OneToMany(mappedBy = "carpool", cascade = CascadeType.ALL)
+    private List<ChatRoom> chatRoomList = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private SkiResort skiResort;
 
     @Column(nullable = false)
-    private String skiResort;
+    private String carpoolType;
 
     @Column(nullable = false)
     private String startLocation;
@@ -50,7 +56,7 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, SkiResort skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;
