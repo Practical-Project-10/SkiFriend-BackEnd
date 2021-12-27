@@ -48,7 +48,7 @@ public class CarpoolController {
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        carpoolService.updateCarpool(carpoolId, requestDto, user.getId()); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
+        carpoolService.updateCarpool(carpoolId, requestDto, user.getId());
     }
 
     //카풀 게시글 삭제

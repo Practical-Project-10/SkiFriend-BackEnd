@@ -130,6 +130,7 @@ public class CarpoolService {
     }
 
 
+    @Transactional
     //카풀 전체 조회
     public List<CarpoolDto.ResponseDto> getCarpools(String skiResortName, int page, int size) {
         List<CarpoolDto.ResponseDto> carpoolResponseDtoList = new ArrayList<>();

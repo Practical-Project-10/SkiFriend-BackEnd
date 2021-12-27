@@ -215,6 +215,7 @@ public class FreePostService {
     }
 
     //자유게시글 전체 조회
+    @Transactional
     public List<FreePostDto.AllResponseDto> getFreePosts(String skiResortName, int page, int size) {
         List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
