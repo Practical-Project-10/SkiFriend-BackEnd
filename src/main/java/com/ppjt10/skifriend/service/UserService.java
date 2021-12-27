@@ -40,12 +40,14 @@ public class UserService {
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
+        String phoneNumber = requestDto.getPhoneNum();
 
+        checkIsPhoneNum(phoneNumber);
         checkIsNickname(nickname);
         checkIsId(username);
 
         // 유효성 검사
-        UserInfoValidator.validateUserInfoInput(username, nickname, password, requestDto.getPhoneNum(), "test");
+        UserInfoValidator.validateUserInfoInput(username, nickname, password, phoneNumber, "test");
 
         // 민감 정보 암호화
         String enPassword = passwordEncoder.encode(password);
@@ -59,12 +61,14 @@ public class UserService {
         String username = requestDto.getUsername();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
+        String phoneNumber = requestDto.getPhoneNum();
 
+        checkIsPhoneNum(phoneNumber);
         checkIsNickname(nickname);
         checkIsId(username);
 
         // 유효성 검사
-        UserInfoValidator.validateUserInfoInput(username, nickname, password, requestDto.getPhoneNum(), requestDto.getSelfIntro());
+        UserInfoValidator.validateUserInfoInput(username, nickname, password, phoneNumber, requestDto.getSelfIntro());
         GenderType.findByGenderType(requestDto.getGender());
         AgeRangeType.findByageRangeType(requestDto.getAgeRange());
         CareerType.findByCareerType(requestDto.getCareer());
@@ -185,6 +189,13 @@ public class UserService {
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 ()-> new IllegalArgumentException("회원이 아닙니다."));
+    }
+
+    private void checkIsPhoneNum(String phoneNum){
+        Optional<User> isPhoneNum = userRepository.findByPhoneNum(phoneNum);
+        if (isPhoneNum.isPresent()) {
+            throw new IllegalArgumentException("중복된 핸드폰 번호가 존재합니다.");
+        }
     }
 
 
