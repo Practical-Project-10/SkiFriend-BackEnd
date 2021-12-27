@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
 @Builder
 @Entity
 @Getter
@@ -29,7 +30,6 @@ public class Comment extends Timestamped {
 
     @Column(nullable = false)
     private String content;
-
 
 
     public void update(CommentDto.RequestDto requestDto) {

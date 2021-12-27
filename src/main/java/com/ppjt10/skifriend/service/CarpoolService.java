@@ -5,8 +5,10 @@ import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.FreePost;
+import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
+import com.ppjt10.skifriend.repository.SkiResortRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
@@ -27,17 +29,24 @@ import java.util.stream.Collectors;
 public class CarpoolService {
 
     private final CarpoolRepository carpoolRepository;
+    private final SkiResortRepository skiResortRepository;
 
+    // 카풀 게시글 작성
     @Transactional
-    public void createCarpool(String skiResort, CarpoolDto.RequestDto requestDto, User user) {
+    public void createCarpool(String skiResortName, CarpoolDto.RequestDto requestDto, User user) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
-        SkiResortType.findBySkiResortType(skiResort);
+
+        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
         Carpool carpool = new Carpool(user, requestDto, skiResort);
         carpoolRepository.save(carpool);
     }
 
+    // 카풀 게시글 수정
     @Transactional
     public void updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
@@ -52,6 +61,7 @@ public class CarpoolService {
         carpool.update(requestDto);
     }
 
+    //카풀 게시글 삭제
     @Transactional
     public void deleteCarpool(Long carpoolId, Long userid) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
@@ -90,6 +100,7 @@ public class CarpoolService {
     }
     //endregion
 
+    //카풀 상태 변경
     @Transactional
     public void changeStatus(Long carpoolId, Long userid) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
@@ -110,7 +121,7 @@ public class CarpoolService {
                 .carpoolType(carpool.getCarpoolType())
                 .startLocation(carpool.getStartLocation())
                 .endLocation(carpool.getEndLocation())
-                .skiResort(carpool.getSkiResort())
+                .skiResortName(carpool.getSkiResort().getResortName())
                 .date(carpool.getDate())
                 .time(carpool.getTime())
                 .price(carpool.getPrice())
@@ -122,8 +133,11 @@ public class CarpoolService {
 
 
     //카풀 전체 조회
-    public List<CarpoolDto.ResponseDto> getCarpools(String skiResort, int page, int size) {
+    public List<CarpoolDto.ResponseDto> getCarpools(String skiResortName, int page, int size) {
             List<CarpoolDto.ResponseDto> carpoolResponseDtoList = new ArrayList<>();
+        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
             //해당 스키장의 카풀 정보 리스트 가져오기
             Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
 
@@ -145,7 +159,7 @@ public class CarpoolService {
                     .carpoolType(carpool.getCarpoolType())
                     .startLocation(carpool.getStartLocation())
                     .endLocation(carpool.getEndLocation())
-                    .skiResort(carpool.getSkiResort())
+                    .skiResortName(carpool.getSkiResort().getResortName())
                     .date(carpool.getDate())
                     .time(carpool.getTime())
                     .price(carpool.getPrice())

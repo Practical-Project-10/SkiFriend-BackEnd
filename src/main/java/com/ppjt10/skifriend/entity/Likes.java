@@ -26,7 +26,6 @@ public class Likes extends Timestamped {
     private FreePost freePost;
 
 
-
     public Likes(User user, FreePost freePost) {
         this.user = user;
         this.freePost = freePost;

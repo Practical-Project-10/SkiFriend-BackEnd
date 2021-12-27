@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Carpool extends Timestamped {
+public class  Carpool extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -23,8 +23,9 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private String carpoolType;
 
-    @Column(nullable = false)
-    private String skiResort;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private SkiResort skiResort;
 
     @Column(nullable = false)
     private String startLocation;
@@ -50,7 +51,7 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
+    public Carpool(User user, CarpoolDto.RequestDto requestDto, SkiResort skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;

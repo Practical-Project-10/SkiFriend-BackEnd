@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.dto;
 
+import com.ppjt10.skifriend.entity.SkiResort;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +36,7 @@ public class CarpoolDto {
         private String carpoolType;
         private String startLocation;
         private String endLocation;
-        private String skiResort;
+        private String skiResortName;
         private String date;
         private String time;
         private int price;

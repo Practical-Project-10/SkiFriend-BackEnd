@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.BoardListResponseDto;
+import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CarpoolService;
@@ -20,6 +21,7 @@ public class CarpoolController {
     private final CarpoolService carpoolService;
 
     //카풀 게시물 조회
+    //skiResort = 스키장 이름
     @GetMapping("/board/carpool/{skiResort}")
     public ResponseEntity<List<CarpoolDto.ResponseDto>> getCarpools(@PathVariable String skiResort,
                                                                     @RequestParam int page,
