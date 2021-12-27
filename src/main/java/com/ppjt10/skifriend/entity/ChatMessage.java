@@ -23,32 +23,22 @@ public class ChatMessage  {
 
     private MessageType type; // 메시지 타입
 
-    @Column
-    private String roomId; // 방번호
+    @ManyToOne
+    @JoinColumn
+    private ChatRoom chatRoom; // 방번호
 
-    @Column
-    private String sender; // 메시지 보낸사람
+    @ManyToOne
+    @JoinColumn
+    private User user; // 메시지 보낸사람
 
     @Column
     private String message; // 메시지
 
-    @Column
-    private long userCount;
-    //채팅이 이뤄지는 도중에 필요한 Dto를 따로 만들어 줘야함
-//    @Builder
-//    public ChatMessage(ChatMessageDto.RequestDto requestDto, UserService userService) {
-//        this.type = requestDto.getType();
-//        this.roomId = requestDto.getRoomId();
-//        this.sender =  userService.getUser(requestDto.getSender()));
-//        this.message = chatMessageRequestDto.getMessage();
-//    }
-
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String message, long userCount) {
+    public ChatMessage(MessageType type, ChatRoom chatRoom, User user, String message) {
         this.type = type;
-        this.roomId = roomId;
-        this.sender = sender;
+        this.chatRoom = chatRoom;
+        this.user = user;
         this.message = message;
-        this.userCount = userCount;
     }
 }

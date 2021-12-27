@@ -139,14 +139,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/signup/nicknamecheck");
 
         // 문자 SMS 인증 요청
-        skipPathList.add("GET,/user/sms");
+        skipPathList.add("POST,/user/sms");
         skipPathList.add("POST,/user/sms/check");
 
-        // 홈
-        skipPathList.add("GET,/main");
-
         // 상세 탭
-        skipPathList.add("GET,/board/{skiResort}");
+        skipPathList.add("GET,/board/carpool/{skiResort}");
         skipPathList.add("GET,/board/carpool/category");
         skipPathList.add("GET,/board/freeBoard/**");
         skipPathList.add("GET,/skiResort/{skiResort}");
