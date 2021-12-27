@@ -1,30 +1,31 @@
 package com.ppjt10.skifriend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence .*;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-    @Entity
-    @Getter
-    @NoArgsConstructor
-    public class SkiResort {
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Id
-        private Long id;
+@Builder
+@Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class SkiResort {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
 
-        @Column
-        private String name;
+    @Column
+    private String resortName;
 
-        @OneToMany(mappedBy = "skiResort", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({"skiResort"})
-        private List<Carpool> carpoolList = new ArrayList<>();
+    @OneToMany(mappedBy = "skiResort", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"skiResort"})
+    private List<Carpool> carpoolList = new ArrayList<>();
 
-        @OneToMany(mappedBy = "skiResort", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({"skiResort"})
-        private List<FreePost> freePostList = new ArrayList<>();
-    }
+    @OneToMany(mappedBy = "skiResort", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"skiResort"})
+    private List<FreePost> freePostList = new ArrayList<>();
+}
 

@@ -80,8 +80,8 @@ public class Carpool extends Timestamped {
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
     }
-    
-    public void changeStatus(){
+
+    public void changeStatus() {
         this.status = false;
     }
 }

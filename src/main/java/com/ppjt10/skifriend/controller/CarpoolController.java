@@ -19,6 +19,7 @@ public class CarpoolController {
     private final CarpoolService carpoolService;
 
     //카풀 게시물 조회
+    //skiResort = 스키장 이름
     @GetMapping("/board/carpool/{skiResort}")
     public ResponseEntity<List<CarpoolDto.ResponseDto>> getCarpools(@PathVariable String skiResort,
                                                                     @RequestParam int page,

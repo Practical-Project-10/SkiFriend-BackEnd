@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.dto;
 
+import com.ppjt10.skifriend.entity.SkiResort;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +41,7 @@ public class FreePostDto {
     public static class HotResponseDto{
         private Long postId;
         private String title;
-        private String skiResort;
+        private SkiResort skiResort;
         private String createdAt;
         private int likeCnt;
         private int commentCnt;
