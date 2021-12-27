@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.repository;
 
 import com.ppjt10.skifriend.entity.Carpool;
+import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
 
     List<Carpool> findAllByUser(User user);
 
-    Page<Carpool> findAllBySkiResort(String skiResort, Pageable pageable);
+    Page<Carpool> findAllBySkiResort(SkiResort skiResort, Pageable pageable);
 
     List<Carpool> findAllByDateAndTime(String date, String time);
 }
