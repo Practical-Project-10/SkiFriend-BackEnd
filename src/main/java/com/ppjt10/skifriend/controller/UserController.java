@@ -20,8 +20,14 @@ public class UserController {
     private final UserService userService;
     private final MessageService messageService;
 
+    // 임시 1차 회원가입 테스트
+    @PostMapping("/user/test/signup")
+    public void testSignup(@RequestBody UserDto.testRequestDto requestDto){
+        userService.testSignup(requestDto);
+    }
+
     // 문자 SMS 인증
-    @GetMapping("/user/sms")
+    @PostMapping("/user/sms")
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.PhoneNumDto phoneNumber) {
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }

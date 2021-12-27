@@ -10,6 +10,17 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class testRequestDto{
+        private String username;
+        private String password;
+        private String phoneNum;
+        private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestDto{
         private String username;
         private String password;

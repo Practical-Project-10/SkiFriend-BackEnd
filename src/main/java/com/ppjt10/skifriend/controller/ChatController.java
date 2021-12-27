@@ -43,6 +43,7 @@ public class ChatController {
             ) throws ParseException, JsonProcessingException {
         requestDto.setUserCount(redisRepository.getUserCount(requestDto.getRoomId()));
         requestDto.setSender(jwtDecoder.decodeUsername(token));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + requestDto.getMessage());
         chatMessageService.sendChatMessage(requestDto);
     }
     //endregion
