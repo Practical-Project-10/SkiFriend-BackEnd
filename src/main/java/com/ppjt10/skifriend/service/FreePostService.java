@@ -2,9 +2,8 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.CommentDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
-import com.ppjt10.skifriend.dto.LikesDto;
+import com.ppjt10.skifriend.dto.*;
+import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.Comment;
 import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.Likes;
@@ -13,6 +12,8 @@ import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -186,11 +187,31 @@ public class FreePostService {
                 .commentCnt(freePost.getCommentCnt())
                 .build();
     }
+
+    //자유게시글 전체 조회
+    public List<FreePostDto.AllResponseDto> getFreePosts(String skiResort, int page, int size) {
+            List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
+            //해당 스키장의 자유게시글 리스트 가져오기
+            Page<FreePost> freePostPage = freePostRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
+
+            //게시글 리스트
+            if (freePostPage.hasContent()){
+                for (FreePost freePost : freePostPage.toList()){
+                    freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
+                }
+            }
+            return freePostResponseDtoList;
+    }
+    private FreePostDto.AllResponseDto generateFreePostResponseDto(FreePost freePost){
+        return FreePostDto.AllResponseDto.builder()
+                .postId(freePost.getId())
+                .userId(freePost.getUser().getId())
+                .nickname(freePost.getUser().getNickname())
+                .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
+                .title(freePost.getTitle())
+                .likeCnt(freePost.getLikeCnt())
+                .commentCnt(freePost.getCommentCnt())
+                .build();
+    }
     //endregion
-
-
-
-
-
-
 }

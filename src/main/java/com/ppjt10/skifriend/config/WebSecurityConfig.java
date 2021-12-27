@@ -129,6 +129,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
 
+        // Home
+        skipPathList.add("GET,/main");
+
         // 회원 관리 API 허용
         skipPathList.add("POST,/user/test/signup");
         skipPathList.add("POST,/user/signup");
@@ -139,12 +142,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/sms");
         skipPathList.add("POST,/user/sms/check");
 
-        // 자유게시판 상세조회
+        // 홈
         skipPathList.add("GET,/main");
-        skipPathList.add("GET,/board/freeBoard/**");
-        skipPathList.add("GET,/skiResort/{skiResort}");
+
+        // 상세 탭
         skipPathList.add("GET,/board/{skiResort}");
         skipPathList.add("GET,/board/carpool/category");
+        skipPathList.add("GET,/board/freeBoard/**");
+        skipPathList.add("GET,/skiResort/{skiResort}");
 
         skipPathList.add("GET,/webjars/**");
         skipPathList.add("GET,/ws-stomp/**");
