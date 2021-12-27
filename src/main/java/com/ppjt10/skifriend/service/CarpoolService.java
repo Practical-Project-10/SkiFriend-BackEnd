@@ -25,22 +25,31 @@ import java.util.stream.Collectors;
 public class CarpoolService {
 
     private final CarpoolRepository carpoolRepository;
+    private final SkiResortRepository skiResortRepository;
 
+    //카풀 게시글 작성
     @Transactional
-    public void createCarpool(String skiResort, CarpoolDto.RequestDto requestDto, User user) {
+    public void createCarpool(String skiResortName, CarpoolDto.RequestDto requestDto, User user) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
-        SkiResortType.findBySkiResortType(skiResort);
+
+        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
         Carpool carpool = new Carpool(user, requestDto, skiResort);
+
         carpoolRepository.save(carpool);
     }
 
+    //카풀 게시글 수정
     @Transactional
     public void updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
+
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
@@ -48,9 +57,11 @@ public class CarpoolService {
         if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
+
         carpool.update(requestDto);
     }
 
+    //카풀 게시글 삭제
     @Transactional
     public void deleteCarpool(Long carpoolId, Long userid) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
@@ -60,9 +71,9 @@ public class CarpoolService {
         if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
+
         carpoolRepository.deleteById(carpoolId);
     }
-
 
     //region 카풀 카테고리 분류
     @Transactional
@@ -88,8 +99,27 @@ public class CarpoolService {
         Page<CarpoolDto.ResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
         return ResponseEntity.ok().body(categoryResponseDtoPage);
     }
-    //endregion
 
+    private CarpoolDto.ResponseDto toCategoryResponseDto(Carpool carpool) {
+        return CarpoolDto.ResponseDto.builder()
+                .postId(carpool.getId())
+                .userId(carpool.getUser().getId())
+                .nickname(carpool.getUser().getNickname())
+                .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
+                .carpoolType(carpool.getCarpoolType())
+                .startLocation(carpool.getStartLocation())
+                .endLocation(carpool.getEndLocation())
+                .skiResort(carpool.getSkiResort().getResortName())
+                .date(carpool.getDate())
+                .time(carpool.getTime())
+                .price(carpool.getPrice())
+                .memberNum(carpool.getMemberNum())
+                .notice(carpool.getNotice())
+                .status(carpool.isStatus())
+                .build();
+    }
+
+    //카풀 상태 변경
     @Transactional
     public void changeStatus(Long carpoolId, Long userid) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
@@ -99,6 +129,7 @@ public class CarpoolService {
         if(carpool.getUser().getId() != userid){
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
+
         carpool.changeStatus();
     }
 
@@ -127,7 +158,7 @@ public class CarpoolService {
                     .carpoolType(carpool.getCarpoolType())
                     .startLocation(carpool.getStartLocation())
                     .endLocation(carpool.getEndLocation())
-                    .skiResort(carpool.getSkiResort())
+                    .skiResort(carpool.getSkiResort().getResortName())
                     .date(carpool.getDate())
                     .time(carpool.getTime())
                     .price(carpool.getPrice())

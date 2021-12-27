@@ -234,10 +234,13 @@ public class FreePostService {
     }
 
     //자유게시글 전체 조회
-    public List<FreePostDto.AllResponseDto> getFreePosts(String skiResort, int page, int size) {
-            List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
-            //해당 스키장의 자유게시글 리스트 가져오기
-            Page<FreePost> freePostPage = freePostRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
+    public List<FreePostDto.AllResponseDto> getFreePosts(String skiResortName, int page, int size) {
+        List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
+        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+        //해당 스키장의 자유게시글 리스트 가져오기
+        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
 
         //게시글 리스트
         if (freePostPage.hasContent()) {
