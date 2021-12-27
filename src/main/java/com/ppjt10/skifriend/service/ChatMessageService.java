@@ -46,7 +46,7 @@ public class ChatMessageService {
                 .collect(Collectors.toList());
         ChatMessageDto.InChatRoomResponseDto inChatRoomResponseDto = ChatMessageDto.InChatRoomResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
-                .roomName(chatRoom.getCarpool().getNotice())
+                .roomName(chatRoom.getNotice())
                 .roomContents(chatMessageResponseDtos)
                 .build();
         return ResponseEntity.ok().body(inChatRoomResponseDto);
@@ -66,7 +66,9 @@ public class ChatMessageService {
 //        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
 //            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
 //        }
-//        chatMessageRepository.save(message);
+
+        chatMessageRepository.save(message);
+
         System.out.println("전송");
         redisPublisher.publish(message);
         System.out.println("성공");

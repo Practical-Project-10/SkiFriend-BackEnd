@@ -63,11 +63,16 @@ public class ChatRoomService {
             Long carpoolId,
             UserDetailsImpl userDetails
     ) {
+        if(userDetails == null){
+            throw new IllegalArgumentException("로그인 한 유저만 채팅이 가능합니다.");
+        }
+
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 ()->new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
-        if (carpool.getUser().getId() == userDetails.getUser().getId()) {
+        Long writerId = carpool.getUser().getId();
+        if (writerId == userDetails.getUser().getId()) {
             throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
         }
 
@@ -78,14 +83,20 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
 
         if(userIds.contains(senderId)) {
-            ChatRoom existedChatRoom = chatRoomRepository.findByCarpoolIdAndSenderId(carpoolId, senderId);
+            ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
             return ResponseEntity.ok().body(toChatRoomResponseDto(existedChatRoom));
         }
-        ChatRoom chatRoom = new ChatRoom(carpool, senderId);
 
-        ChatUserInfo chatUserInfo = new ChatUserInfo(userDetails.getUser(), chatRoom);
+        ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId);
+        chatRoomRepository.save(chatRoom);
+        System.out.println("채팅 방 저장!!!!!!!!!");
 
-        chatUserInfoRepository.save(chatUserInfo);
+        ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
+        chatUserInfoRepository.save(chatUserInfoSender);
+
+        ChatUserInfo chatUserInfoWriter= new ChatUserInfo(carpool.getUser(), chatRoom);
+        chatUserInfoRepository.save(chatUserInfoWriter);
+
         return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
     }
     //endregion
@@ -94,7 +105,7 @@ public class ChatRoomService {
     private ChatRoomDto.ResponseDto toChatRoomResponseDto(ChatRoom chatRoom) {
         return ChatRoomDto.ResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
-                .roomName(chatRoom.getCarpool().getNotice())
+                .roomName(chatRoom.getNotice())
                 .build();
     }
 

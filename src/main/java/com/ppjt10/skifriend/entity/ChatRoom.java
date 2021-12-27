@@ -18,16 +18,24 @@ public class ChatRoom {
     @Column
     private String roomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private Carpool carpool;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(nullable = false)
+//    private Carpool carpool;
+
+    @Column
+    private String notice;
+
+    @Column
+    private Long writerId;
 
     @Column
     private Long senderId;
 
-    public ChatRoom (Carpool carpool, Long senderId) {
-        this.carpool = carpool;
+    public ChatRoom (String notice, Long writerId, Long senderId) {
+        //this.carpool = carpool;
+        this.notice = notice;
         this.roomId = UUID.randomUUID().toString();
+        this.writerId = writerId;
         this.senderId = senderId;
     }
 }
