@@ -64,9 +64,9 @@ public class ChatRoomService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 ()->new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
-        if (carpool.getUser().getId() == userDetails.getUser().getId()) {
-            throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
-        }
+//        if (carpool.getUser().getId() == userDetails.getUser().getId()) {
+//            throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
+//        }
         Long senderId = userDetails.getUser().getId();
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
         List<Long> userIds = chatUserInfoList.stream()
@@ -81,6 +81,7 @@ public class ChatRoomService {
                         .senderId(senderId)
                         .chatUserInfoList(chatUserInfoList)
                         .build();
+
         ChatUserInfo chatUserInfo = ChatUserInfo.builder()
                 .user(userDetails.getUser())
                 .chatRoom(chatRoom)

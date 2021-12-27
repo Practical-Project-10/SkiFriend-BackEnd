@@ -24,11 +24,11 @@ public class ChatMessage  extends Timestamped {
 
     private MessageType type; // 메시지 타입
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ChatRoom chatRoom; // 방번호
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private User user; // 메시지 보낸사람
 

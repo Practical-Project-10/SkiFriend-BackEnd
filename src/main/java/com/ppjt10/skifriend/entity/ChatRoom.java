@@ -25,7 +25,7 @@ public class ChatRoom extends Timestamped {
     @Column
     private String roomId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Carpool carpool;
 

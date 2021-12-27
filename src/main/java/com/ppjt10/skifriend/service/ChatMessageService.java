@@ -10,11 +10,8 @@ import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
-import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,12 +66,18 @@ public class ChatMessageService {
                 .user(user)
                 .message(requestDto.getMessage())
                 .build();
-        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
-            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
-        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
-            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
-        }
-        chatMessageRepository.save(message);
+//        MessageDto message = MessageDto.builder()
+//                .type(requestDto.getType())
+//                .nickname(user.getNickname())
+//                .message(requestDto.getMessage())
+//                .build();
+
+//        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
+//            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
+//        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
+//            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
+//        }
+//        chatMessageRepository.save(message);
         System.out.println("전송");
         redisPublisher.publish(message);
         System.out.println("성공");

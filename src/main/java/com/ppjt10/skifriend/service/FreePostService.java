@@ -75,9 +75,11 @@ public class FreePostService {
         List<LikesDto.ResponseDto> likesResponseDtoList = freePost.getLikeList().stream()
                 .map(e->toLikesResponseDto(e))
                 .collect(Collectors.toList());
+
         List<CommentDto.ResponseDto> commentResponseDtoList = freePost.getCommentList().stream()
                 .map(e->toCommentResponseDto(e))
                 .collect(Collectors.toList());
+
         FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
                 .postId(postId)
                 .nickname(freePost.getUser().getNickname())
@@ -88,6 +90,7 @@ public class FreePostService {
                 .likesDtoList(likesResponseDtoList)
                 .commentDtoList(commentResponseDtoList)
                 .build();
+
         return ResponseEntity.ok().body(freeResponseDto);
     }
 
@@ -117,19 +120,23 @@ public class FreePostService {
     ) throws IOException {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
+
         if(userDetails.getUser().getId() != freePost.getUser().getId()) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
+
         String imageUrl;
         try {
             imageUrl = s3Uploader.upload(image, imageDirName);
         } catch(Exception err) {
             imageUrl = "No Post Image";
         }
+
         try {
             String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
             s3Uploader.deleteFromS3(oldImageUrl);
         } catch(Exception ignored) {}
+
         freePost.update(requestDto, imageUrl);
     }
     //endregion

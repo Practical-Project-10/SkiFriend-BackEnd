@@ -160,7 +160,8 @@ public class UserService {
 
     @Transactional
     public List<CarpoolDto.ResponseDto> findMyCarpools(User user) {
-        List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
+        //List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
+        List<Carpool> carpoolList = carpoolRepository.findAllByUserId(user.getId());
 
         List<CarpoolDto.ResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
@@ -177,9 +178,10 @@ public class UserService {
                 ()-> new IllegalArgumentException("회원이 아닙니다."));
     }
     //endregion
+
     private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
         return CarpoolDto.ResponseDto.builder()
-                .userId(carpool.getUser().getId())
+                //.userId(carpool.getUser().getId())
                 .postId(carpool.getId())
                 .carpoolType(carpool.getCarpoolType())
                 .startLocation(carpool.getStartLocation())

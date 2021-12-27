@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.time.Timestamped;
@@ -18,11 +19,13 @@ public class Carpool extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(nullable = false)
+    @Column
+    private Long userId;
 
     @OneToMany(mappedBy = "carpool", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"carpool"})
     private List<ChatRoom> chatRoomList = new ArrayList<>();
 
     @Column
@@ -56,7 +59,7 @@ public class Carpool extends Timestamped {
     private boolean status;
 
     public Carpool(User user, CarpoolDto.RequestDto requestDto, String skiResort) {
-        this.user = user;
+        this.userId = user.getId();
         this.carpoolType = requestDto.getCarpoolType();
         this.skiResort = skiResort;
         this.startLocation = requestDto.getStartLocation();
