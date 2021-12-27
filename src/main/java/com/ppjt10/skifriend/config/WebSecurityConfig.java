@@ -53,14 +53,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
-                .antMatchers("/h2-console/**");
+                .antMatchers("/h2-console/**")
 //                .antMatchers("/board/{skiResort}")
 //                .antMatchers("/main", "/skiResort/{skiResort}")
 //                .antMatchers("/board/carpool/category")
 //                .antMatchers("/webjars/**")
 //                .antMatchers("/ws-stomp/**")
 //                .antMatchers("/chat/user")
-//                .antMatchers("/favicon.ico")
+                .antMatchers("/favicon.ico");
 //                .antMatchers("/user/signup, /user/sms, /user/sms/check, /user/signup/idcheck, /user/signup/nicknamecheck");
     }
 

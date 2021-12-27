@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.entity;
 
 
+import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @NoArgsConstructor
-public class ChatMessage  {
+public class ChatMessage  extends Timestamped {
     // 메시지 타입 : 입장, 채팅
     public enum MessageType {
         ENTER, TALK , QUIT

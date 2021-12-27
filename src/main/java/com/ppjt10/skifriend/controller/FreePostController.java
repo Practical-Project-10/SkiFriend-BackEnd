@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.controller;
 
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.FreePostService;
