@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
-//    private final SimpMessageSendingOperations messaging;
+    //    private final SimpMessageSendingOperations messaging;
     private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
 
@@ -28,8 +28,7 @@ public class ChatMessageService {
         int lastIndex = destination.lastIndexOf('/');
         if (lastIndex != -1) {
             return destination.substring(lastIndex + 1);
-        }
-        else {
+        } else {
             return "";
         }
     }
@@ -39,7 +38,7 @@ public class ChatMessageService {
     public ResponseEntity<List<ChatMessageDto.ResponseDto>> takeAllChatMessages(String roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByRoomId(roomId);
         List<ChatMessageDto.ResponseDto> chatMessageResponseDtos = chatMessages.stream()
-                .map(e->toChatMessageResponseDto(e))
+                .map(e -> toChatMessageResponseDto(e))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(chatMessageResponseDtos);
     }

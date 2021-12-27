@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.controller;
 
-import com.ppjt10.skifriend.dto.BoardListResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CarpoolService;

@@ -46,5 +46,4 @@ public class ChatController {
         chatMessageService.sendChatMessage(requestDto);
     }
     //endregion
-
 }

@@ -1,10 +1,7 @@
 package com.ppjt10.skifriend.service;
 
-import com.ppjt10.skifriend.dto.BoardListResponseDto;
 import com.ppjt10.skifriend.dto.CarpoolDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.entity.Carpool;
-import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
