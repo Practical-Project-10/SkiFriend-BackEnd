@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +18,13 @@ public class ChatUserInfo {
     @JoinColumn
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private ChatRoom chatRoom;
+
+    @Builder
+    public ChatUserInfo(User user, ChatRoom chatRoom) {
+        this.user = user;
+        this.chatRoom = chatRoom;
+    }
 }

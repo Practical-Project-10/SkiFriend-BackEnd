@@ -52,7 +52,7 @@
         },
         methods: {
             findAllRoom: function() {
-                axios.get('/chat/rooms',{headers:{"Authorization": 'BEARER eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJFWFBJUkVEX0RBVEUiOjE2NDA4NjQ1NTgsImlzcyI6InNwYXJ0YSIsIlVTRVJfTkFNRSI6ImJlb21pbjEyMyJ9.3S2yyed1UqJRqAjuP5aQWOMW8dDjrG5MGYnN5Rl2m44'}} ).then(response => { this.chatrooms = response.data; });
+                axios.get('/chat/rooms',{headers:{"Authorization": 'BEARER eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJFWFBJUkVEX0RBVEUiOjE2NDA4NjU2MTIsImlzcyI6InNwYXJ0YSIsIlVTRVJfTkFNRSI6ImJlb21pbjEyMyJ9.75WKFuQhxIulsh8y7Q79N83P-hOYm-sEFzZzGs0rZnE'}} ).then(response => { this.chatrooms = response.data; });
             },
             createRoom: function() {
                 if("" === this.room_name) {

@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,7 @@ public class ChatRoomService {
     //endregion
 
     //region 채팅방 생성 메소드
+    @Transactional
     public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(
             Long carpoolId,
             UserDetailsImpl userDetails
@@ -63,12 +66,22 @@ public class ChatRoomService {
         );
         Long senderId = userDetails.getUser().getId();
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
+        List<Long> userIds = chatUserInfoList.stream()
+                .map(e->e.getUser().getId())
+                .collect(Collectors.toList());
+        if(userIds.contains(senderId)) {
+            throw new IllegalArgumentException("이미 채팅방이 존재합니다");
+        }
         ChatRoom chatRoom = ChatRoom.builder()
                         .carpool(carpool)
                         .senderId(senderId)
                         .chatUserInfoList(chatUserInfoList)
                         .build();
-        chatRoomRepository.save(chatRoom);
+        ChatUserInfo chatUserInfo = ChatUserInfo.builder()
+                .user(userDetails.getUser())
+                .chatRoom(chatRoom)
+                .build();
+        chatUserInfoRepository.save(chatUserInfo);
         return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
     }
     //endregion
