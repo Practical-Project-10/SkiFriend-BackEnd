@@ -10,7 +10,6 @@ import java.util.Optional;
 
 
 public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
-
     Page<Carpool> findAllByCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateAndMemberNumIsLessThanEqual(
             String carpoolType,
             String startLocation,

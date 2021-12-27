@@ -20,8 +20,14 @@ public class UserController {
     private final UserService userService;
     private final MessageService messageService;
 
+    // 임시 1차 회원가입 테스트
+    @PostMapping("/user/test/signup")
+    public void testSignup(@RequestBody UserDto.testRequestDto requestDto){
+        userService.testSignup(requestDto);
+    }
+
     // 문자 SMS 인증
-    @GetMapping("/user/sms")
+    @PostMapping("/user/sms")
     public ResponseEntity<String> sendSMS(@RequestBody UserDto.PhoneNumDto phoneNumber) {
         return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
     }
@@ -46,6 +52,18 @@ public class UserController {
                            @RequestPart("requestDto") UserDto.RequestDto requestDto
     ) throws IOException {
         userService.createUser(profileImg, vacImg, requestDto);
+    }
+
+    // 아이디 중복 체크
+    @PostMapping("/user/signup/idcheck")
+    public void checkIsUsername(@RequestBody UserDto.IdCheckDto idCheckDto){
+        userService.checkIsId(idCheckDto.getUsername());
+    }
+
+    // 닉네임 중복 체크
+    @PostMapping("/user/signup/nicknamecheck")
+    public void checkIsNickname(@RequestBody UserDto.NicknameCheckDto nicknameCheckDto){
+        userService.checkIsNickname(nicknameCheckDto.getNickname());
     }
 
     // 유저 정보 조회하기

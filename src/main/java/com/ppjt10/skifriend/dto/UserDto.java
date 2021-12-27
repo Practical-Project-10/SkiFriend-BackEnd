@@ -10,6 +10,17 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class testRequestDto{
+        private String username;
+        private String password;
+        private String phoneNum;
+        private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestDto{
         private String username;
         private String password;
@@ -19,6 +30,22 @@ public class UserDto {
         private String ageRange;
         private String career;
         private String selfIntro;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class IdCheckDto{
+        private String username;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NicknameCheckDto{
+        private String nickname;
     }
 
     @Builder

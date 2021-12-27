@@ -1,7 +1,10 @@
 package com.ppjt10.skifriend.service;
 
+import com.ppjt10.skifriend.dto.BoardListResponseDto;
 import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.entity.Carpool;
+import com.ppjt10.skifriend.entity.FreePost;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +63,7 @@ public class CarpoolService {
         carpoolRepository.deleteById(carpoolId);
     }
 
-    
+
     //region 카풀 카테고리 분류
     @Transactional
     public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCarpools(
@@ -117,4 +121,38 @@ public class CarpoolService {
     }
 
 
-}
+    //카풀 전체 조회
+    public List<CarpoolDto.ResponseDto> getCarpools(String skiResort, int page, int size) {
+            List<CarpoolDto.ResponseDto> carpoolResponseDtoList = new ArrayList<>();
+            //해당 스키장의 카풀 정보 리스트 가져오기
+            Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
+
+            //Carpool 리스트
+            if (carpoolPage.hasContent()) {
+                for (Carpool carpool : carpoolPage.toList()) {
+                    carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
+                }
+            }
+            return carpoolResponseDtoList;
+        }
+
+        private CarpoolDto.ResponseDto generateCarpoolResponseDto(Carpool carpool) {
+            return CarpoolDto.ResponseDto.builder()
+                    .postId(carpool.getId())
+                    .userId(carpool.getUser().getId())
+                    .nickname(carpool.getUser().getNickname())
+                    .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
+                    .carpoolType(carpool.getCarpoolType())
+                    .startLocation(carpool.getStartLocation())
+                    .endLocation(carpool.getEndLocation())
+                    .skiResort(carpool.getSkiResort())
+                    .date(carpool.getDate())
+                    .time(carpool.getTime())
+                    .price(carpool.getPrice())
+                    .memberNum(carpool.getMemberNum())
+                    .notice(carpool.getNotice())
+                    .status(carpool.isStatus())
+                    .build();
+        }
+    }
+
