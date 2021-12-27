@@ -3,12 +3,11 @@ package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.*;
-import com.ppjt10.skifriend.entity.Carpool;
-import com.ppjt10.skifriend.entity.Comment;
-import com.ppjt10.skifriend.entity.FreePost;
-import com.ppjt10.skifriend.entity.Likes;
+import com.ppjt10.skifriend.entity.*;
+import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.repository.LikesRepository;
+import com.ppjt10.skifriend.repository.SkiResortRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.SkiResortType;
@@ -34,50 +33,64 @@ public class FreePostService {
     private final S3Uploader s3Uploader;
     private final String imageDirName = "freepost";
     private final LikesRepository likesRepository;
+    private final SkiResortRepository skiResortRepository;
+    private final CommentRepository commentRepository;
 
     //region 자유 게시판 게시글 작성
     @Transactional
     public void uploadFreePosts(
             UserDetailsImpl userDetails,
             MultipartFile image,
-            String skiResort,
+            String resortName,
             FreePostDto.RequestDto requestDto
     ) throws IOException {
-        SkiResortType.findBySkiResortType(skiResort);
-        if(userDetails == null) {
+//        SkiResortType.findBySkiResortType(skiResort);
+        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+
+        if (userDetails == null) {
             throw new IllegalArgumentException("회원가입 후 이용해주세요.");
         }
+
         String imageUrl;
         try {
             imageUrl = s3Uploader.upload(image, imageDirName);
         } catch (Exception err) {
             imageUrl = "No Post Image";
         }
-        FreePost freePost = FreePost.builder()
-                .user(userDetails.getUser())
-                .skiResort(skiResort)
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .Image(imageUrl)
-                .build();
+
+        FreePost freePost = new FreePost(
+                userDetails.getUser(),
+                skiResort,
+                requestDto.getTitle(),
+                requestDto.getContent(),
+                imageUrl
+        );
+
         freePostRepository.save(freePost);
+
     }
     //endregion
 
     //region 자유 게시판 게시글 상세 조회
     @Transactional
-    public ResponseEntity<FreePostDto.ResponseDto> getFreePost(
+    public FreePostDto.ResponseDto getFreePost(
             Long postId
     ) {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        List<LikesDto.ResponseDto> likesResponseDtoList = freePost.getLikeList().stream()
-                .map(e->toLikesResponseDto(e))
+        List<Likes> likes = likesRepository.findAllByFreePostId(postId);
+
+        List<LikesDto.ResponseDto> likesResponseDtoList = likes.stream()
+                .map(e -> toLikesResponseDto(e))
                 .collect(Collectors.toList());
 
-        List<CommentDto.ResponseDto> commentResponseDtoList = freePost.getCommentList().stream()
-                .map(e->toCommentResponseDto(e))
+        List<Comment> comments = commentRepository.findAllByFreePostId(postId);
+
+        List<CommentDto.ResponseDto> commentResponseDtoList = comments.stream()
+                .map(e -> toCommentResponseDto(e))
                 .collect(Collectors.toList());
 
         FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
@@ -91,7 +104,7 @@ public class FreePostService {
                 .commentDtoList(commentResponseDtoList)
                 .build();
 
-        return ResponseEntity.ok().body(freeResponseDto);
+        return freeResponseDto;
     }
 
     private LikesDto.ResponseDto toLikesResponseDto(Likes likes) {
@@ -213,7 +226,7 @@ public class FreePostService {
         return FreePostDto.HotResponseDto.builder()
                 .postId(freePost.getId())
                 .title(freePost.getTitle())
-                .skiResort(freePost.getSkiResort())
+                .skiResort(freePost.getSkiResort().getResortName())
                 .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
                 .likeCnt(freePost.getLikeCnt())
                 .commentCnt(freePost.getCommentCnt())

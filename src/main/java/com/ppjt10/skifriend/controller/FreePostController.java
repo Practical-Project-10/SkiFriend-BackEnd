@@ -32,6 +32,7 @@ public class FreePostController {
     ) {
         page = page - 1;
         List<FreePostDto.AllResponseDto> allResponseDtoList = freePostService.getFreePosts(skiResort, page, size);
+
         return ResponseEntity.ok()
                 .body(allResponseDtoList);
     }
@@ -54,7 +55,8 @@ public class FreePostController {
     public ResponseEntity<FreePostDto.ResponseDto> readFreePost(
             @PathVariable Long postId
     ) {
-        return freePostService.getFreePost(postId);
+        FreePostDto.ResponseDto responseDto = freePostService.getFreePost(postId);
+        return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 

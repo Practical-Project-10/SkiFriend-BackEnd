@@ -29,7 +29,7 @@ public class ChatRoomService {
     ) {
         Long senderId = userDetails.getUser().getId();
         // 채팅방 생성순서 최근 순으로 반환으로 변경해야함 -> 채팅 마지막으로 친 순서로 변경해야함
-        List<ChatRoom> chatRooms = chatRoomRepository.findAllBySenderIdOrderByModifiedAt(senderId);
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllBySenderId(senderId);
 //        chatRooms.stream()
 //                .forEach(chatRoom -> chatRoom.setUserCount(redisRepository.getUserCount(chatRoom.getRoomId())));
         List<ChatRoomDto.ResponseDto> chatRoomResponseDtos = chatRooms.stream()
@@ -44,8 +44,10 @@ public class ChatRoomService {
             String roomId,
             UserDetailsImpl userDetails
     ) {
+        Long userId = userDetails.getUser().getId();
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
-        List<Long> userIdList = chatRoom.getChatUserInfoList().stream()
+        List<ChatUserInfo> chatUserInfo = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+        List<Long> userIdList = chatUserInfo.stream()
                 .map(e->e.getUser().getId())
                 .collect(Collectors.toList());
         if(!userIdList.contains(userDetails.getUser().getId())) {

@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class FreePost extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

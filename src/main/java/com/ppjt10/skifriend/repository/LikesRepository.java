@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface LikesRepository extends JpaRepository<Likes, Long> {
     Optional<Likes> findByUserIdAndFreePostId(Long userId, Long boardId);
     List<Likes> findAllByModifiedAtAfterAndFreePost_SkiResort(LocalDateTime time, String skiResort);
+    List<Likes> findAllByFreePostId(Long boardId);
 }
