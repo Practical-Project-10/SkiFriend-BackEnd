@@ -40,6 +40,7 @@ public class FreePostDto {
     public static class HotResponseDto{
         private Long postId;
         private String title;
+        private String skiResort;
         private String createdAt;
         private int likeCnt;
         private int commentCnt;

@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.time;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.EntityListeners;
@@ -14,4 +15,7 @@ import java.time.LocalDateTime;
 public abstract class Timestamped {
     @CreatedDate
     private LocalDateTime createAt; //글작성 최초 시점
+
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 }
