@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public class RedisRepository {
 
-    public static final String USER_COUNT = "USER_COUNT";
+    public static final String MESSAGE_COUNT = "MESSAGE_COUNT";
     public static final String ENTER_INFO = "ENTER_INFO";
 
     @Resource(name = "redisTemplate")
@@ -37,18 +37,30 @@ public class RedisRepository {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
     }
 
-    // 채팅방 유저수 조회
-    public long getUserCount(String roomId) {
-        return Long.valueOf(Optional.ofNullable(valueOperations.get(USER_COUNT + "_" + roomId)).orElse(0));
-    }
+//    // 채팅방 유저수 조회
+//    public long getMessageCount(String roomId) {
+//        return Long.valueOf(Optional.ofNullable(valueOperations.get(MESSAGE_COUNT + "_" + roomId)).orElse(0));
+//    }
 
-    // 채팅방에 입장한 유저수 +1
-    public long plusUserCount(String roomId) {
-        return Optional.ofNullable(valueOperations.increment(USER_COUNT + "_" + roomId)).orElse(0L);
-    }
+//    // 채팅방에 입장한 유저수 +1
+//    public long plusUserCount(String roomId) {
+//        return Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId)).orElse(0L);
+//    }
 
     // 채팅방에 입장한 유저수 -1
-    public long minusUserCount(String roomId) {
-        return Optional.ofNullable(valueOperations.decrement(USER_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
+//    public long minusUserCount(String roomId) {
+//        return Optional.ofNullable(valueOperations.decrement(MESSAGE_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
+//    }
+
+    // 채팅방 읽지 않은 메시지의 개수 조회
+    public int getNotVerifiedMessage(String roomId) {
+        return Math.toIntExact(Long.valueOf(Optional.ofNullable(valueOperations.get(MESSAGE_COUNT + "_" + roomId)).orElse(0)));
     }
+
+    // 채팅방에서 읽지 않은 메시지의 개수 저장
+    public int setNotVerifiedMessage(String roomId, int chatMessageCount) {
+        return Math.toIntExact(Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId, chatMessageCount)).orElse(0L));
+    }
+
+//
 }

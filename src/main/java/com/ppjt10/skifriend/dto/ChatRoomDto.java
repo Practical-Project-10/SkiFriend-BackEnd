@@ -28,5 +28,6 @@ public class ChatRoomDto {
         private String lastMsg;
         private String lastMsgTime;
         private String userProfile;
+        private int notVerifiedMsgCnt;
     }
 }

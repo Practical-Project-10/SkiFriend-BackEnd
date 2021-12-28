@@ -125,6 +125,7 @@ public class ChatRoomService {
                 .roomName(chatRoom.getTitle())
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())
+                .notVerifiedMsgCnt(redisRepository.getNotVerifiedMessage(chatRoom.getRoomId()))
 //                .userProfile()
                 .build();
     }
