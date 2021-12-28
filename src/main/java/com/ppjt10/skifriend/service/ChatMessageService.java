@@ -45,7 +45,7 @@ public class ChatMessageService {
     ) {
         Long userId = userDetails.getUser().getId();
         ChatRoom foundChatRoom = chatRoomRepository.findByRoomId(roomId);
-        if(foundChatRoom.getSenderId() != userId || foundChatRoom.getWriterId() != userId) {
+        if(foundChatRoom.getSenderId() != userId && foundChatRoom.getWriterId() != userId) {
             throw new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다");
         }
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
@@ -72,17 +72,19 @@ public class ChatMessageService {
 //            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
 //        }
 
+        chatMessageRepository.save(message);
+
         ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
                 .type(message.getType())
                 .messageId(message.getId())
                 .message(message.getMessage())
+                .roomId(message.getChatRoom().getRoomId())
                 .sender(message.getUser().getNickname())
                 .createdAt(message.getCreateAt().toString())
                 .build();
 
         System.out.println("전송");
         redisPublisher.publish(messageDto);
-        chatMessageRepository.save(message);
         System.out.println("성공");
     }
     //endregion

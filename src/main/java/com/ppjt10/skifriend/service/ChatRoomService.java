@@ -82,11 +82,12 @@ public class ChatRoomService {
         }
 
         Long senderId = userDetails.getUser().getId();
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
+        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
 
-        if(chatUserInfoList != null) {
-            ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
+        if(existedChatRoom != null) {
+
             return toChatRoomResponseDto(existedChatRoom);
+
         }
 
         else {
