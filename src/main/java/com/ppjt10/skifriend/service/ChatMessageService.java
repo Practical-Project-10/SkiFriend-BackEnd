@@ -55,7 +55,7 @@ public class ChatMessageService {
     }
     //endregion
 
-    //region 채팅방 구독하기/ 메시지 보내기
+    //region 채팅방 메시지 보내기
     public void sendChatMessage(ChatMessageDto.RequestDto requestDto) {
 
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
@@ -66,12 +66,6 @@ public class ChatMessageService {
 
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
-//        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
-//            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
-//        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
-//            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
-//        }
-
         chatMessageRepository.save(message);
 
         ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
@@ -79,7 +73,38 @@ public class ChatMessageService {
                 .type(message.getType())
                 .messageId(message.getId())
                 .message(message.getMessage())
+                .sender(message.getUser().getNickname())
+                .createdAt(message.getCreateAt().toString())
+                .build();
+
+        System.out.println("전송");
+        redisPublisher.publish(messageDto);
+        System.out.println("성공");
+    }
+    //endregion
+
+    //region 채팅방 입장 구독 퇴장 메시지
+    public void connectMessage(ChatMessageDto.RequestDto requestDto) {
+
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+
+        User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
+        );
+
+        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
+
+        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
+            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
+        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
+            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
+        }
+
+
+        ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
                 .roomId(message.getChatRoom().getRoomId())
+                .type(message.getType())
+                .message(message.getMessage())
                 .sender(message.getUser().getNickname())
                 .createdAt(message.getCreateAt().toString())
                 .build();
