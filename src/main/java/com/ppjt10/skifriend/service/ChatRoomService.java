@@ -93,7 +93,7 @@ public class ChatRoomService {
         }
 
         else {
-            ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId, carpoolId);
+            ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), writerId, senderId, carpoolId);
             chatRoomRepository.save(chatRoom);
 
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
@@ -111,7 +111,7 @@ public class ChatRoomService {
     private ChatRoomDto.ResponseDto toChatRoomResponseDto(ChatRoom chatRoom) {
         return ChatRoomDto.ResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
-                .roomName(chatRoom.getNotice())
+                .roomName(chatRoom.getTitle())
                 .build();
     }
 
@@ -120,7 +120,7 @@ public class ChatRoomService {
             ChatMessage chatMessage) {
         return ChatRoomDto.ChatRoomListResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
-                .roomName(chatRoom.getNotice())
+                .roomName(chatRoom.getTitle())
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())
 //                .userProfile()
