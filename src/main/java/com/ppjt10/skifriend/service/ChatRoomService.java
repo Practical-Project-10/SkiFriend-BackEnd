@@ -24,23 +24,25 @@ public class ChatRoomService {
     private final ChatUserInfoRepository chatUserInfoRepository;
 
     //내가 참여한 모든 채팅방 목록 조회 메소드
-    public List<ChatRoomDto.ResponseDto> findAllRoom(
+    public List<ChatRoomDto.ChatRoomListResponseDto> findAllRoom(
             UserDetailsImpl userDetails
     ) {
         Long userId = userDetails.getUser().getId();
-        // 채팅방 생성순서 최근 순으로 반환으로 변경해야함 -> 채팅 마지막으로 친 순서로 변경해야함;
-        List<Long> chatRoomIds = chatUserInfoRepository.findAllByUserId(userId)
-                .stream()
+
+        List<Long> chatRoomIds = chatUserInfoRepository.findAllByUserId(userId).stream()
                 .map(e->e.getChatRoom().getId())
                 .collect(Collectors.toList());
+
         List<ChatRoom> chatRooms = chatRoomIds.stream()
                 .map(e->chatRoomRepository.findById(e).orElseThrow(()->new IllegalArgumentException("해당하는 채팅방이 없습니다")))
                 .collect(Collectors.toList());
+
+        List<ChatRoomDto.ChatRoomListResponseDto> chatRoomListResponseDtos = chatRooms.stream()
+                .map(e->toChatRoomListResponseDto(e, chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(e.getRoomId()).get(0)))
+                .collect(Collectors.toList());
 //        chatRooms.stream()
 //                .forEach(chatRoom -> chatRoom.setUserCount(redisRepository.getUserCount(chatRoom.getRoomId())));
-        return chatRooms.stream()
-                .map(e->toChatRoomResponseDto(e))
-                .collect(Collectors.toList());
+        return chatRoomListResponseDtos;
     }
     //
 
@@ -110,6 +112,18 @@ public class ChatRoomService {
         return ChatRoomDto.ResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
                 .roomName(chatRoom.getNotice())
+                .build();
+    }
+
+    private ChatRoomDto.ChatRoomListResponseDto toChatRoomListResponseDto(
+            ChatRoom chatRoom,
+            ChatMessage chatMessage) {
+        return ChatRoomDto.ChatRoomListResponseDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .roomName(chatRoom.getNotice())
+                .lastMsg(chatMessage.getMessage())
+                .lastMsgTime(chatMessage.getCreateAt().toString())
+//                .userProfile()
                 .build();
     }
 

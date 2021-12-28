@@ -35,10 +35,10 @@ public class ChatRoomController {
     //region 내가 참여한 모든 채팅방 목록 조회
     @GetMapping("/rooms")
     @ResponseBody
-    public ResponseEntity<List<ChatRoomDto.ResponseDto>> room(
+    public ResponseEntity<List<ChatRoomDto.ChatRoomListResponseDto>> room(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<ChatRoomDto.ResponseDto> responseDtos = chatRoomService.findAllRoom(userDetails);
+        List<ChatRoomDto.ChatRoomListResponseDto> responseDtos = chatRoomService.findAllRoom(userDetails);
 
         return ResponseEntity.ok().body(responseDtos);
     }

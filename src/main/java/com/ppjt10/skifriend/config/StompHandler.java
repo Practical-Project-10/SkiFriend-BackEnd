@@ -43,6 +43,7 @@ public class StompHandler implements ChannelInterceptor {
 //            redisRepository.plusUserCount(roomId);
 //
 //            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+//            System.out.println("클라이언트 유저 이름: " + name);
 //            chatMessageService.sendChatMessage(
 //                    ChatMessageDto.RequestDto .builder()
 //                            .type(ChatMessage.MessageType.ENTER)
@@ -56,7 +57,7 @@ public class StompHandler implements ChannelInterceptor {
 //            System.out.println("Disconnect시 룸아이디" +roomId);
 //            redisRepository.minusUserCount(roomId);
 //            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-//            System.out.println(name);
+//            System.out.println("클라이언트 유저 이름: " + name);
 //            chatMessageService.sendChatMessage(ChatMessageDto.RequestDto.builder()
 //                    .type(ChatMessage.MessageType.QUIT)
 //                    .roomId(roomId)
