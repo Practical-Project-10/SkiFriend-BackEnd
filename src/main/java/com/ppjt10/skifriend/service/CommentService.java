@@ -35,6 +35,8 @@ public class CommentService {
         Comment comment = new Comment(userDetails.getUser(), freePost, requestDto.getContent());
 
         commentRepository.save(comment);
+
+        freePost.setCommentCnt(freePost.getCommentCnt() + 1);
     }
     //endregion
 
@@ -67,5 +69,7 @@ public class CommentService {
         }
 
         commentRepository.deleteById(commentId);
+
+        comment.getFreePost().setCommentCnt(comment.getFreePost().getCommentCnt() - 1);
     }
 }

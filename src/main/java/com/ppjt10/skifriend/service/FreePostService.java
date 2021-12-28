@@ -101,7 +101,7 @@ public class FreePostService {
                 .content(freePost.getContent())
                 .image(freePost.getImage())
                 .likeCnt(freePost.getLikeCnt())
-                .commentCnt(commentResponseDtoList.size())
+                .commentCnt(freePost.getCommentCnt())
                 .likesDtoList(likesResponseDtoList)
                 .commentDtoList(commentResponseDtoList)
                 .build();
@@ -235,7 +235,7 @@ public class FreePostService {
                 .skiResort(freePost.getSkiResort().getResortName())
                 .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
                 .likeCnt(freePost.getLikeCnt())
-//                .commentCnt(freePost.getCommentCnt())
+                .commentCnt(freePost.getCommentCnt())
                 .build();
     }
 
@@ -265,7 +265,7 @@ public class FreePostService {
                 .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .likeCnt(freePost.getLikeCnt())
-//                .commentCnt(freePost.getCommentCnt())
+                .commentCnt(freePost.getCommentCnt())
                 .build();
     }
     //endregion

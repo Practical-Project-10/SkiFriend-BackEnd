@@ -140,6 +140,7 @@ public class CarpoolService {
                     .nickname(carpool.getUser().getNickname())
                     .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
                     .carpoolType(carpool.getCarpoolType())
+                    .title(carpool.getTitle())
                     .startLocation(carpool.getStartLocation())
                     .endLocation(carpool.getEndLocation())
                     .skiResort(carpool.getSkiResort().getResortName())
