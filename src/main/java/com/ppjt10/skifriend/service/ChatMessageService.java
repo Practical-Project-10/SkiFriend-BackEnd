@@ -38,18 +38,11 @@ public class ChatMessageService {
 
 
     //region 해당 채팅방 모든 채팅 내용 불러오기
-    public ResponseEntity<ChatMessageDto.InChatRoomResponseDto> takeAllChatMessages(String roomId) {
+    public List<ChatMessageDto.ResponseDto> takeAllChatMessages(String roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
-        List<ChatMessageDto.ResponseDto> chatMessageResponseDtos = chatMessages.stream()
+        return chatMessages.stream()
                 .map(e -> toChatMessageResponseDto(e))
                 .collect(Collectors.toList());
-        ChatMessageDto.InChatRoomResponseDto inChatRoomResponseDto = ChatMessageDto.InChatRoomResponseDto.builder()
-                .roomId(chatRoom.getRoomId())
-                .roomName(chatRoom.getNotice())
-                .roomContents(chatMessageResponseDtos)
-                .build();
-        return ResponseEntity.ok().body(inChatRoomResponseDto);
     }
     //endregion
 
@@ -69,8 +62,17 @@ public class ChatMessageService {
 
         chatMessageRepository.save(message);
 
+        ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
+                .type(message.getType())
+                .messageId(message.getId())
+                .message(message.getMessage())
+                .roomId(message.getChatRoom().getRoomId())
+                .sender(message.getUser().getNickname())
+                .createdAt(message.getCreateAt().toString())
+                .build();
+
         System.out.println("전송");
-        redisPublisher.publish(message);
+        redisPublisher.publish(messageDto);
         System.out.println("성공");
     }
     //endregion
@@ -78,9 +80,11 @@ public class ChatMessageService {
     private ChatMessageDto.ResponseDto toChatMessageResponseDto(ChatMessage chatMessage) {
         return ChatMessageDto.ResponseDto.builder()
                 .type(chatMessage.getType())
+                .messageId(chatMessage.getId())
                 .roomId(chatMessage.getChatRoom().getRoomId())
                 .sender(chatMessage.getUser().getNickname())
                 .message(chatMessage.getMessage())
+                .createdAt(chatMessage.getCreateAt().toString())
                 .build();
     }
 }

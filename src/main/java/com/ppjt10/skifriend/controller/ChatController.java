@@ -29,8 +29,9 @@ public class ChatController {
     //region 해당 방에서 했던 모든 메시지 가져오기
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public ResponseEntity<ChatMessageDto.InChatRoomResponseDto> getAllMessages(@PathVariable String roomId) {
-        return chatMessageService.takeAllChatMessages(roomId);
+    public ResponseEntity<List<ChatMessageDto.ResponseDto>> getAllMessages(@PathVariable String roomId) {
+        List<ChatMessageDto.ResponseDto> responseDtos = chatMessageService.takeAllChatMessages(roomId);
+        return ResponseEntity.ok().body(responseDtos);
     }
     //endregion
 
