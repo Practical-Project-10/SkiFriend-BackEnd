@@ -10,6 +10,7 @@ import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,15 @@ public class ChatMessageService {
 
 
     //region 해당 채팅방 모든 채팅 내용 불러오기
-    public List<ChatMessageDto.ResponseDto> takeAllChatMessages(String roomId) {
+    public List<ChatMessageDto.ResponseDto> takeAllChatMessages(
+            String roomId,
+            UserDetailsImpl userDetails
+    ) {
+        Long userId = userDetails.getUser().getId();
+        ChatRoom foundChatRoom = chatRoomRepository.findByRoomId(roomId);
+        if(foundChatRoom.getSenderId() != userId && foundChatRoom.getWriterId() != userId) {
+            throw new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다");
+        }
         List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         return chatMessages.stream()
                 .map(e -> toChatMessageResponseDto(e))
@@ -48,10 +57,13 @@ public class ChatMessageService {
 
     //region 채팅방 구독하기/ 메시지 보내기
     public void sendChatMessage(ChatMessageDto.RequestDto requestDto) {
+
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+
         User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
+
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
 //        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
@@ -63,6 +75,7 @@ public class ChatMessageService {
         chatMessageRepository.save(message);
 
         ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
+                .roomId(message.getChatRoom().getRoomId())
                 .type(message.getType())
                 .messageId(message.getId())
                 .message(message.getMessage())
@@ -81,7 +94,6 @@ public class ChatMessageService {
         return ChatMessageDto.ResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
-                .roomId(chatMessage.getChatRoom().getRoomId())
                 .sender(chatMessage.getUser().getNickname())
                 .message(chatMessage.getMessage())
                 .createdAt(chatMessage.getCreateAt().toString())

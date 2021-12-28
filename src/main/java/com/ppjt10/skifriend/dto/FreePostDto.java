@@ -29,6 +29,8 @@ public class FreePostDto {
         private String content;
         private String image;
         private String createdAt;
+        private int likeCnt;
+        private int commentCnt;
         private List<LikesDto.ResponseDto> likesDtoList;
         private List<CommentDto.ResponseDto> commentDtoList;
     }

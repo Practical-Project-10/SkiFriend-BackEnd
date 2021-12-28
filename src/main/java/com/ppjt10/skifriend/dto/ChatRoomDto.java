@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class ChatRoomDto {
-    //    Carpool carpool, List<ChatMessage> chatMessageList, Long senderId, List<ChatUserInfo> chatUserInfoList
+
     @Builder
     @Getter
     @AllArgsConstructor
@@ -14,5 +14,17 @@ public class ChatRoomDto {
     public static class ResponseDto{
         private String roomName;
         private String roomId;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ChatRoomListResponseDto{
+        private String roomName;
+        private String roomId;
+        private String lastMsg;
+        private String lastMsgTime;
+        private String userProfile;
     }
 }
