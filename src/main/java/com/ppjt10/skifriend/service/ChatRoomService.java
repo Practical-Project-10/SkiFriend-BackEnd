@@ -84,12 +84,11 @@ public class ChatRoomService {
         Long senderId = userDetails.getUser().getId();
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
 
-        if(chatUserInfoList != null) {
-            ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
-            return toChatRoomResponseDto(existedChatRoom);
-        }
+        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
 
-        else {
+        if(existedChatRoom != null) {
+            return toChatRoomResponseDto(existedChatRoom);
+        } else {
             ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId);
             chatRoomRepository.save(chatRoom);
             System.out.println("채팅 방 저장!!!!!!!!!");

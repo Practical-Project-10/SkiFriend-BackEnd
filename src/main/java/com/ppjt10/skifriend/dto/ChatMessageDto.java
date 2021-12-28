@@ -29,6 +29,7 @@ public class ChatMessageDto {
     public static class ResponseDto {
         private ChatMessage.MessageType type;
         private Long messageId;
+        private String roomId;
         private String sender;
         private String message;
         private String createdAt;
