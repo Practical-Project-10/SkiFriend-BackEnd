@@ -23,7 +23,7 @@ public class ChatRoom {
 //    private Carpool carpool;
 
     @Column
-    private String notice;
+    private String title;
 
     @Column
     private Long writerId;
@@ -34,9 +34,9 @@ public class ChatRoom {
     @Column
     private Long carpoolId;
 
-    public ChatRoom (String notice, Long writerId, Long senderId, Long carpoolId) {
+    public ChatRoom (String title, Long writerId, Long senderId, Long carpoolId) {
         //this.carpool = carpool;
-        this.notice = notice;
+        this.title = title;
         this.roomId = UUID.randomUUID().toString();
         this.writerId = writerId;
         this.senderId = senderId;
