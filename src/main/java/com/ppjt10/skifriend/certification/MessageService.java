@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.certification;
 
+import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
@@ -55,7 +56,7 @@ public class MessageService {
     public String sendSMS(String phoneNumber) {
 
         // 중복 검사
-//        checkDuplicatoin(phoneNumber);
+        // checkDuplicatoin(phoneNumber);
 
         Message coolsms = new Message(apiKey, apiSecret);
 
@@ -88,7 +89,7 @@ public class MessageService {
     }
 
     // 인증 번호 검증
-    public String verifySms(UserDto.SmsCertificationDto requestDto) {
+    public String verifySms(SignupDto.SmsCertificationDto requestDto) {
         if (isVerify(requestDto)) {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
@@ -97,7 +98,7 @@ public class MessageService {
         return "인증 완료되었습니다.";
     }
 
-    private boolean isVerify(UserDto.SmsCertificationDto requestDto) {
+    private boolean isVerify(SignupDto.SmsCertificationDto requestDto) {
         return !(smsCertification.hasKey(requestDto.getPhoneNumber()) &&
                 smsCertification.getSmsCertification(requestDto.getPhoneNumber())
                         .equals(requestDto.getRandomNumber()));

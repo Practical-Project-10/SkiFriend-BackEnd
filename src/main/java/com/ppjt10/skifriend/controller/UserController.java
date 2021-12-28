@@ -1,9 +1,9 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
-import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,65 +11,43 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final MessageService messageService;
-
-    // 임시 1차 회원가입 테스트
-    @PostMapping("/user/test/signup")
-    public void testSignup(@RequestBody UserDto.testRequestDto requestDto){
-        userService.testSignup(requestDto);
-    }
-
-    // 문자 SMS 인증
-    @PostMapping("/user/sms")
-    public ResponseEntity<String> sendSMS(@RequestBody UserDto.PhoneNumDto phoneNumber) {
-        return ResponseEntity.ok().body(messageService.sendSMS(phoneNumber.getPhoneNumber()));
-    }
-
-    // 인증번호 일치하는지 검증
-    @PostMapping("/user/sms/check")
-    public ResponseEntity<String> verifyRandNum(@RequestBody UserDto.SmsCertificationDto requestDto) {
-        return ResponseEntity.ok().body(messageService.verifySms(requestDto));
-    }
-
 
     // 유저 핸드폰 번호 공개하기
     @GetMapping("/user/Info/phoneNum")
-    public ResponseEntity<UserDto.PhoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<SignupDto.PhoneNumDto> getPhoneNum(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.getPhoneNum(userDetails.getUser().getId()));
     }
 
-    // 회원가입
-    @PostMapping("/user/signup")
-    public void userSignup(@RequestPart("profileImg") MultipartFile profileImg,
-                           @RequestPart("vacImg") MultipartFile vacImg,
-                           @RequestPart("requestDto") UserDto.RequestDto requestDto
-    ) throws IOException {
-        userService.createUser(profileImg, vacImg, requestDto);
-    }
-
-    // 아이디 중복 체크
-    @PostMapping("/user/signup/idcheck")
-    public void checkIsUsername(@RequestBody UserDto.IdCheckDto idCheckDto){
-        userService.checkIsId(idCheckDto.getUsername());
-    }
-
-    // 닉네임 중복 체크
-    @PostMapping("/user/signup/nicknamecheck")
-    public void checkIsNickname(@RequestBody UserDto.NicknameCheckDto nicknameCheckDto){
-        userService.checkIsNickname(nicknameCheckDto.getNickname());
+    // 유저 프로필 작성
+    @PostMapping("/user/profile")
+    public ResponseEntity<UserDto.ResponseDto> writeUserProfile(
+            @RequestPart("profileImg") MultipartFile profileImg,
+            @RequestPart("vacImg") MultipartFile vacImg,
+            @RequestPart("requestDto") UserDto.ProfileRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok().body(userService.writeUserProfile(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
     }
 
     // 유저 정보 조회하기
     @GetMapping("/user/Info")
     public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.getUserInfo(userDetails.getUser().getId()));
+    }
+
+    // 비밀번호 수정하기
+    @PutMapping("/user/Info/password")
+    public void updatePassword(
+            @RequestBody UserDto.PasswordDto passwordDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        userService.updatePassword(passwordDto, userDetails.getUser().getId());
     }
 
     // 유저 정보 수정하기
