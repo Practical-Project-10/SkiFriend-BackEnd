@@ -23,19 +23,24 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
 
-    //내가 참여한 채팅방 조회 메소드
-    public ResponseEntity<List<ChatRoomDto.ResponseDto>> findAllRoom(
+    //내가 참여한 모든 채팅방 목록 조회 메소드
+    public List<ChatRoomDto.ResponseDto> findAllRoom(
             UserDetailsImpl userDetails
     ) {
-        Long senderId = userDetails.getUser().getId();
-        // 채팅방 생성순서 최근 순으로 반환으로 변경해야함 -> 채팅 마지막으로 친 순서로 변경해야함
-        List<ChatRoom> chatRooms = chatRoomRepository.findAllBySenderId(senderId);
+        Long userId = userDetails.getUser().getId();
+        // 채팅방 생성순서 최근 순으로 반환으로 변경해야함 -> 채팅 마지막으로 친 순서로 변경해야함;
+        List<Long> chatRoomIds = chatUserInfoRepository.findAllByUserId(userId)
+                .stream()
+                .map(e->e.getChatRoom().getId())
+                .collect(Collectors.toList());
+        List<ChatRoom> chatRooms = chatRoomIds.stream()
+                .map(e->chatRoomRepository.findById(e).orElseThrow(()->new IllegalArgumentException("해당하는 채팅방이 없습니다")))
+                .collect(Collectors.toList());
 //        chatRooms.stream()
 //                .forEach(chatRoom -> chatRoom.setUserCount(redisRepository.getUserCount(chatRoom.getRoomId())));
-        List<ChatRoomDto.ResponseDto> chatRoomResponseDtos = chatRooms.stream()
+        return chatRooms.stream()
                 .map(e->toChatRoomResponseDto(e))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(chatRoomResponseDtos);
     }
     //
 
@@ -50,7 +55,7 @@ public class ChatRoomService {
         List<Long> userIdList = chatUserInfo.stream()
                 .map(e->e.getUser().getId())
                 .collect(Collectors.toList());
-        if(!userIdList.contains(userDetails.getUser().getId())) {
+        if(!userIdList.contains(userId)) {
             throw new IllegalArgumentException("채팅방에 입장할 권한이 없습니다.");
         }
         return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
@@ -59,7 +64,7 @@ public class ChatRoomService {
 
     //region 채팅방 생성 메소드
     @Transactional
-    public ResponseEntity<ChatRoomDto.ResponseDto> createChatRoom(
+    public ChatRoomDto.ResponseDto createChatRoom(
             Long carpoolId,
             UserDetailsImpl userDetails
     ) {
@@ -78,26 +83,25 @@ public class ChatRoomService {
 
         Long senderId = userDetails.getUser().getId();
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(senderId);
-        List<Long> userIds = chatUserInfoList.stream()
-                .map(e->e.getUser().getId())
-                .collect(Collectors.toList());
 
-        if(userIds.contains(senderId)) {
+        if(chatUserInfoList != null) {
             ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
-            return ResponseEntity.ok().body(toChatRoomResponseDto(existedChatRoom));
+            return toChatRoomResponseDto(existedChatRoom);
         }
 
-        ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId);
-        chatRoomRepository.save(chatRoom);
-        System.out.println("채팅 방 저장!!!!!!!!!");
+        else {
+            ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId);
+            chatRoomRepository.save(chatRoom);
+            System.out.println("채팅 방 저장!!!!!!!!!");
 
-        ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
-        chatUserInfoRepository.save(chatUserInfoSender);
+            ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
+            chatUserInfoRepository.save(chatUserInfoSender);
 
-        ChatUserInfo chatUserInfoWriter= new ChatUserInfo(carpool.getUser(), chatRoom);
-        chatUserInfoRepository.save(chatUserInfoWriter);
+            ChatUserInfo chatUserInfoWriter= new ChatUserInfo(carpool.getUser(), chatRoom);
+            chatUserInfoRepository.save(chatUserInfoWriter);
 
-        return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
+            return toChatRoomResponseDto(chatRoom);
+        }
     }
     //endregion
 

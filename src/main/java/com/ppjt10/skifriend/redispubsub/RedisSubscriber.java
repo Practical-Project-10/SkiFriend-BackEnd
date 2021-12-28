@@ -18,11 +18,19 @@ public class RedisSubscriber {
 
     public void sendMessage(String publishedMessage) {
         try {
+
             ObjectMapper objectMapper = new ObjectMapper();
+
+            ChatMessage chatMessage = objectMapper.readValue(publishedMessage,ChatMessage.class);
+
             ChatMessageDto.ResponseDto responseDto = objectMapper.readValue(publishedMessage,ChatMessageDto.ResponseDto.class);
-            messagingTemplate.convertAndSend("/sub/chat/room/" + responseDto.getRoomId(), responseDto);
+
+            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getChatRoom().getRoomId(), responseDto);
+
         } catch (Exception e) {
+
             log.error(e.getMessage());
+
         }
     }
 }

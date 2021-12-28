@@ -38,7 +38,9 @@ public class ChatRoomController {
     public ResponseEntity<List<ChatRoomDto.ResponseDto>> room(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return chatRoomService.findAllRoom(userDetails);
+        List<ChatRoomDto.ResponseDto> responseDtos = chatRoomService.findAllRoom(userDetails);
+
+        return ResponseEntity.ok().body(responseDtos);
     }
     //endregion
 
@@ -49,8 +51,10 @@ public class ChatRoomController {
     public ResponseEntity<ChatRoomDto.ResponseDto> createRoom(
             @PathVariable Long carpoolId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
-            ) {
-        return chatRoomService.createChatRoom(carpoolId, userDetails);
+    ) {
+        ChatRoomDto.ResponseDto responseDto = chatRoomService.createChatRoom(carpoolId, userDetails);
+
+        return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 
