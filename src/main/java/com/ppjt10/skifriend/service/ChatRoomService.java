@@ -45,7 +45,7 @@ public class ChatRoomService {
     //
 
     //region 유저가 참여한 특정 채팅방 조회 메소드
-    public ResponseEntity<ChatRoomDto.ResponseDto> findRoomById(
+    public ChatRoomDto.ResponseDto findRoomById(
             String roomId,
             UserDetailsImpl userDetails
     ) {
@@ -58,7 +58,7 @@ public class ChatRoomService {
         if(!userIdList.contains(userId)) {
             throw new IllegalArgumentException("채팅방에 입장할 권한이 없습니다.");
         }
-        return ResponseEntity.ok().body(toChatRoomResponseDto(chatRoom));
+        return toChatRoomResponseDto(chatRoom);
     }
     //endregion
 
@@ -82,7 +82,7 @@ public class ChatRoomService {
         }
 
         Long senderId = userDetails.getUser().getId();
-        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderId(writerId, senderId);
+        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderIdAndCarpoolId(writerId, senderId, carpoolId);
 
         if(existedChatRoom != null) {
 
@@ -91,9 +91,8 @@ public class ChatRoomService {
         }
 
         else {
-            ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId);
+            ChatRoom chatRoom = new ChatRoom(carpool.getNotice(), writerId, senderId, carpoolId);
             chatRoomRepository.save(chatRoom);
-            System.out.println("채팅 방 저장!!!!!!!!!");
 
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);

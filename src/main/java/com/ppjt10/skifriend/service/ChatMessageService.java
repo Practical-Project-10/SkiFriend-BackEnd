@@ -75,6 +75,7 @@ public class ChatMessageService {
         chatMessageRepository.save(message);
 
         ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
+                .roomId(message.getChatRoom().getRoomId())
                 .type(message.getType())
                 .messageId(message.getId())
                 .message(message.getMessage())

@@ -31,11 +31,15 @@ public class ChatRoom {
     @Column
     private Long senderId;
 
-    public ChatRoom (String notice, Long writerId, Long senderId) {
+    @Column
+    private Long carpoolId;
+
+    public ChatRoom (String notice, Long writerId, Long senderId, Long carpoolId) {
         //this.carpool = carpool;
         this.notice = notice;
         this.roomId = UUID.randomUUID().toString();
         this.writerId = writerId;
         this.senderId = senderId;
+        this.carpoolId = carpoolId;
     }
 }

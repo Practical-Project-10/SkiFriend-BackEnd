@@ -65,7 +65,8 @@ public class ChatRoomController {
             @PathVariable String roomId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return chatRoomService.findRoomById(roomId, userDetails);
+        ChatRoomDto.ResponseDto responseDto = chatRoomService.findRoomById(roomId, userDetails);
+        return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 
