@@ -15,6 +15,7 @@ public class RedisRepository {
 
     public static final String MESSAGE_COUNT = "MESSAGE_COUNT";
     public static final String ENTER_INFO = "ENTER_INFO";
+    public static final String READ_CNT = "READ_CNT";
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
@@ -62,5 +63,14 @@ public class RedisRepository {
         return Math.toIntExact(Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId, chatMessageCount)).orElse(0L));
     }
 
+
+    public int getReadedMessage(String roomId, String name) {
+        return Math.toIntExact(Long.valueOf(Optional.ofNullable(valueOperations.get(READ_CNT + "_" + roomId + "_" + name)).orElse(0)));
+    }
+
+    // 채팅방에서 읽지 않은 메시지의 개수 저장
+    public int setReadedMessage(String roomId, String name, int chatMessageCount) {
+        return Math.toIntExact(Optional.ofNullable(valueOperations.increment(READ_CNT + "_" + roomId + "_" + name, chatMessageCount)).orElse(0L));
+    }
 //
 }
