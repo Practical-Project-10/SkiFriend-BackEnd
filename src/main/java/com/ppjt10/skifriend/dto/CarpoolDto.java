@@ -13,6 +13,7 @@ public class CarpoolDto {
     @NoArgsConstructor
     public static class RequestDto{
         private String carpoolType;
+        private String title;
         private String startLocation;
         private String endLocation;
         private String date;
@@ -33,6 +34,7 @@ public class CarpoolDto {
         private String nickname;
         private String createdAt;
         private String carpoolType;
+        private String title;
         private String startLocation;
         private String endLocation;
         private String skiResort;
