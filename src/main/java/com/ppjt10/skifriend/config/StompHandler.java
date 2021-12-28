@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
+
 import java.util.Optional;
 
 //token들 Authorization으로 바꿔줘야함
@@ -31,18 +32,17 @@ public class StompHandler implements ChannelInterceptor {
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
-        }
-        else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
+        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             String roomId = chatMessageService.getRoomId(
                     Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
             );
             int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
             int pastMsgCnt = redisRepository.getNotVerifiedMessage(roomId);
             int notVerifiedMsgCnt = presentChatMsgCnt - pastMsgCnt;
-            redisRepository.setNotVerifiedMessage(roomId, notVerifiedMsgCnt);
+
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            System.out.println("클라이언트 헤더" +message.getHeaders());
-            System.out.println("클라이언트 세션 아이디"+ sessionId);
+            System.out.println("클라이언트 헤더" + message.getHeaders());
+            System.out.println("클라이언트 세션 아이디" + sessionId);
             redisRepository.setUserEnterInfo(sessionId, roomId);
 //            redisRepository.plusUserCount(roomId);
 
@@ -50,23 +50,30 @@ public class StompHandler implements ChannelInterceptor {
             String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
             System.out.println("클라이언트 유저 이름: " + name);
 
+            int pastcnt = redisRepository.getReadedMessage(roomId, name);
+            int notRead = presentChatMsgCnt - pastcnt;
+            System.out.println("현재 메세지 수 : " + presentChatMsgCnt);
+            System.out.println("안 읽은 메세지 수 : " + notRead);
+            redisRepository.setNotVerifiedMessage(roomId, notRead);
+
             chatMessageService.connectMessage(
-                    ChatMessageDto.RequestDto .builder()
+                    ChatMessageDto.RequestDto.builder()
                             .type(ChatMessage.MessageType.ENTER)
                             .roomId(roomId)
                             .sender(name)
                             .build());
-        }
-        else if(StompCommand.DISCONNECT == accessor.getCommand()) {
+        } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
-            System.out.println("Disconnect시 룸아이디" +roomId);
+            System.out.println("Disconnect시 룸아이디" + roomId);
 //            redisRepository.minusUserCount(roomId);
             int chatMessageCount = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
-            redisRepository.setNotVerifiedMessage(roomId, chatMessageCount);
 //            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
             System.out.println("클라이언트 유저 이름: " + name);
+            redisRepository.setNotVerifiedMessage(roomId, chatMessageCount);
+            redisRepository.setReadedMessage(roomId, name, chatMessageCount);
+            System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
             chatMessageService.connectMessage(ChatMessageDto.RequestDto.builder()
                     .type(ChatMessage.MessageType.QUIT)
                     .roomId(roomId)
