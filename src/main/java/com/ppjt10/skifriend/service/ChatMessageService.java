@@ -106,7 +106,6 @@ public class ChatMessageService {
                 .type(message.getType())
                 .message(message.getMessage())
                 .sender(message.getUser().getNickname())
-                .createdAt(message.getCreateAt().toString())
                 .build();
 
         System.out.println("전송");

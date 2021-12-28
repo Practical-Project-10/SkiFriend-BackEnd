@@ -152,8 +152,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.OtherResponseDto getOtherProfile(UserDto.OtherRequestDto requestDto, Long userId) {
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(requestDto.getRoomId());
+    public UserDto.OtherResponseDto getOtherProfile(Long longRoomId, Long userId) {
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
 
         User user = new User();
         for (ChatUserInfo chatUserInfo : chatUserInfoList) {
