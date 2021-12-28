@@ -112,6 +112,7 @@ public class ChatRoomService {
         return ChatRoomDto.ResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
                 .roomName(chatRoom.getTitle())
+                .longRoomId(chatRoom.getId())
                 .build();
     }
 
@@ -120,6 +121,7 @@ public class ChatRoomService {
             ChatMessage chatMessage) {
         return ChatRoomDto.ChatRoomListResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
+                .longRoomId(chatRoom.getId())
                 .roomName(chatRoom.getTitle())
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())

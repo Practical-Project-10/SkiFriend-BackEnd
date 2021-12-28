@@ -14,6 +14,7 @@ public class ChatRoomDto {
     public static class ResponseDto{
         private String roomName;
         private String roomId;
+        private Long longRoomId;
     }
 
     @Builder
@@ -23,6 +24,7 @@ public class ChatRoomDto {
     public static class ChatRoomListResponseDto{
         private String roomName;
         private String roomId;
+        private Long longRoomId;
         private String lastMsg;
         private String lastMsgTime;
         private String userProfile;
