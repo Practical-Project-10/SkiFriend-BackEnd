@@ -42,8 +42,10 @@ public class StompHandler implements ChannelInterceptor {
 //            redisRepository.setUserEnterInfo(sessionId, roomId);
 //            redisRepository.plusUserCount(roomId);
 
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+//            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
             System.out.println("클라이언트 유저 이름: " + name);
+
             chatMessageService.connectMessage(
                     ChatMessageDto.RequestDto .builder()
                             .type(ChatMessage.MessageType.ENTER)
@@ -56,7 +58,8 @@ public class StompHandler implements ChannelInterceptor {
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
             System.out.println("Disconnect시 룸아이디" +roomId);
 //            redisRepository.minusUserCount(roomId);
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+//            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
             System.out.println("클라이언트 유저 이름: " + name);
             chatMessageService.connectMessage(ChatMessageDto.RequestDto.builder()
                     .type(ChatMessage.MessageType.QUIT)
