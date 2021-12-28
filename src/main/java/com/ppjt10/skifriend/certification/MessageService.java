@@ -55,7 +55,7 @@ public class MessageService {
     public String sendSMS(String phoneNumber) {
 
         // 중복 검사
-        checkDuplicatoin(phoneNumber);
+//        checkDuplicatoin(phoneNumber);
 
         Message coolsms = new Message(apiKey, apiSecret);
 

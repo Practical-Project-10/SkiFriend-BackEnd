@@ -42,7 +42,7 @@ public class UserService {
         String password = requestDto.getPassword();
         String phoneNumber = requestDto.getPhoneNum();
 
-        checkIsPhoneNum(phoneNumber);
+//        checkIsPhoneNum(phoneNumber);
         checkIsNickname(nickname);
         checkIsId(username);
 
