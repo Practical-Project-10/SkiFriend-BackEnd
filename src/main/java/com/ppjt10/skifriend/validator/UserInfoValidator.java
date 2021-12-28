@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class UserInfoValidator {
-    public static void validateUserInfoInput(String username, String nickname, String password, String phoneNum, String selfIntro) {
+    public static void validateUserInfoInput(String username, String nickname, String password, String phoneNum) {
         String patternUsername = "(?=.*[a-zA-Z])(?=.*[0-9])[^@$!%*#?&].{4,}$";
         String patternPassword = "[A-Za-z\\d$@$!%*#?&]{8,}$";
         String patternPhoneNum = "(?=.*[0-9]).{11}$";
@@ -29,11 +29,6 @@ public class UserInfoValidator {
         // 휴대전화번호 형식 확인
         if (phoneNum == null || !Pattern.matches(patternPhoneNum, phoneNum)) {
             throw new IllegalArgumentException("휴대전화 번호를 정확히 입력해주세요.");
-        }
-
-        // 자기소개 형식 확인
-        if (selfIntro == null) {
-            throw new IllegalArgumentException("자기소개를 입력해주세요.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +46,7 @@ public class User {
     private String selfIntro;
 
     // 태스트용 생성자
-    public User(UserDto.testRequestDto requestDto, String enPassword){
+    public User(SignupDto.RequestDto requestDto, String enPassword){
         this.username = requestDto.getUsername();
         this.nickname = requestDto.getNickname();
         this.phoneNum = requestDto.getPhoneNum();
@@ -71,9 +72,17 @@ public class User {
         this.vacImg = imgPath;
     }
 
-    public void update(UserDto.UpdateRequestDto requestDto, String enPassword) {
-        this.password = enPassword;
+    public void setPassword(String enPassword) { this.password = enPassword; }
+
+    public void update(UserDto.UpdateRequestDto requestDto) {
         this.nickname = requestDto.getNickname();
+        this.career = requestDto.getCareer();
+        this.selfIntro = requestDto.getSelfIntro();
+    }
+
+    public void wirteProfile(UserDto.ProfileRequestDto requestDto) {
+        this.gender = requestDto.getGender();
+        this.ageRange = requestDto.getAgeRange();
         this.career = requestDto.getCareer();
         this.selfIntro = requestDto.getSelfIntro();
     }

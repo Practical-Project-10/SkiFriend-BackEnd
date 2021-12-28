@@ -10,17 +10,6 @@ public class UserDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class testRequestDto{
-        private String username;
-        private String password;
-        private String phoneNum;
-        private String nickname;
-    }
-
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class RequestDto{
         private String username;
         private String password;
@@ -30,6 +19,26 @@ public class UserDto {
         private String ageRange;
         private String career;
         private String selfIntro;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ProfileRequestDto{
+        private String gender;
+        private String ageRange;
+        private String career;
+        private String selfIntro;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PasswordDto{
+        private String password;
+        private String newPassword;
     }
 
     @Builder
@@ -82,22 +91,5 @@ public class UserDto {
         private String ageRange;
         private String career;
         private String selfIntro;
-    }
-
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class PhoneNumDto{
-        private String phoneNumber;
-    }
-
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class SmsCertificationDto{
-        private String phoneNumber;
-        private String randomNumber;
     }
 }
