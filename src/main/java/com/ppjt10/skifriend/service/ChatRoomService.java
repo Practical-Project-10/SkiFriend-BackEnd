@@ -39,7 +39,9 @@ public class ChatRoomService {
         List<ChatRoomDto.ChatRoomListResponseDto> chatRoomListResponseDtos = chatRooms.stream()
                 .map(e->toChatRoomListResponseDto(e,
                         chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(e.getRoomId()).get(0),
-                        (e.getSenderId()==userId)?userRepository.findById(e.getWriterId()).orElseThrow(()->new IllegalArgumentException("")).getNickname():userRepository.findById(e.getSenderId()).orElseThrow(()->new IllegalArgumentException("")).getNickname()
+                        (e.getSenderId()==userId)?
+                                userRepository.findById(e.getWriterId()).orElseThrow(()->new IllegalArgumentException("")).getNickname():
+                                userRepository.findById(e.getSenderId()).orElseThrow(()->new IllegalArgumentException("")).getNickname()
                 ))
                 .collect(Collectors.toList());
 //        chatRooms.stream()
