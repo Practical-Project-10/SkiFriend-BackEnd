@@ -92,4 +92,26 @@ public class UserDto {
         private String career;
         private String selfIntro;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OtherRequestDto{
+        private Long roomId;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OtherResponseDto{
+        private String nickname;
+        private String profileImg;
+        private String vacImg;
+        private String gender;
+        private String ageRange;
+        private String career;
+        private String selfIntro;
+    }
 }
