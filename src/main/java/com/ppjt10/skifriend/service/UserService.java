@@ -6,8 +6,10 @@ import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.entity.Carpool;
+import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
+import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.validator.AgeRangeType;
 import com.ppjt10.skifriend.validator.CareerType;
@@ -21,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ChatUserInfoRepository chatUserInfoRepository;
     private final CarpoolRepository carpoolRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
@@ -147,6 +151,20 @@ public class UserService {
         return carpoolListDto;
     }
 
+    @Transactional
+    public UserDto.OtherResponseDto getOtherProfile(UserDto.OtherRequestDto requestDto, Long userId) {
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(requestDto.getRoomId());
+
+        User user = new User();
+        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+            if (chatUserInfo.getUser().getId() != userId) {
+                user = chatUserInfo.getUser();
+            }
+        }
+
+        return createOtherReponseDto(user);
+    }
+
     private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
         return CarpoolDto.ResponseDto.builder()
                 .userId(carpool.getUser().getId())
@@ -167,6 +185,18 @@ public class UserService {
         return UserDto.ResponseDto.builder()
                 .username(user.getUsername())
                 .phoneNum(user.getPhoneNum())
+                .nickname(user.getNickname())
+                .profileImg(user.getProfileImg())
+                .vacImg(user.getVacImg())
+                .gender(user.getGender())
+                .ageRange(user.getAgeRange())
+                .career(user.getCareer())
+                .selfIntro(user.getSelfIntro())
+                .build();
+    }
+
+    private UserDto.OtherResponseDto createOtherReponseDto(User user) {
+        return UserDto.OtherResponseDto.builder()
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
                 .vacImg(user.getVacImg())
