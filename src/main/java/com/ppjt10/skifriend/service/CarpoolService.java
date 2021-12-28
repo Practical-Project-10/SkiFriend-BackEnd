@@ -94,29 +94,10 @@ public class CarpoolService {
                 pageable
         );
         List<CarpoolDto.ResponseDto> categoryResponseDto = sortedCategories.stream()
-                .map(e->toCategoryResponseDto(e))
+                .map(e->generateCarpoolResponseDto(e))
                 .collect(Collectors.toList());
         Page<CarpoolDto.ResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
         return ResponseEntity.ok().body(categoryResponseDtoPage);
-    }
-
-    private CarpoolDto.ResponseDto toCategoryResponseDto(Carpool carpool) {
-        return CarpoolDto.ResponseDto.builder()
-                .postId(carpool.getId())
-                .userId(carpool.getUser().getId())
-                .nickname(carpool.getUser().getNickname())
-                .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
-                .carpoolType(carpool.getCarpoolType())
-                .startLocation(carpool.getStartLocation())
-                .endLocation(carpool.getEndLocation())
-                .skiResort(carpool.getSkiResort().getResortName())
-                .date(carpool.getDate())
-                .time(carpool.getTime())
-                .price(carpool.getPrice())
-                .memberNum(carpool.getMemberNum())
-                .notice(carpool.getNotice())
-                .status(carpool.isStatus())
-                .build();
     }
 
     //카풀 상태 변경
@@ -159,6 +140,7 @@ public class CarpoolService {
                     .nickname(carpool.getUser().getNickname())
                     .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
                     .carpoolType(carpool.getCarpoolType())
+                    .title(carpool.getTitle())
                     .startLocation(carpool.getStartLocation())
                     .endLocation(carpool.getEndLocation())
                     .skiResort(carpool.getSkiResort().getResortName())
