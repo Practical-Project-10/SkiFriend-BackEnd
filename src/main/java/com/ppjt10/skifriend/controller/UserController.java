@@ -73,10 +73,10 @@ public class UserController {
     }
 
     // 채팅 방에서 상대방 프로필 조회하기
-    @GetMapping("/user/introduction")
+    @GetMapping("/user/introduction/{longRoomId}")
     public ResponseEntity<UserDto.OtherResponseDto> getOtherProfile(
-            @RequestBody UserDto.OtherRequestDto requestDto,
+            @PathVariable Long longRoomId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok().body(userService.getOtherProfile(requestDto, userDetails.getUser().getId()));
+        return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, userDetails.getUser().getId()));
     }
 }
