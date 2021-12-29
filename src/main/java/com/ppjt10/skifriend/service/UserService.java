@@ -14,6 +14,7 @@ import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.validator.AgeRangeType;
 import com.ppjt10.skifriend.validator.CareerType;
 import com.ppjt10.skifriend.validator.GenderType;
+import com.ppjt10.skifriend.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -114,7 +115,8 @@ public class UserService {
     public void updatePassword(UserDto.PasswordDto passwordDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
 
-        if (user.getPassword().equals(passwordEncoder.encode(passwordDto.getPassword()))) {
+        if (passwordEncoder.matches(passwordDto.getPassword(), user.getPassword())) {
+            UserInfoValidator.checkPassword(passwordDto.getNewPassword());
             String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
             user.setPassword(enPassword);
         } else {

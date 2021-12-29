@@ -11,6 +11,7 @@ import com.ppjt10.skifriend.repository.ChatRoomRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
+import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,8 @@ public class ChatMessageService {
                 .messageId(message.getId())
                 .message(message.getMessage())
                 .sender(message.getUser().getNickname())
-                .createdAt(message.getCreateAt().toString())
+                .senderImg(message.getUser().getProfileImg())
+                .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
                 .build();
 
         System.out.println("전송");
@@ -119,8 +121,9 @@ public class ChatMessageService {
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .sender(chatMessage.getUser().getNickname())
+                .senderImg(chatMessage.getUser().getProfileImg())
                 .message(chatMessage.getMessage())
-                .createdAt(chatMessage.getCreateAt().toString())
+                .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 }

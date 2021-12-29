@@ -138,7 +138,7 @@ public class CarpoolService {
                     .postId(carpool.getId())
                     .userId(carpool.getUser().getId())
                     .nickname(carpool.getUser().getNickname())
-                    .createdAt(TimeConversion.timeConversion(carpool.getCreateAt()))
+                    .createdAt(TimeConversion.timePostConversion(carpool.getCreateAt()))
                     .carpoolType(carpool.getCarpoolType())
                     .title(carpool.getTitle())
                     .startLocation(carpool.getStartLocation())
