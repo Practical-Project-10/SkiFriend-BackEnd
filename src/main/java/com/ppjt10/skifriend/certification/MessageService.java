@@ -76,9 +76,23 @@ public class MessageService {
 //        }
 
         // DB에 발송한 인증번호 저장
-        smsCertification.createSmsCertification(phoneNumber,randomNum);
+        smsCertification.createSmsCertification(phoneNumber, randomNum);
 
         return "문자 전송이 완료되었습니다.";
+    }
+
+    public void createChatRoomAlert(String phoneNumber, String msg) {
+        // 발신 정보 설정
+//        HashMap<String, String> params = makeParams(phoneNumber, msg);
+//
+//        try {
+//            JSONObject obj = (JSONObject) coolsms.send(params);
+//            System.out.println(obj.toString());
+//        } catch (CoolsmsException e) {
+//            System.out.println(e.getMessage());
+//            System.out.println(e.getCode());
+//        }
+        System.out.println(phoneNumber + "에게 채팅방 생성 알림 전송 : " + msg);
     }
 
     private void checkDuplicatoin(String phoneNum) {
