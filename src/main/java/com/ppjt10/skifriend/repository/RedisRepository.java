@@ -70,7 +70,7 @@ public class RedisRepository {
 
     // 마지막으로 읽은 시간 체크
     public void setLastMessageReadTime(String roomId, String name, String time){
-        timeOperations.set(LAST_MESSAGE_TIME + "_" + roomId + "_" + name, time);
+        timeOperations.set(LAST_MESSAGE_TIME + "_" + roomId + "_" + name, name + "/" + time);
     }
 
     public List<String> getLastMessageReadTime() {
