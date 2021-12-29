@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 
+import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.ChatMessageDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
@@ -15,6 +16,7 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +30,8 @@ public class ChatMessageService {
     private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
+    private final String imageDirName = "chatMessage";
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -55,6 +59,46 @@ public class ChatMessageService {
                 .collect(Collectors.toList());
     }
     //endregion
+
+    //region 채팅방 사진 메시지 보내기
+//    public void uploadChatMessageImg(MultipartFile img, ChatMessageDto.RequestDto requestDto) {
+//
+//        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+//
+//        User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
+//                () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
+//        );
+//
+//        String imageUrl;
+//        try {
+//            imageUrl = s3Uploader.upload(img, imageDirName);
+//        } catch (Exception err) {
+//            imageUrl = "No Message Image";
+//        }
+//
+//        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
+//
+//        message.setImg(imageUrl);
+//
+//        chatMessageRepository.save(message);
+//
+//        ChatMessageDto.ResponseDto messageDto = ChatMessageDto.ResponseDto.builder()
+//                .roomId(message.getChatRoom().getRoomId())
+//                .type(message.getType())
+//                .messageId(message.getId())
+//                .img(message.getImg())
+//                .sender(message.getUser().getNickname())
+//                .senderImg(message.getUser().getProfileImg())
+//                .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
+//                .build();
+//
+//        System.out.println("전송");
+//        redisPublisher.publish(messageDto);
+//        System.out.println("성공");
+//    }
+    //endregion
+
+
 
     //region 채팅방 메시지 보내기
     public void sendChatMessage(ChatMessageDto.RequestDto requestDto) {
