@@ -142,7 +142,7 @@ public class ChatRoomService {
                 .roomName(user)
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())
-                .notVerifiedMsgCnt(redisRepository.getNotVerifiedMessage(chatRoom.getRoomId()))
+                .notVerifiedMsgCnt(redisRepository.getNotVerifiedMessage(chatRoom.getRoomId(), user))
 //                .userProfile()
                 .build();
     }

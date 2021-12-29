@@ -16,6 +16,8 @@ public class RedisRepository {
     public static final String MESSAGE_COUNT = "MESSAGE_COUNT";
     public static final String ENTER_INFO = "ENTER_INFO";
     public static final String READ_CNT = "READ_CNT";
+    public static final String NAME_INFO = "NAME_INFO";
+
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
@@ -27,6 +29,15 @@ public class RedisRepository {
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
     }
+
+    public void setUserNameInfo(String sessionId, String name) {
+        hashOpsEnterInfo.put(NAME_INFO, sessionId, name);
+    }
+
+    public String getUserNameId(String sessionId) {
+        return hashOpsEnterInfo.get(NAME_INFO, sessionId);
+    }
+
 
     // 유저 세션으로 입장해 있는 채팅방 ID 조회
     public String getUserEnterRoomId(String sessionId) {
@@ -54,12 +65,12 @@ public class RedisRepository {
 //    }
 
     // 채팅방 읽지 않은 메시지의 개수 조회
-    public int getNotVerifiedMessage(String roomId) {
+    public int getNotVerifiedMessage(String roomId, String name) {
         return Math.toIntExact(Long.valueOf(Optional.ofNullable(valueOperations.get(MESSAGE_COUNT + "_" + roomId)).orElse(0)));
     }
 
     // 채팅방에서 읽지 않은 메시지의 개수 저장
-    public int setNotVerifiedMessage(String roomId, int chatMessageCount) {
+    public int setNotVerifiedMessage(String roomId, String name, int chatMessageCount) {
         return Math.toIntExact(Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId, chatMessageCount)).orElse(0L));
     }
 
