@@ -27,6 +27,7 @@ public class ChatRoomService {
             UserDetailsImpl userDetails
     ) {
         Long userId = userDetails.getUser().getId();
+        String username = userDetails.getUser().getUsername();
 
         List<Long> chatRoomIds = chatUserInfoRepository.findAllByUserId(userId).stream()
                 .map(e->e.getChatRoom().getId())
@@ -41,7 +42,8 @@ public class ChatRoomService {
                         chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(e.getRoomId()).get(0),
                         (e.getSenderId()==userId)?
                                 userRepository.findById(e.getWriterId()).orElseThrow(()->new IllegalArgumentException("")).getNickname():
-                                userRepository.findById(e.getSenderId()).orElseThrow(()->new IllegalArgumentException("")).getNickname()
+                                userRepository.findById(e.getSenderId()).orElseThrow(()->new IllegalArgumentException("")).getNickname(),
+                        username
                 ))
                 .collect(Collectors.toList());
 //        chatRooms.stream()
@@ -101,6 +103,7 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당하는 유저가 없습니다")
         );
         String writer = user.getNickname();
+        String writername = user.getUsername();
         if(existedChatRoom != null) {
 
             return toChatRoomResponseDto(existedChatRoom, writer);
@@ -110,6 +113,8 @@ public class ChatRoomService {
         else {
             ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), writerId, senderId, carpoolId);
             chatRoomRepository.save(chatRoom);
+
+            redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writername, 0);
 
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);
@@ -134,15 +139,21 @@ public class ChatRoomService {
     private ChatRoomDto.ChatRoomListResponseDto toChatRoomListResponseDto(
             ChatRoom chatRoom,
             ChatMessage chatMessage,
-            String user
+            String nickname,
+            String username
     ) {
+        String roomId = chatRoom.getRoomId();
+        int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
+        int pastMsgCnt = redisRepository.getNotVerifiedMessage(roomId, username);
+        int notVerifiedMsgCnt = presentChatMsgCnt - pastMsgCnt;
+
         return ChatRoomDto.ChatRoomListResponseDto.builder()
-                .roomId(chatRoom.getRoomId())
+                .roomId(roomId)
                 .longRoomId(chatRoom.getId())
-                .roomName(user)
+                .roomName(nickname)
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())
-                .notVerifiedMsgCnt(redisRepository.getNotVerifiedMessage(chatRoom.getRoomId(), user))
+                .notVerifiedMsgCnt(notVerifiedMsgCnt)
 //                .userProfile()
                 .build();
     }
