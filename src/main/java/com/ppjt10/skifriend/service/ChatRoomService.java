@@ -46,7 +46,10 @@ public class ChatRoomService {
                         (e.getSenderId() == userId) ?
                                 userRepository.findById(e.getWriterId()).orElseThrow(() -> new IllegalArgumentException("")).getNickname() :
                                 userRepository.findById(e.getSenderId()).orElseThrow(() -> new IllegalArgumentException("")).getNickname(),
-                        username
+                        username,
+                        (e.getSenderId() == userId) ?
+                                userRepository.findById(e.getWriterId()).orElseThrow(() -> new IllegalArgumentException("")).getProfileImg() :
+                                userRepository.findById(e.getSenderId()).orElseThrow(() -> new IllegalArgumentException("")).getProfileImg()
                 ))
                 .collect(Collectors.toList());
 //        chatRooms.stream()
@@ -146,7 +149,8 @@ public class ChatRoomService {
             ChatRoom chatRoom,
             ChatMessage chatMessage,
             String nickname,
-            String username
+            String username,
+            String userProfile
     ) {
         String roomId = chatRoom.getRoomId();
         int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
@@ -160,7 +164,7 @@ public class ChatRoomService {
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(chatMessage.getCreateAt().toString())
                 .notVerifiedMsgCnt(notVerifiedMsgCnt)
-//                .userProfile()
+                .userProfile(userProfile)
                 .build();
     }
 

@@ -74,6 +74,7 @@ public class ChatMessageService {
                 .messageId(message.getId())
                 .message(message.getMessage())
                 .sender(message.getUser().getNickname())
+                .senderImg(message.getUser().getProfileImg())
                 .createdAt(message.getCreateAt().toString())
                 .build();
 
