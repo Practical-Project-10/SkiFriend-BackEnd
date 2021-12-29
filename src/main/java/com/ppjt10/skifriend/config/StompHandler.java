@@ -14,6 +14,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -65,6 +67,10 @@ public class StompHandler implements ChannelInterceptor {
                 int chatMessageCount = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
                 System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
                 redisRepository.setNotVerifiedMessage(roomId, name, chatMessageCount);
+
+                // 마지막 접속 시간 체크
+                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
                 chatMessageService.connectMessage(ChatMessageDto.RequestDto.builder()
                         .type(ChatMessage.MessageType.QUIT)
