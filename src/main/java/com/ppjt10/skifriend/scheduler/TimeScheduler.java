@@ -43,14 +43,14 @@ public class TimeScheduler {
 
     // 15분 마다 실행
     @Transactional
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0 0/1 * * *")
     public void chatAlertScheduler() {
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         List<String> fromRedisLastMessageNameTimeList = redisRepository.getLastMessageReadTime();
         for (String fromRedisLastMessageNameTime : fromRedisLastMessageNameTimeList){
-            List<String> lastMessageNameTime = Arrays.asList(fromRedisLastMessageNameTime.split(" "));
+            List<String> lastMessageNameTime = Arrays.asList(fromRedisLastMessageNameTime.split("/"));
             String lastMessageName = lastMessageNameTime.get(0);
             LocalDateTime lastMessageTime = LocalDateTime.parse(lastMessageNameTime.get(1), formatter);
 
@@ -61,8 +61,6 @@ public class TimeScheduler {
                 );
                 messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
             }
-
-            System.out.println("읽은 시간 체크!!" + timeDiff);
         }
     }
 }
