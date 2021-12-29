@@ -114,7 +114,7 @@ public class UserService {
     public void updatePassword(UserDto.PasswordDto passwordDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
 
-        if (user.getPassword() == passwordEncoder.encode(passwordDto.getPassword())) {
+        if (user.getPassword().equals(passwordEncoder.encode(passwordDto.getPassword()))) {
             String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
             user.setPassword(enPassword);
         } else {

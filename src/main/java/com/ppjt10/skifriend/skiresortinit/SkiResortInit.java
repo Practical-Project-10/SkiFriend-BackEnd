@@ -14,22 +14,26 @@ public class SkiResortInit implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        SkiResort skiResort1 = new SkiResort("HighOne");
-        skiResortRepository.save(skiResort1);
 
-        SkiResort skiResort2 = new SkiResort("YongPyong");
-        skiResortRepository.save(skiResort2);
+        Boolean isHighOne = skiResortRepository.existsByResortName("HighOne");
+        if (!isHighOne) {
+            SkiResort skiResort1 = new SkiResort("HighOne");
+            skiResortRepository.save(skiResort1);
 
-        SkiResort skiResort3 = new SkiResort("WellihilliPark");
-        skiResortRepository.save(skiResort3);
+            SkiResort skiResort2 = new SkiResort("YongPyong");
+            skiResortRepository.save(skiResort2);
 
-        SkiResort skiResort4 = new SkiResort("Konjiam");
-        skiResortRepository.save(skiResort4);
+            SkiResort skiResort3 = new SkiResort("WellihilliPark");
+            skiResortRepository.save(skiResort3);
 
-        SkiResort skiResort5 = new SkiResort("VivaldiPark");
-        skiResortRepository.save(skiResort5);
+            SkiResort skiResort4 = new SkiResort("Konjiam");
+            skiResortRepository.save(skiResort4);
 
-        SkiResort skiResort6 = new SkiResort("Phoenix");
-        skiResortRepository.save(skiResort6);
+            SkiResort skiResort5 = new SkiResort("VivaldiPark");
+            skiResortRepository.save(skiResort5);
+
+            SkiResort skiResort6 = new SkiResort("Phoenix");
+            skiResortRepository.save(skiResort6);
+        }
     }
 }
