@@ -96,7 +96,7 @@ public class FreePostService {
         FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
                 .postId(postId)
                 .nickname(freePost.getUser().getNickname())
-                .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
+                .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .content(freePost.getContent())
                 .image(freePost.getImage())
@@ -120,7 +120,7 @@ public class FreePostService {
                 .commentId(comment.getId())
                 .nickname(comment.getUser().getNickname())
                 .content(comment.getContent())
-                .createdAt(TimeConversion.timeConversion(comment.getCreateAt()))
+                .createdAt(TimeConversion.timePostConversion(comment.getCreateAt()))
                 .build();
     }
     //endregion
@@ -233,7 +233,7 @@ public class FreePostService {
                 .postId(freePost.getId())
                 .title(freePost.getTitle())
                 .skiResort(freePost.getSkiResort().getResortName())
-                .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
+                .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .likeCnt(freePost.getLikeCnt())
                 .commentCnt(freePost.getCommentCnt())
                 .build();
@@ -262,7 +262,7 @@ public class FreePostService {
                 .postId(freePost.getId())
                 .userId(freePost.getUser().getId())
                 .nickname(freePost.getUser().getNickname())
-                .createdAt(TimeConversion.timeConversion(freePost.getCreateAt()))
+                .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .likeCnt(freePost.getLikeCnt())
                 .commentCnt(freePost.getCommentCnt())

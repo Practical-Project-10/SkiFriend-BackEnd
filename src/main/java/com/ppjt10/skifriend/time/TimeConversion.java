@@ -3,9 +3,10 @@ package com.ppjt10.skifriend.time;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class TimeConversion {
-    public static String timeConversion(LocalDateTime createdAt) {
+    public static String timePostConversion(LocalDateTime createdAt) {
         LocalDateTime currentTime = LocalDateTime.now();
         Long timeDiff = Duration.between(createdAt, currentTime).getSeconds();
         String resultConversion = "";
@@ -20,6 +21,21 @@ public class TimeConversion {
             resultConversion = timeDiff / 60 + "분 전";
         } else {
             resultConversion = timeDiff + "초 전";
+        }
+
+        return resultConversion;
+    }
+
+    public static String timeChatConversion(LocalDateTime createdAt) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        Long timeDiff = Duration.between(createdAt, currentTime).getSeconds();
+        String resultConversion = "";
+
+        if ((timeDiff / 86400) > 1) {
+            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        }
+         else {
+            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("a HH시 mm분"));
         }
 
         return resultConversion;
