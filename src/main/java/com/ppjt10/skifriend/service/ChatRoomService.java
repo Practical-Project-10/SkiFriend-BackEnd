@@ -6,6 +6,7 @@ import com.ppjt10.skifriend.dto.ChatRoomDto;
 import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
+import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,7 +163,7 @@ public class ChatRoomService {
                 .longRoomId(chatRoom.getId())
                 .roomName(nickname)
                 .lastMsg(chatMessage.getMessage())
-                .lastMsgTime(chatMessage.getCreateAt().toString())
+                .lastMsgTime(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .notVerifiedMsgCnt(notVerifiedMsgCnt)
                 .userProfile(userProfile)
                 .build();

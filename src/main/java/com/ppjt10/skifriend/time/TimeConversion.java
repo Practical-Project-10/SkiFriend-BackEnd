@@ -28,14 +28,13 @@ public class TimeConversion {
 
     public static String timeChatConversion(LocalDateTime createdAt) {
         LocalDateTime currentTime = LocalDateTime.now();
-        Long timeDiff = Duration.between(createdAt, currentTime).getSeconds();
         String resultConversion = "";
 
-        if ((timeDiff / 86400) > 1) {
-            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        if (currentTime.getDayOfMonth() > createdAt.getDayOfMonth()) {
+            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("MM월 dd일"));
         }
          else {
-            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("a HH시 mm분"));
+            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("a hh시 mm분"));
         }
 
         return resultConversion;
