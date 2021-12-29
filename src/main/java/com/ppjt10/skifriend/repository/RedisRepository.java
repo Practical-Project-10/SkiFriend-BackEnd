@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Repository
@@ -16,6 +19,7 @@ public class RedisRepository {
     public static final String MESSAGE_COUNT = "MESSAGE_COUNT";
     public static final String ENTER_INFO = "ENTER_INFO";
     public static final String NAME_INFO = "NAME_INFO";
+    public static final String LAST_MESSAGE_TIME = "LAST_MESSAGE_TIME";
 
 
     @Resource(name = "redisTemplate")
@@ -23,6 +27,9 @@ public class RedisRepository {
 
     @Resource(name = "redisTemplate")
     private ValueOperations<String, Integer> valueOperations;
+
+    @Resource(name = "redisTemplate")
+    private ValueOperations<String, String> timeOperations;
 
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
     public void setUserEnterInfo(String sessionId, String roomId) {
@@ -61,4 +68,13 @@ public class RedisRepository {
         valueOperations.set(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount);
     }
 
+    // 마지막으로 읽은 시간 체크
+    public void setLastMessageReadTime(String roomId, String name, String time){
+        timeOperations.set(LAST_MESSAGE_TIME + "_" + roomId + "_" + name, time);
+    }
+
+    public List<String> getLastMessageReadTime() {
+        Set<String> keys = timeOperations.getOperations().keys(LAST_MESSAGE_TIME+"*");
+        return timeOperations.multiGet(keys);
+    }
 }

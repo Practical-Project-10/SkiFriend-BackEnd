@@ -31,6 +31,8 @@ public class MessageService {
     @Value("${coolsms.fromnumber}")
     private String fromNumber;
 
+    private final Message coolsms = new Message(apiKey, apiSecret);
+
     private String createRandomNumber() {
         Random rand = new Random();
         String randomNum = "";
@@ -57,8 +59,6 @@ public class MessageService {
 
         // 중복 검사
         // checkDuplicatoin(phoneNumber);
-
-        Message coolsms = new Message(apiKey, apiSecret);
 
         // 랜덤한 인증 번호 생성
         String randomNum = createRandomNumber();
