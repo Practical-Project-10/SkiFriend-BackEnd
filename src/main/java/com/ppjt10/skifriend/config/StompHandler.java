@@ -85,7 +85,7 @@ public class StompHandler implements ChannelInterceptor {
                 // redisRepository.setReadedMessage(roomId, name, chatMessageCount);
                 System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
 
-                redisRepository.setNotVerifiedMessage(roomId, name, chatMessageCount);
+//                redisRepository.setNotVerifiedMessage(roomId, name, chatMessageCount);
 
                 chatMessageService.connectMessage(ChatMessageDto.RequestDto.builder()
                         .type(ChatMessage.MessageType.QUIT)

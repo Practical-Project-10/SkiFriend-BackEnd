@@ -38,7 +38,8 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
 
         List<ChatRoomDto.ChatRoomListResponseDto> chatRoomListResponseDtos = chatRooms.stream()
-                .map(e->toChatRoomListResponseDto(e,
+                .map(e->toChatRoomListResponseDto(
+                        e,
                         chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(e.getRoomId()).get(0),
                         (e.getSenderId()==userId)?
                                 userRepository.findById(e.getWriterId()).orElseThrow(()->new IllegalArgumentException("")).getNickname():
@@ -60,17 +61,17 @@ public class ChatRoomService {
         Long userId = userDetails.getUser().getId();
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         List<ChatUserInfo> chatUserInfo = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
-        List<Long> userIdList = chatUserInfo.stream()
+        List<Long> inChatRoomUserIds = chatUserInfo.stream()
                 .map(e->e.getUser().getId())
                 .collect(Collectors.toList());
-        if(!userIdList.contains(userId)) {
+        if(!inChatRoomUserIds.contains(userId)) {
             throw new IllegalArgumentException("채팅방에 입장할 권한이 없습니다.");
         }
-        List<Long> ids = userIdList.stream()
-                .filter(e->equals(userId))
-                .collect(Collectors.toList());
-        Long id = ids.get(0);
-        User user = userRepository.findById(id).orElseThrow(
+        Long opponentId = inChatRoomUserIds.stream()
+                .filter(e->!e.equals(userId))
+                .collect(Collectors.toList()).get(0);
+
+        User user = userRepository.findById(opponentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 유저가 없습니다")
         );
 
@@ -99,14 +100,14 @@ public class ChatRoomService {
 
         Long senderId = userDetails.getUser().getId();
         ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderIdAndCarpoolId(writerId, senderId, carpoolId);
-        User user = userRepository.findById(writerId).orElseThrow(
+        User writer = userRepository.findById(writerId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 없습니다")
         );
-        String writer = user.getNickname();
-        String writername = user.getUsername();
+        String writerNickname = writer.getNickname();
+        String writerUsername = writer.getUsername();
         if(existedChatRoom != null) {
 
-            return toChatRoomResponseDto(existedChatRoom, writer);
+            return toChatRoomResponseDto(existedChatRoom, writerNickname);
 
         }
 
@@ -114,7 +115,7 @@ public class ChatRoomService {
             ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), writerId, senderId, carpoolId);
             chatRoomRepository.save(chatRoom);
 
-            redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writername, 0);
+            redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writerUsername, 0);
 
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);
@@ -122,16 +123,16 @@ public class ChatRoomService {
             ChatUserInfo chatUserInfoWriter= new ChatUserInfo(carpool.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoWriter);
 
-            return toChatRoomResponseDto(chatRoom, writer);
+            return toChatRoomResponseDto(chatRoom, writerNickname);
         }
     }
     //endregion
 
 
-    private ChatRoomDto.ResponseDto toChatRoomResponseDto(ChatRoom chatRoom, String user) {
+    private ChatRoomDto.ResponseDto toChatRoomResponseDto(ChatRoom chatRoom, String nickName) {
         return ChatRoomDto.ResponseDto.builder()
                 .roomId(chatRoom.getRoomId())
-                .roomName(user)
+                .roomName(nickName)
                 .longRoomId(chatRoom.getId())
                 .build();
     }
