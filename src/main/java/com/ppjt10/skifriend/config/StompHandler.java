@@ -45,9 +45,7 @@ public class StompHandler implements ChannelInterceptor {
             String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
             System.out.println("클라이언트 유저 이름: " + name);
             redisRepository.setUserNameInfo(sessionId, name);
-
-            int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
-            redisRepository.setNotVerifiedMessage(roomId, name, presentChatMsgCnt);
+            
 
             chatMessageService.connectMessage(
                     ChatMessageDto.RequestDto.builder()

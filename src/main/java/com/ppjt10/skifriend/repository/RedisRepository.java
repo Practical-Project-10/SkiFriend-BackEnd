@@ -55,7 +55,13 @@ public class RedisRepository {
     }
 
     // 채팅방에서 DISCONNECT 시점에 읽은 메세지 개수 저장
-    public int setNotVerifiedMessage(String roomId, String name, int chatMessageCount) {
-        return Math.toIntExact(Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount)).orElse(0L));
+    public void setNotVerifiedMessage(String roomId, String name, int chatMessageCount) {
+        valueOperations.set(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount);
     }
+
+
+//    // 채팅방에서 DISCONNECT 시점에 읽은 메세지 개수 저장
+//    public int setNotVerifiedMessage(String roomId, String name, int chatMessageCount) {
+//        return Math.toIntExact(Optional.ofNullable(valueOperations.increment(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount)).orElse(0L));
+//    }
 }
