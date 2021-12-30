@@ -11,4 +11,5 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     Optional<Likes> findByUserIdAndFreePostId(Long userId, Long boardId);
     List<Likes> findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime time, Long skiResort);
     List<Likes> findAllByFreePostId(Long boardId);
+    List<Likes> deleteAllByFreePostId(Long boardId);
 }

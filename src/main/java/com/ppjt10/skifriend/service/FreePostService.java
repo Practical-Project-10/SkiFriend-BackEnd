@@ -181,6 +181,8 @@ public class FreePostService {
         }
         String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
         s3Uploader.deleteFromS3(oldImageUrl);
+        commentRepository.deleteAllByFreePostId(postId);
+        likesRepository.deleteAllByFreePostId(postId);
         freePostRepository.deleteById(postId);
     }
     //endregion
