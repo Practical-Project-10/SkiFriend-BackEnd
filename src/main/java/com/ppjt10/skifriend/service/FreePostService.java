@@ -54,9 +54,13 @@ public class FreePostService {
         }
 
         String imageUrl;
-        try {
-            imageUrl = s3Uploader.upload(image, imageDirName);
-        } catch (Exception err) {
+        if(!image.isEmpty()) {
+            try {
+                imageUrl = s3Uploader.upload(image, imageDirName);
+            } catch (Exception err) {
+                imageUrl = "No Post Image";
+            }
+        } else  {
             imageUrl = "No Post Image";
         }
 
@@ -141,17 +145,20 @@ public class FreePostService {
         }
 
         String imageUrl;
-        try {
-            imageUrl = s3Uploader.upload(image, imageDirName);
-        } catch (Exception err) {
+        if(!image.isEmpty()) {
+            try {
+                imageUrl = s3Uploader.upload(image, imageDirName);
+            } catch (Exception err) {
+                imageUrl = "No Post Image";
+            }
+        } else  {
             imageUrl = "No Post Image";
         }
 
         try {
             String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
             s3Uploader.deleteFromS3(oldImageUrl);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         freePost.update(requestDto, imageUrl);
     }
