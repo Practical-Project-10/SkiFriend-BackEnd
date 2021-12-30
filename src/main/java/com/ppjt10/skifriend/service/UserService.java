@@ -52,26 +52,26 @@ public class UserService {
         user.wirteProfile(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
-        if(!profileImg.isEmpty()) {
+        if (!profileImg.isEmpty()) {
             try {
                 String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                 user.setProfileImg(profileImgUrl);
             } catch (Exception e) {
                 user.setProfileImg("No Post Image");
             }
-        } else  {
+        } else {
             user.setProfileImg("No Post Image");
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
-        if(!vacImg.isEmpty()) {
+        if (!vacImg.isEmpty()) {
             try {
                 String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
                 user.setVacImg(vacImgUrl);
             } catch (Exception e) {
                 user.setVacImg("No Post Image");
             }
-        } else  {
+        } else {
             user.setVacImg("No Post Image");
         }
 
@@ -94,35 +94,45 @@ public class UserService {
         user.update(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
-        try{
-            String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(source);
-        } catch (Exception e){}
+        System.out.println("Original파일이름!!!!!!! : " + profileImg.getOriginalFilename());
+        System.out.println("name파일이름!!!!!!! : " + profileImg.getName());
+        if (!profileImg.isEmpty()) {
+            // 빈 이미지가 아닐때만 기존 이미지 삭제
+            if (!user.getProfileImg().equals("No Post Image")) {
+                try {
+                    String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    s3Uploader.deleteFromS3(source);
+                } catch (Exception e) {}
+            }
 
-        if(!profileImg.isEmpty()) {
-            try {
-                String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-                user.setProfileImg(profileImgUrl);
-            } catch (Exception e) {
+            if(!profileImg.getOriginalFilename().equals("delete")){
+                try {
+                    String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
+                    user.setProfileImg(profileImgUrl);
+                } catch (Exception e) {
+                    user.setProfileImg("No Post Image");
+                }
+            } else {
                 user.setProfileImg("No Post Image");
             }
-        } else  {
-            user.setProfileImg("No Post Image");
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
-        if(!vacImg.isEmpty()) {
-            try {
-                String source = URLDecoder.decode(user.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-                s3Uploader.deleteFromS3(source);
+        if (!vacImg.isEmpty()) {
+            // 빈 이미지가 아닐때만 기존 이미지 삭제
+            if (!user.getVacImg().equals("No Post Image")) {
+                try {
+                    String source = URLDecoder.decode(user.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    s3Uploader.deleteFromS3(source);
+                } catch (Exception e) {}
+            }
 
+            try {
                 String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
                 user.setVacImg(vacImgUrl);
             } catch (Exception e) {
                 user.setVacImg("No Post Image");
             }
-        } else  {
-            user.setVacImg("No Post Image");
         }
 
         return createUserResponseDto(user);

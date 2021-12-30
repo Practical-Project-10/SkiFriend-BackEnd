@@ -35,6 +35,9 @@ public class ChatMessage  extends Timestamped {
     @Column
     private String message; // 메시지
 
+    @Column
+    private String img; // 이미지 첨부시
+
     public ChatMessage(MessageType type, ChatRoom chatRoom, User user, String message) {
         this.type = type;
         this.chatRoom = chatRoom;
@@ -44,5 +47,9 @@ public class ChatMessage  extends Timestamped {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }

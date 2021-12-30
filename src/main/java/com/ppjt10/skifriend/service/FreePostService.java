@@ -144,21 +144,25 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
-        String imageUrl;
+        String imageUrl = freePost.getImage();
         if(!image.isEmpty()) {
-            try {
-                imageUrl = s3Uploader.upload(image, imageDirName);
-            } catch (Exception err) {
+            if(!imageUrl.equals("No Post Image")) {
+                try {
+                    String oldImageUrl = URLDecoder.decode(imageUrl.replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    s3Uploader.deleteFromS3(oldImageUrl);
+                } catch (Exception ignored) {}
+            }
+
+            if(!image.getOriginalFilename().equals("delete")) {
+                try {
+                    imageUrl = s3Uploader.upload(image, imageDirName);
+                } catch (Exception err) {
+                    imageUrl = "No Post Image";
+                }
+            } else{
                 imageUrl = "No Post Image";
             }
-        } else  {
-            imageUrl = "No Post Image";
         }
-
-        try {
-            String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(oldImageUrl);
-        } catch (Exception ignored) {}
 
         freePost.update(requestDto, imageUrl);
     }
@@ -177,13 +181,15 @@ public class FreePostService {
         }
         String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
         s3Uploader.deleteFromS3(oldImageUrl);
+        commentRepository.deleteAllByFreePostId(postId);
+        likesRepository.deleteAllByFreePostId(postId);
         freePostRepository.deleteById(postId);
     }
     //endregion
 
     //region HOT게시물 가져오기
     @Transactional
-    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
+    public List<FreePostDto.HotResponseDto> takeHotFreePosts() {
         FreePost highOne = extractHotFreePost(SkiResortType.HIGHONE.getSkiResortType());
         FreePost yongPyong = extractHotFreePost(SkiResortType.YONGPYONG.getSkiResortType());
         FreePost vivaldi = extractHotFreePost(SkiResortType.VIVALDIPARK.getSkiResortType());
@@ -200,7 +206,7 @@ public class FreePostService {
         List<FreePostDto.HotResponseDto> resortTabDtoList = populatedResortPosts.stream()
                 .map(e -> toHotResponseDto(e))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(resortTabDtoList);
+        return resortTabDtoList;
     }
 
     // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
