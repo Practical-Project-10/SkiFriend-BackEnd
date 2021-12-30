@@ -144,21 +144,21 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
-        String imageUrl;
+        String imageUrl = freePost.getImage();
         if(!image.isEmpty()) {
+            if(!imageUrl.equals("No Post Image")) {
+                try {
+                    String oldImageUrl = URLDecoder.decode(imageUrl.replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    s3Uploader.deleteFromS3(oldImageUrl);
+                } catch (Exception ignored) {}
+            }
+
             try {
                 imageUrl = s3Uploader.upload(image, imageDirName);
             } catch (Exception err) {
                 imageUrl = "No Post Image";
             }
-        } else  {
-            imageUrl = "No Post Image";
         }
-
-        try {
-            String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(oldImageUrl);
-        } catch (Exception ignored) {}
 
         freePost.update(requestDto, imageUrl);
     }
