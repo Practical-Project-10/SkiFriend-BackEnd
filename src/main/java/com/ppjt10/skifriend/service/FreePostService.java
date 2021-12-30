@@ -183,7 +183,7 @@ public class FreePostService {
 
     //region HOT게시물 가져오기
     @Transactional
-    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
+    public List<FreePostDto.HotResponseDto> takeHotFreePosts() {
         FreePost highOne = extractHotFreePost(SkiResortType.HIGHONE.getSkiResortType());
         FreePost yongPyong = extractHotFreePost(SkiResortType.YONGPYONG.getSkiResortType());
         FreePost vivaldi = extractHotFreePost(SkiResortType.VIVALDIPARK.getSkiResortType());
@@ -200,7 +200,7 @@ public class FreePostService {
         List<FreePostDto.HotResponseDto> resortTabDtoList = populatedResortPosts.stream()
                 .map(e -> toHotResponseDto(e))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(resortTabDtoList);
+        return resortTabDtoList;
     }
 
     // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
