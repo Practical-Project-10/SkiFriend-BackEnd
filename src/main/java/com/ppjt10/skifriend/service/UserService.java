@@ -94,6 +94,8 @@ public class UserService {
         user.update(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
+        System.out.println("Original파일이름!!!!!!! : " + profileImg.getOriginalFilename());
+        System.out.println("name파일이름!!!!!!! : " + profileImg.getName());
         if (!profileImg.isEmpty()) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
             if (!user.getProfileImg().equals("No Post Image")) {
@@ -103,10 +105,14 @@ public class UserService {
                 } catch (Exception e) {}
             }
 
-            try {
-                String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-                user.setProfileImg(profileImgUrl);
-            } catch (Exception e) {
+            if(!profileImg.getOriginalFilename().equals("delete")){
+                try {
+                    String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
+                    user.setProfileImg(profileImgUrl);
+                } catch (Exception e) {
+                    user.setProfileImg("No Post Image");
+                }
+            } else {
                 user.setProfileImg("No Post Image");
             }
         }

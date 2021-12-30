@@ -153,9 +153,13 @@ public class FreePostService {
                 } catch (Exception ignored) {}
             }
 
-            try {
-                imageUrl = s3Uploader.upload(image, imageDirName);
-            } catch (Exception err) {
+            if(!image.getOriginalFilename().equals("delete")) {
+                try {
+                    imageUrl = s3Uploader.upload(image, imageDirName);
+                } catch (Exception err) {
+                    imageUrl = "No Post Image";
+                }
+            } else{
                 imageUrl = "No Post Image";
             }
         }
