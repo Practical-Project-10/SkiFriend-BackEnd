@@ -103,9 +103,7 @@ public class ChatRoomService {
         if (writerId == userDetails.getUser().getId()) {
             throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
         }
-
         Long senderId = userDetails.getUser().getId();
-        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderIdAndCarpoolId(writerId, senderId, carpoolId);
         User writer = userRepository.findById(writerId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 없습니다")
         );
@@ -113,10 +111,11 @@ public class ChatRoomService {
         String writerUsername = writer.getUsername();
         String writerPhone = writer.getPhoneNum();
 
-
+        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderIdAndCarpoolId(writerId, senderId, carpoolId);
+        //채팅방이 존재한다면
         if (existedChatRoom != null) {
             return toChatRoomResponseDto(existedChatRoom, writerNickname);
-        } else {
+        } else {    //존재하지 않는다면 방을 만들어준다.
             // 방 생성 알림 메세지 글 작성자한테 전송하기
             String msg = carpool.getTitle() + "게시글에 대한 채팅이 왔습니다! 확인하세요 :)";
             messageService.createChatRoomAlert(writerPhone, msg);
@@ -126,9 +125,11 @@ public class ChatRoomService {
 
             redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writerUsername, 0);
 
+            //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(userDetails.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);
 
+            //카풀 작성자 정보
             ChatUserInfo chatUserInfoWriter = new ChatUserInfo(carpool.getUser(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoWriter);
 
@@ -136,7 +137,6 @@ public class ChatRoomService {
         }
     }
     //endregion
-
 
     private ChatRoomDto.ResponseDto toChatRoomResponseDto(ChatRoom chatRoom, String nickName) {
         return ChatRoomDto.ResponseDto.builder()

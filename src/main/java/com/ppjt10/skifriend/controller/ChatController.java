@@ -31,23 +31,21 @@ public class ChatController {
     private final JwtDecoder jwtDecoder;
 
     //region 해당 방에서 했던 모든 메시지 조회
+    //사용 중
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
     public ResponseEntity<List<ChatMessageDto.ResponseDto>> getAllMessages(
             @PathVariable String roomId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-
-        List<ChatMessageDto.ResponseDto> responseDtos = chatMessageService.takeAllChatMessages(
-                roomId,
-                userDetails
-        );
+        List<ChatMessageDto.ResponseDto> responseDtos = chatMessageService.takeAllChatMessages(roomId, userDetails);
 
         return ResponseEntity.ok().body(responseDtos);
     }
     //endregion
 
     //region 채팅방 구독 및 메시지 보내기
+    //사용 중
     @MessageMapping("/chat/message")
     public void chatMessage(
             @Payload ChatMessageDto.RequestDto requestDto,

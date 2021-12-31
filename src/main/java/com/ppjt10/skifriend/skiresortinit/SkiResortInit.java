@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class SkiResortInit implements ApplicationRunner {
+
     private final SkiResortRepository skiResortRepository;
 
     @Override

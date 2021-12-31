@@ -33,6 +33,7 @@ public class ChatRoomController {
     }
 
     //region 내가 참여한 모든 채팅방 목록 조회
+    //사용 중
     @GetMapping("/rooms")
     @ResponseBody
     public ResponseEntity<List<ChatRoomDto.ChatRoomListResponseDto>> room(
@@ -46,6 +47,7 @@ public class ChatRoomController {
 
 
     //region 채팅방 생성
+    //사용 중
     @PostMapping("/room/{carpoolId}")
     @ResponseBody
     public ResponseEntity<ChatRoomDto.ResponseDto> createRoom(
@@ -59,6 +61,7 @@ public class ChatRoomController {
     //endregion
 
     //region 특정 채팅방 조회
+    //사용 중
     @GetMapping("/room/{roomId}")
     @ResponseBody
     public ResponseEntity<ChatRoomDto.ResponseDto> roomInfo(
