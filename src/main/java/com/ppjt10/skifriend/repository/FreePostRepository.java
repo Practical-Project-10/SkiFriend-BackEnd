@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface FreePostRepository extends JpaRepository<FreePost, Long> {
-    List<FreePost> findAllBySkiResortOrderByLikeCntDesc(String skiResort);
 
-    Page<FreePost> findAllBySkiResort(SkiResort skiResort, Pageable pageable);
+
+    Page<FreePost> findAllBySkiResortOrderByCreateAtDesc(SkiResort skiResort, Pageable pageable);
 }

@@ -21,17 +21,21 @@ public class FreePostController {
     // 핫 게시물 내려주기
     @GetMapping("/main")
     public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
+
         List<FreePostDto.HotResponseDto> responseDtos = freePostService.takeHotFreePosts();
+        
         return ResponseEntity.ok().body(responseDtos);
     }
 
     //자유게시판 전체 조회
     @GetMapping("/board/freeBoard/{skiResort}")
-    public ResponseEntity<List<FreePostDto.AllResponseDto>> getFreePosts(@PathVariable String skiResort,
-                                                                         @RequestParam int page,
-                                                                         @RequestParam int size
+    public ResponseEntity<List<FreePostDto.AllResponseDto>> getFreePosts(
+            @PathVariable String skiResort,
+            @RequestParam int page,
+            @RequestParam int size
     ) {
         page = page - 1;
+
         List<FreePostDto.AllResponseDto> allResponseDtoList = freePostService.getFreePosts(skiResort, page, size);
 
         return ResponseEntity.ok()
@@ -40,14 +44,16 @@ public class FreePostController {
 
     //region 자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
-    public void writeFreePosts(
+    public ResponseEntity<FreePostDto.AllResponseDto> writeFreePosts(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart("image") MultipartFile image,
             @PathVariable String skiResort,
             @RequestPart("requestDto") FreePostDto.RequestDto requestDto
     ) throws IOException {
-        freePostService.uploadFreePosts(userDetails, image, skiResort, requestDto);
-        System.out.println(requestDto.getContent());
+
+        FreePostDto.AllResponseDto responseDto = freePostService.uploadFreePosts(userDetails, image, skiResort, requestDto);
+
+        return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 
@@ -56,21 +62,25 @@ public class FreePostController {
     public ResponseEntity<FreePostDto.ResponseDto> readFreePost(
             @PathVariable Long postId
     ) {
+
         FreePostDto.ResponseDto responseDto = freePostService.getFreePost(postId);
+
         return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 
     //region 자유 게시판 게시글 수정
     @PutMapping("/board/freeBoard/{postId}")
-    public void editFreePost(
+    public ResponseEntity<FreePostDto.AllResponseDto> editFreePost(
             @PathVariable Long postId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart("image") MultipartFile image,
             @RequestPart("requestDto") FreePostDto.RequestDto requestDto
     ) throws IOException {
-        freePostService.modifyFreePost(userDetails, requestDto, image, postId);
 
+        FreePostDto.AllResponseDto responseDto = freePostService.modifyFreePost(userDetails, requestDto, image, postId);
+
+        return ResponseEntity.ok().body(responseDto);
     }
     //endregion
 
@@ -80,7 +90,9 @@ public class FreePostController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long postId
     ) throws UnsupportedEncodingException {
+
         freePostService.deleteFreePost(userDetails, postId);
+
     }
     //endregion
 }
