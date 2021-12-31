@@ -27,11 +27,11 @@ public class UserController {
 
     // 유저 프로필 작성
     @PostMapping("/user/profile")
-    public ResponseEntity<UserDto.ResponseDto> writeUserProfile(
-            @RequestPart("profileImg") MultipartFile profileImg,
-            @RequestPart("vacImg") MultipartFile vacImg,
-            @RequestPart("requestDto") UserDto.ProfileRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<UserDto.ResponseDto> writeUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
+                                                                @RequestPart("vacImg") MultipartFile vacImg,
+                                                                @RequestPart("requestDto") UserDto.ProfileRequestDto requestDto,
+                                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
+
         return ResponseEntity.ok().body(userService.writeUserProfile(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
     }
 
