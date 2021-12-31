@@ -32,10 +32,12 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
+            System.out.println("CONNECT!!!!" + accessor.getFirstNativeHeader("Authorization").substring(7));
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
 
         }
         else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            System.out.println("SUBSCRIBE!!!!");
             String roomId = chatMessageService.getRoomId(
                     Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
             );
