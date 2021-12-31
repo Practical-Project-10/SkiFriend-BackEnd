@@ -32,22 +32,26 @@ public class CarpoolController {
 
     //카풀 게시물 작성
     @PostMapping("/board/carpool/{skiResort}")
-    public void createCarpool(@PathVariable String skiResort,
+    public ResponseEntity<CarpoolDto.ResponseDto> createCarpool(@PathVariable String skiResort,
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        carpoolService.createCarpool(skiResort, requestDto, user);
+        CarpoolDto.ResponseDto carpoolResponseDto = carpoolService.createCarpool(skiResort, requestDto, user);
+        return ResponseEntity.ok()
+                .body(carpoolResponseDto);
     }
 
     //카풀 게시뭏 수정
     @PutMapping("/board/carpool/{carpoolId}")
-    public void updateCarpool(@PathVariable Long carpoolId,
+    public ResponseEntity<CarpoolDto.ResponseDto> updateCarpool(@PathVariable Long carpoolId,
                               @RequestBody CarpoolDto.RequestDto requestDto,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        carpoolService.updateCarpool(carpoolId, requestDto, user.getId()); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
+        CarpoolDto.ResponseDto carpoolResponseDto = carpoolService.updateCarpool(carpoolId, requestDto, user.getId()); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
+        return ResponseEntity.ok()
+                .body(carpoolResponseDto);
     }
 
     //카풀 게시글 삭제

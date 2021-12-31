@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class CarpoolService {
 
     //카풀 게시글 작성
     @Transactional
-    public void createCarpool(String skiResortName, CarpoolDto.RequestDto requestDto, User user) {
+    public CarpoolDto.ResponseDto createCarpool(String skiResortName, CarpoolDto.RequestDto requestDto, User user) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
 
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
@@ -39,13 +40,14 @@ public class CarpoolService {
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
         Carpool carpool = new Carpool(user, requestDto, skiResort);
-
         carpoolRepository.save(carpool);
+
+        return generateCarpoolResponseDto(carpool);
     }
 
     //카풀 게시글 수정
     @Transactional
-    public void updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
+    public CarpoolDto.ResponseDto updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
@@ -59,6 +61,7 @@ public class CarpoolService {
         }
 
         carpool.update(requestDto);
+        return generateCarpoolResponseDto(carpool);
     }
 
     //카풀 게시글 삭제
@@ -130,6 +133,7 @@ public class CarpoolService {
                     carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
                 }
             }
+            Collections.reverse(carpoolResponseDtoList);
             return carpoolResponseDtoList;
         }
 

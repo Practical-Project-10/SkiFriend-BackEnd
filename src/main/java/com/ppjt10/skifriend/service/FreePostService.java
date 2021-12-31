@@ -2,8 +2,13 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.*;
-import com.ppjt10.skifriend.entity.*;
+import com.ppjt10.skifriend.dto.CommentDto;
+import com.ppjt10.skifriend.dto.FreePostDto;
+import com.ppjt10.skifriend.dto.LikesDto;
+import com.ppjt10.skifriend.entity.Comment;
+import com.ppjt10.skifriend.entity.FreePost;
+import com.ppjt10.skifriend.entity.Likes;
+import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.repository.LikesRepository;
@@ -14,7 +19,6 @@ import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

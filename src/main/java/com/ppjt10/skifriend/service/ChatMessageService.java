@@ -43,7 +43,6 @@ public class ChatMessageService {
         }
     }
 
-
     //region 해당 채팅방 모든 채팅 내용 불러오기
     public List<ChatMessageDto.ResponseDto> takeAllChatMessages(
             String roomId,
