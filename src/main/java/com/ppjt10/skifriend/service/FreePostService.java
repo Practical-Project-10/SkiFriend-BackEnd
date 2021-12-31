@@ -42,7 +42,7 @@ public class FreePostService {
 
     //region 자유 게시판 게시글 작성
     @Transactional
-    public void uploadFreePosts(
+    public FreePostDto.AllResponseDto uploadFreePosts(
             UserDetailsImpl userDetails,
             MultipartFile image,
             String resortName,
@@ -77,6 +77,8 @@ public class FreePostService {
         );
 
         freePostRepository.save(freePost);
+
+        return generateFreePostResponseDto(freePost);
 
     }
     //endregion
@@ -135,7 +137,7 @@ public class FreePostService {
 
     //region 자유 게시판 게시글 수정
     @Transactional
-    public void modifyFreePost(
+    public FreePostDto.AllResponseDto modifyFreePost(
             UserDetailsImpl userDetails,
             FreePostDto.RequestDto requestDto,
             MultipartFile image,
@@ -169,6 +171,8 @@ public class FreePostService {
         }
 
         freePost.update(requestDto, imageUrl);
+
+        return generateFreePostResponseDto(freePost);
     }
     //endregion
 
@@ -258,12 +262,18 @@ public class FreePostService {
 
     //자유게시글 전체 조회
     public List<FreePostDto.AllResponseDto> getFreePosts(String skiResortName, int page, int size) {
+
         List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
+
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+
         //해당 스키장의 자유게시글 리스트 가져오기
-        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
+        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(
+                skiResort,
+                PageRequest.of(page, size)
+        );
 
         //게시글 리스트
         if (freePostPage.hasContent()) {

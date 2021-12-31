@@ -125,7 +125,10 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
             //해당 스키장의 카풀 정보 리스트 가져오기
-            Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResort(skiResort, PageRequest.of(page, size));
+            Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(
+                    skiResort,
+                    PageRequest.of(page, size)
+            );
 
             //Carpool 리스트
             if (carpoolPage.hasContent()) {
@@ -133,7 +136,7 @@ public class CarpoolService {
                     carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
                 }
             }
-            Collections.reverse(carpoolResponseDtoList);
+
             return carpoolResponseDtoList;
         }
 
