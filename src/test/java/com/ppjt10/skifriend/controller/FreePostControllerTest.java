@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -114,10 +115,8 @@ class FreePostControllerTest {
         //given
         String request = objectMapper.writeValueAsString(post1);
 
-        File file = new File("/Users/beomin/Desktop/file.txt");
-        FileInputStream fileInputStream = new FileInputStream(file);
 
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", "".getBytes());
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", "empty.txt", "multipart/form-data", "".getBytes());
 
         MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
@@ -152,8 +151,6 @@ class FreePostControllerTest {
 
         Long postId = 1L;
 
-        File file = new File("/Users/beomin/Desktop/file.txt");
-
         MockMultipartHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.multipart("/board/freeBoard/{postId}", postId);
 
@@ -162,9 +159,7 @@ class FreePostControllerTest {
             return request1;
         });
 
-        FileInputStream fileInputStream = new FileInputStream(file);
-
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", fileInputStream);
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", "empty.txt", "multipart/form-data", "".getBytes());
 
         MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(builder.file(multipartFile1).file(multipartFile2)
