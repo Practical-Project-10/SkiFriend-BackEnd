@@ -134,7 +134,7 @@ class FreePostControllerTest {
         File file = new File("/Users/beomin/Desktop/file.txt");
         FileInputStream fileInputStream = new FileInputStream(file);
 
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", fileInputStream);
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", "".getBytes());
 
         MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
@@ -227,40 +227,6 @@ class FreePostControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
 
-
-    }
-    @Test
-    @Order(9)
-    @DisplayName("댓글 작성")
-    void test9() throws Exception {
-
-        Long postId = 1L;
-
-        String requestDto = objectMapper.writeValueAsString(comment1);
-
-        mockMvc.perform(post("/board/freeBoard/{postId}/comments", postId)
-                        .header("Authorization", this.token)
-                        .content(requestDto)
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andDo(print());
-    }
-
-    @Test
-    @Order(10)
-    @DisplayName("댓글 수정")
-    void test10() throws Exception {
-
-        Long commentId = 1L;
-
-        String requestDto = objectMapper.writeValueAsString(comment1);
-
-        mockMvc.perform(put("/board/freeBoard/comments/{commentId}", commentId)
-                        .header("Authorization", this.token)
-                        .content(requestDto)
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andDo(print());
 
     }
 

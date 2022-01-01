@@ -3,6 +3,7 @@ package com.ppjt10.skifriend.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.CommentDto;
+import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.service.FreePostService;
 import org.junit.jupiter.api.*;
@@ -15,13 +16,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import java.io.File;
+import java.io.FileInputStream;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,11 +87,33 @@ class CommentControllerTest {
 
     }
 
-
     @Test
     @Order(3)
-    @DisplayName("댓글 작성")
+    @DisplayName("게시물 작성")
     void test3() throws Exception {
+        //given
+        String request = objectMapper.writeValueAsString(post1);
+
+        File file = new File("/Users/beomin/Desktop/file.txt");
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", "".getBytes());
+
+        MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
+        mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
+                        .file(multipartFile1)
+                        .file(multipartFile2)
+                        .contentType("multipart/mixed")
+                        .characterEncoding("UTF-8")
+                        .header(HttpHeaders.AUTHORIZATION, this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("댓글 작성")
+    void test4() throws Exception {
 
         Long postId = 1L;
 
@@ -102,9 +128,9 @@ class CommentControllerTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     @DisplayName("댓글 수정")
-    void test4() throws Exception {
+    void test5() throws Exception {
 
         Long commentId = 1L;
 
@@ -119,6 +145,20 @@ class CommentControllerTest {
 
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("댓글 삭제")
+    void test6() throws Exception {
+
+        Long commentId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/comments/{commentId}", commentId)
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
 
     private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
             .username("beomin12")
@@ -131,6 +171,12 @@ class CommentControllerTest {
             .username("beomin12")
             .password("asdf12!!")
             .build();
+
+    private FreePostDto.RequestDto post1 = FreePostDto.RequestDto.builder()
+            .title("버민")
+            .content("내용")
+            .build();
+
 
     private CommentDto.RequestDto comment1 = CommentDto.RequestDto.builder()
             .content("comment1")
