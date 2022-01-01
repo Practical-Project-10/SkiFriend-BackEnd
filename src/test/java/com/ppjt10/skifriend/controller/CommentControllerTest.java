@@ -93,10 +93,8 @@ class CommentControllerTest {
         //given
         String request = objectMapper.writeValueAsString(post1);
 
-        File file = new File("/Users/beomin/Desktop/file.txt");
-        FileInputStream fileInputStream = new FileInputStream(file);
 
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", "".getBytes());
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", "empty.txt", "multipart/form-data", "".getBytes());
 
         MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
