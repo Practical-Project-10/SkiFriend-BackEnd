@@ -58,15 +58,22 @@ public class FreePostService {
         }
 
         String imageUrl;
-        if(!image.isEmpty()) {
-            try {
-                imageUrl = s3Uploader.upload(image, imageDirName);
-            } catch (Exception err) {
-                imageUrl = "No Post Image";
-            }
-        } else  {
+        if(image == null) {
             imageUrl = "No Post Image";
         }
+        else {
+            if(!image.isEmpty()) {
+                try {
+                    imageUrl = s3Uploader.upload(image, imageDirName);
+                } catch (Exception err) {
+                    imageUrl = "No Post Image";
+                }
+            } else  {
+                imageUrl = "No Post Image";
+            }
+        }
+
+
 
         FreePost freePost = new FreePost(
                 userDetails.getUser(),
@@ -261,7 +268,12 @@ public class FreePostService {
     }
 
     //자유게시글 전체 조회
-    public List<FreePostDto.AllResponseDto> getFreePosts(String skiResortName, int page, int size) {
+    public List<FreePostDto.AllResponseDto> getFreePosts(
+            String skiResortName,
+            int page,
+            int size
+    )
+    {
 
         List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
 

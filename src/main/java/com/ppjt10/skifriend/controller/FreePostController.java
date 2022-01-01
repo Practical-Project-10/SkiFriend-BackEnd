@@ -23,7 +23,7 @@ public class FreePostController {
     public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
 
         List<FreePostDto.HotResponseDto> responseDtos = freePostService.takeHotFreePosts();
-        
+
         return ResponseEntity.ok().body(responseDtos);
     }
 
@@ -46,11 +46,12 @@ public class FreePostController {
     @PostMapping("/board/{skiResort}/freeBoard")
     public ResponseEntity<FreePostDto.AllResponseDto> writeFreePosts(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestPart("image") MultipartFile image,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             @PathVariable String skiResort,
-            @RequestPart("requestDto") FreePostDto.RequestDto requestDto
+            @RequestPart(value = "requestDto", required = false) FreePostDto.RequestDto requestDto
     ) throws IOException {
-
+        System.out.println("requestDto: " + requestDto);
+        System.out.println("img: " + image);
         FreePostDto.AllResponseDto responseDto = freePostService.uploadFreePosts(userDetails, image, skiResort, requestDto);
 
         return ResponseEntity.ok().body(responseDto);

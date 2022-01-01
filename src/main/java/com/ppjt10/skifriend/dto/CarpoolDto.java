@@ -53,7 +53,7 @@ public class CarpoolDto {
     @NoArgsConstructor
     public static class CategoryRequestDto{
         private String carpoolType;
-        private int maxMemberNum;
+        private int memberNum;
         private String startLocation;
         private String endLocation;
         private String date;

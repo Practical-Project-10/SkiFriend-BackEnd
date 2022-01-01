@@ -1,104 +1,288 @@
 package com.ppjt10.skifriend.controller;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ppjt10.skifriend.dto.CommentDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
+import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.repository.FreePostRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
-
+import com.ppjt10.skifriend.service.FreePostService;
+import lombok.val;
+import org.junit.Before;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.*;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-//@WebMvcTest(controllers = FreePostController.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WithMockUser
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
 class FreePostControllerTest {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    MockMvc mockMvc;
 
-    private final String title = "title1";
-    private final String content = "content1";
-    private final String postImg = "Image";
-    private final String skiResortName = "HighOne";
-    private String token;
+    @Autowired
+    private WebApplicationContext wac;
 
+    @Mock
+    FreePostRepository freePostRepository;
 
+    @Mock
+    FreePostService freePostService;
 
-    private  HttpHeaders headers;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @InjectMocks
+    CommentController controller;
 
+    @InjectMocks
+    FreePostController freePostController;
 
-    @Nested
-    @DisplayName("게시글 작성")
-    class writeFreePost {
+    private HttpHeaders headers;
 
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-        @Test
-        @Order(1)
+    private String token = "";
 
-        @DisplayName("게시글 작성 성공")
-//        @WithAuthUser(username = "beomin12")
-        public void success() throws JsonProcessingException {
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        MockitoAnnotations.initMocks(this);
 
-            //given
-            FreePostDto.RequestDto requestDto = FreePostDto.RequestDto.builder()
-                    .title(title)
-                    .content(content)
-                    .build();
+        headers = new HttpHeaders();
 
-            String requestBody = objectMapper.writeValueAsString(requestDto);
-
-            HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
-
-            //when
-            ResponseEntity<FreePostDto.ResponseDto> response = testRestTemplate.postForEntity(
-                    "/board/" + skiResortName + "/freeBoard",
-                    request,
-                    FreePostDto.ResponseDto.class
-            );
-
-            //then
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-        }
-
-
-//        @Test
-//        @Order(2)
-//        @DisplayName("게시글 작성 실패")
-//        public void fail() {
-//
-//
-//        }
-
-
-
-
-
-
-
-
-
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
     }
 
 
+
+    @Test
+    @Order(1)
+    @DisplayName("회원 가입")
+    void test1() throws Exception {
+        // given
+        String requestBody = objectMapper.writeValueAsString(user1);
+
+        mockMvc.perform(post("/user/signup")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andDo(print());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("로그인, JWT 토큰 받기")
+    void test2() throws Exception {
+        // given
+        String requestBody = objectMapper.writeValueAsString(user1Login);
+
+        MockHttpServletResponse response = mockMvc.perform(post("/user/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andDo(print())
+                        .andReturn().getResponse();
+
+        token = response.getHeader(HttpHeaders.AUTHORIZATION);
+
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("게시물 작성")
+    void test3() throws Exception {
+        //given
+        String request = objectMapper.writeValueAsString(post1);
+
+        File file = new File("/Users/beomin/Desktop/file.txt");
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", fileInputStream);
+
+        MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
+        mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
+                        .file(multipartFile1)
+                        .file(multipartFile2)
+                        .contentType("multipart/mixed")
+                        .characterEncoding("UTF-8")
+                        .header(HttpHeaders.AUTHORIZATION, this.token))
+                        .andExpect(status().isOk())
+                        .andDo(print());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("게시물 상세조회")
+    void test4() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(get("/board/freeBoard/{postId}/detail", postId)
+                        .header(HttpHeaders.AUTHORIZATION, this.token)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("게시물 수정")
+    void test5() throws Exception {
+
+        String request = objectMapper.writeValueAsString(post1);
+
+        Long postId = 1L;
+
+        File file = new File("/Users/beomin/Desktop/file.txt");
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/board/freeBoard/{postId}", postId);
+
+        builder.with(request1 -> {
+            request1.setMethod("PUT");
+            return request1;
+        });
+
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        MockMultipartFile multipartFile1 = new MockMultipartFile("image", file.getName(), "multipart/form-data", fileInputStream);
+
+        MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
+        mockMvc.perform(builder.file(multipartFile1).file(multipartFile2)
+                        .header("Authorization", this.token))
+                        .andExpect(status().isOk());
+
+    }
+
+
+    @Test
+    @Order(6)
+    @DisplayName("전체 게시글 조회")
+    void test6() throws Exception {
+
+        String skiResort = "HighOne";
+
+        mockMvc.perform(get("/board/freeBoard/{skiResort}", skiResort)
+                        .param("page", "1")
+                        .param("size", "10")
+                .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("게시글 삭제")
+    void test7() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+                .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("핫 게시물 조회")
+    void test8() throws Exception {
+
+        mockMvc.perform(get("/main"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+
+    }
+    @Test
+    @Order(9)
+    @DisplayName("댓글 작성")
+    void test9() throws Exception {
+
+        Long postId = 1L;
+
+        String requestDto = objectMapper.writeValueAsString(comment1);
+
+        mockMvc.perform(post("/board/freeBoard/{postId}/comments", postId)
+                        .header("Authorization", this.token)
+                        .content(requestDto)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andDo(print());
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("댓글 수정")
+    void test10() throws Exception {
+
+        Long commentId = 1L;
+
+        String requestDto = objectMapper.writeValueAsString(comment1);
+
+        mockMvc.perform(put("/board/freeBoard/comments/{commentId}", commentId)
+                        .header("Authorization", this.token)
+                        .content(requestDto)
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andDo(print());
+
+    }
+
+
+    private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
+            .username("beomin12")
+            .nickname("버민")
+            .password("asdf12!!")
+            .phoneNum("01078945321")
+            .build();
+
+    private UserControllerTest.TestLoginDto user1Login = UserControllerTest.TestLoginDto.builder()
+            .username("beomin12")
+            .password("asdf12!!")
+            .build();
+
+    private FreePostDto.RequestDto post1 = FreePostDto.RequestDto.builder()
+            .title("버민")
+            .content("내용")
+            .build();
+
+    private CommentDto.RequestDto comment1 = CommentDto.RequestDto.builder()
+            .content("comment1")
+            .build();
 }

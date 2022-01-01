@@ -70,14 +70,15 @@ public class CarpoolController {
     }
 
     //region 카풀 카테고리 분류
-    @GetMapping("/board/carpool/category")
+    @PostMapping("/board/carpool/{skiResort}/category")
     public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCategories(
+            @PathVariable String skiResort,
             @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto,
             @RequestParam("page") int page,
             @RequestParam("size") int size
     ) {
         page = page - 1;
-        return carpoolService.sortCarpools(categoryRequestDto, page, size);
+        return carpoolService.sortCarpools(skiResort, categoryRequestDto, page, size);
     }
     //endregion
 }

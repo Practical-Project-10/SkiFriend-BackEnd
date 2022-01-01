@@ -26,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Controller
 public class ChatController {
-    private final RedisRepository redisRepository;
     private final ChatMessageService chatMessageService;
     private final JwtDecoder jwtDecoder;
 

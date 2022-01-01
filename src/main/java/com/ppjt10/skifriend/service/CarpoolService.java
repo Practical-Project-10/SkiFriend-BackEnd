@@ -81,21 +81,40 @@ public class CarpoolService {
     //region 카풀 카테고리 분류
     @Transactional
     public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCarpools(
+            String skiResortName,
             CarpoolDto.CategoryRequestDto categoryRequestDto,
             int page,
             int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Carpool> sortedCategories =
-                carpoolRepository.findAllByCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateAndMemberNumIsLessThanEqual
-        (
-                categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
-                categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
-                categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
-                categoryRequestDto.getDate(), //빈 값은 "" 으로
-                categoryRequestDto.getMaxMemberNum(), // 빈 값은 숫자 맥스로
-                pageable
-        );
+        Page<Carpool> sortedCategories;
+        if(categoryRequestDto.getMemberNum() > 0 && categoryRequestDto.getMemberNum() < 5) {
+            sortedCategories =
+                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc
+                            (
+                                    skiResortName,
+                                    categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
+                                    categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
+                                    categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
+                                    categoryRequestDto.getDate(), //빈 값은 "" 으로
+                                    categoryRequestDto.getMemberNum(), // 빈 값은 숫자 맥스로
+                                    pageable
+                            );
+        }
+        else {
+            sortedCategories =
+                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsGreaterThanEqualOrderByCreateAtDesc
+                            (
+                                    skiResortName,
+                                    categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
+                                    categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
+                                    categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
+                                    categoryRequestDto.getDate(), //빈 값은 "" 으로
+                                    categoryRequestDto.getMemberNum(), // 빈 값은 숫자 맥스로
+                                    pageable
+                            );
+        }
+
         List<CarpoolDto.ResponseDto> categoryResponseDto = sortedCategories.stream()
                 .map(e->generateCarpoolResponseDto(e))
                 .collect(Collectors.toList());
