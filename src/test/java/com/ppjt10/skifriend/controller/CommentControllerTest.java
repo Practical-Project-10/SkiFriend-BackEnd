@@ -39,7 +39,6 @@ class CommentControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-
     private HttpHeaders headers;
 
     private static ObjectMapper objectMapper = new ObjectMapper();

@@ -58,21 +58,6 @@ class FreePostControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext wac;
-
-    @Mock
-    FreePostRepository freePostRepository;
-
-    @Mock
-    FreePostService freePostService;
-
-    @InjectMocks
-    CommentController controller;
-
-    @InjectMocks
-    FreePostController freePostController;
-
     private HttpHeaders headers;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -81,8 +66,6 @@ class FreePostControllerTest {
 
     @Before
     public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-        MockitoAnnotations.initMocks(this);
 
         headers = new HttpHeaders();
 
@@ -206,28 +189,42 @@ class FreePostControllerTest {
                 .andDo(print());
     }
 
+
+
     @Test
     @Order(7)
-    @DisplayName("게시글 삭제")
-    void test7() throws Exception {
-        Long postId = 1L;
-
-        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
-                .header("Authorization", this.token))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @Order(8)
     @DisplayName("핫 게시물 조회")
-    void test8() throws Exception {
+    void test7() throws Exception {
 
         mockMvc.perform(get("/main"))
                 .andExpect(status().isOk())
                 .andDo(print());
 
 
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("게시물 좋아요")
+    void test8() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(post("/board/freeBoard/{postId}/likes", postId)
+                .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("게시글 삭제")
+    void test9() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+                        .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
 
