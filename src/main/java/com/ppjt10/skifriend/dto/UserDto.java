@@ -64,6 +64,7 @@ public class UserDto {
     public static class LoginResponseDto{
         private Long userId;
         private String nickname;
+        private boolean isProfile;
     }
 
     @Builder

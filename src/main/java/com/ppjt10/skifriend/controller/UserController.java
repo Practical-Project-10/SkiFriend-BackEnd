@@ -60,10 +60,10 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateUserInfo(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
     }
 
-    // 유저 삭제하기
+    // 유저 삭제하기(회원 탈퇴)
     @DeleteMapping("/user/info")
-    public void deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.deleteUser(userDetails.getUser().getId());
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok().body(userService.deleteUser(userDetails.getUser().getId()));
     }
 
     // 내가 쓴 카풀 게시물 불러오기
