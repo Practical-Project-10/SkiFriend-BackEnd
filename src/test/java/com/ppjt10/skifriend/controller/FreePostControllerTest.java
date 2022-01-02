@@ -185,28 +185,28 @@ class FreePostControllerTest {
                 .andDo(print());
     }
 
-//    @Test
-//    @Order(9)
-//    @DisplayName("게시글 삭제")
-//    void test9() throws Exception {
-//        Long postId = 1L;
-//
-//        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
-//                        .header("Authorization", this.token))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
+    @Test
+    @Order(9)
+    @DisplayName("게시글 삭제")
+    void test9() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+                        .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
 
     private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
-            .username("beomin12")
-            .nickname("버민")
+            .username("beomin121")
+            .nickname("버민1")
             .password("asdf12!!")
-            .phoneNum("01078945321")
+            .phoneNum("01012341234")
             .build();
 
     private UserControllerTest.TestLoginDto user1Login = UserControllerTest.TestLoginDto.builder()
-            .username("beomin12")
+            .username("beomin121")
             .password("asdf12!!")
             .build();
 
