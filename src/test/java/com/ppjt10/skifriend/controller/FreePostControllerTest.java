@@ -1,49 +1,24 @@
 package com.ppjt10.skifriend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.CommentDto;
 import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.dto.SignupDto;
-import com.ppjt10.skifriend.repository.FreePostRepository;
-import com.ppjt10.skifriend.service.FreePostService;
-import lombok.val;
 import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.*;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockPart;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -210,17 +185,17 @@ class FreePostControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @Order(9)
-    @DisplayName("게시글 삭제")
-    void test9() throws Exception {
-        Long postId = 1L;
-
-        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
-                        .header("Authorization", this.token))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+//    @Test
+//    @Order(9)
+//    @DisplayName("게시글 삭제")
+//    void test9() throws Exception {
+//        Long postId = 1L;
+//
+//        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+//                        .header("Authorization", this.token))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+//    }
 
 
     private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
