@@ -1,0 +1,34 @@
+# appspec.yml
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/app/step/zip/
+    overwrite: yes
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+    ApplicationStart:
+      - location: deploy.sh
+        timeout: 60
+        runas: ubuntu
+
+#  AfterInstall:
+#    - location: stop.sh
+#      timeout: 60
+#      runas: ubuntu
+#
+#  ApplicationStart:
+#    - location: start.sh
+#      timeout: 60
+#      runas: ubuntu
+#
+#  ValidateService:
+#    - location: health.sh
+#      timeout: 60
+#      runas: ubuntu
