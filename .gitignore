@@ -37,5 +37,5 @@ out/
 .vscode/
 
 ### AWS S3 ###
-application.properties
+#application.properties
 
