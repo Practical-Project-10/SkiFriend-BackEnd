@@ -1,10 +1,8 @@
-# .travis.yml
-
 language: java
 jdk:
-  - openjdk11
+  - openjdk8
 
-branches:
+branches: # (1)
   only:
     - main
 
