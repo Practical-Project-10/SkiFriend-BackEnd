@@ -1,5 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
+
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,21 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
 @RequiredArgsConstructor
+@RestController
 public class ProfileController {
-    private final Environment env;
+
+    private final Environment environment;
 
     @GetMapping("/profile")
-    public String changePort() {
-        List<String> profile = Arrays.asList(env.getActiveProfiles());
-        System.out.println("프로파일"+profile);
-        List<String> realProfiles = Arrays.asList("real1", "real2");
-        String defaultProfile = profile.isEmpty() ? "default" : profile.get(0);
+    public String profile() {
+        List<String> profiles = Arrays.asList(environment.getActiveProfiles());
+        System.out.println("profiles 값 @@@@@@@@@: " + profiles);
+        List<String> realProfiles = Arrays.asList("real", "real1", "real2");
+        String defaultProfile = profiles.isEmpty()? "default" : profiles.get(0);
 
-        return profile.stream()
+        return profiles.stream()
                 .filter(realProfiles::contains)
                 .findAny()
                 .orElse(defaultProfile);
     }
+
 }
