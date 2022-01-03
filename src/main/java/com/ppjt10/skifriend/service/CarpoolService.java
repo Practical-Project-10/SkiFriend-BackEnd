@@ -80,14 +80,11 @@ public class CarpoolService {
 
     //region 카풀 카테고리 분류
     @Transactional
-    public ResponseEntity<Page<CarpoolDto.ResponseDto>> sortCarpools(
+    public List<CarpoolDto.ResponseDto> sortCarpools(
             String skiResortName,
-            CarpoolDto.CategoryRequestDto categoryRequestDto,
-            int page,
-            int size
+            CarpoolDto.CategoryRequestDto categoryRequestDto
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Carpool> sortedCategories;
+        List<Carpool> sortedCategories;
         if(categoryRequestDto.getMemberNum() > 0 && categoryRequestDto.getMemberNum() < 5) {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc
@@ -97,8 +94,7 @@ public class CarpoolService {
                                     categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getDate(), //빈 값은 "" 으로
-                                    categoryRequestDto.getMemberNum(), // 빈 값은 숫자 맥스로
-                                    pageable
+                                    categoryRequestDto.getMemberNum() // 빈 값은 숫자 맥스로
                             );
         }
         else {
@@ -110,16 +106,14 @@ public class CarpoolService {
                                     categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getDate(), //빈 값은 "" 으로
-                                    categoryRequestDto.getMemberNum(), // 빈 값은 숫자 맥스로
-                                    pageable
+                                    categoryRequestDto.getMemberNum() // 빈 값은 숫자 맥스로
                             );
         }
 
         List<CarpoolDto.ResponseDto> categoryResponseDto = sortedCategories.stream()
                 .map(e->generateCarpoolResponseDto(e))
                 .collect(Collectors.toList());
-        Page<CarpoolDto.ResponseDto> categoryResponseDtoPage = new PageImpl<>(categoryResponseDto, pageable, sortedCategories.getTotalElements());
-        return ResponseEntity.ok().body(categoryResponseDtoPage);
+        return categoryResponseDto;
     }
 
     //카풀 상태 변경
