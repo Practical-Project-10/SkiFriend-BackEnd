@@ -236,17 +236,17 @@ class FreePostControllerTest {
 
     }
 
-    @Test
-    @Order(12)
-    @DisplayName("게시글 삭제")
-    void test12() throws Exception {
-        Long postId = 1L;
-
-        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
-                        .header("Authorization", this.token))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+//    @Test
+//    @Order(12)
+//    @DisplayName("게시글 삭제")
+//    void test12() throws Exception {
+//        Long postId = 1L;
+//
+//        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+//                        .header("Authorization", this.token))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+//    }
 
 
     private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
