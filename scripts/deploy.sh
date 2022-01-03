@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 REPOSITORY=/home/ubuntu/app/step
 PROJECT_NAME=SkiFriend-BackEnd
 
