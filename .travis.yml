@@ -38,4 +38,3 @@ deploy: # (5)
 # CI 실행 완료 시 메일로 알람
 #notifications:
 #  slack:
-#    -
