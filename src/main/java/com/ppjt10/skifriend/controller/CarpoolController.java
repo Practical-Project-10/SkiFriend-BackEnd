@@ -53,7 +53,7 @@ public class CarpoolController {
         return ResponseEntity.ok()
                 .body(carpoolResponseDto);
     }
-
+//
     //카풀 게시글 삭제
     @DeleteMapping("/board/carpool/{carpoolId}")
     public void deleteCarpool(@PathVariable Long carpoolId,
