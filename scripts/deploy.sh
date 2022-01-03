@@ -1,5 +1,5 @@
 #!/bin/bash
-REPOSITORY=/home/ubuntu/app/step
+REPOSITORY=/home/ubuntu/app/step/zip
 PROJECT_NAME=SkiFriend-BackEnd
 
 echo "> Build 파일 복사"
