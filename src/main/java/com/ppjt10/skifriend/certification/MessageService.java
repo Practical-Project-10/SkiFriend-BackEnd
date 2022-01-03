@@ -78,7 +78,7 @@ public class MessageService {
         // DB에 발송한 인증번호 저장
         smsCertification.createSmsCertification(phoneNumber, randomNum);
 
-        return "문자 전송이 완료되었습니다.";
+        return "문자 전송이 완료되었습니다. 인증번호는 " + randomNum + " 입니다.";
     }
 
     public void createChatRoomAlert(String phoneNumber, String msg) {
