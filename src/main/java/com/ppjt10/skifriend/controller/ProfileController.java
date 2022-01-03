@@ -16,6 +16,7 @@ public class ProfileController {
     @GetMapping("/profile")
     public String changePort() {
         List<String> profile = Arrays.asList(env.getActiveProfiles());
+        System.out.println("프로파일"+profile);
         List<String> realProfiles = Arrays.asList("real1", "real2");
         String defaultProfile = profile.isEmpty() ? "default" : profile.get(0);
 
