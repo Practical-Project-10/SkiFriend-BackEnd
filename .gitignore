@@ -38,4 +38,5 @@ out/
 
 ### AWS S3 ###
 application.properties
-
+application-real1.properties
+application-real2.properties

@@ -154,8 +154,10 @@ public class UserService {
 
     // 유저 탈퇴
     @Transactional
-    public void deleteUser(Long userId) {
+    public String deleteUser(Long userId) {
         userRepository.deleteById(userId);
+
+        return "회원탈퇴 되었습니다.";
     }
 
     // 내 폰 번호 공개
