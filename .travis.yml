@@ -45,7 +45,7 @@ deploy: # (5)
     bucket: skifriend-ci-bucket # 버킷명
     key: SkiFriend-BackEnd.zip # 빌드 파일을 압축해서 전달
     bundle_type: zip # 압축 확장자
-    application: travis # codeDeploy 애플리케이션 명
+    application: skifriend-ci # codeDeploy 애플리케이션 명
     deployment_group: skifriend-ci-group # 배포 그룹 명
     regoin: ap-northeast-2
     wait-until-deployed: true
