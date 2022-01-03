@@ -1,0 +1,41 @@
+# .travis.yml
+
+language: java
+jdk:
+  - openjdk11
+
+branches:
+  only:
+    - main
+
+# Travis CI 서버의 Home
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+
+before_install:
+  - chmod +x gradlew
+
+script: "./gradlew clean build"
+
+before_deploy:
+  - zip -r SkiFriend-BackEnd *
+  - mkdir -p deploy
+  - mv SkiFriend-BackEnd.zip deploy/SkiFriend-BackEnd.zip
+
+deploy: # (5)
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY # Travis repo setting에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo setting에 설정된 값
+    bucket: skifriend-ci-bucket # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private # zip 파일 접근을 private으로
+    local_dir: deploy
+    wait-until-deployed: true
+
+# CI 실행 완료 시 메일로 알람
+#notifications:
+#  slack:
+#    -
