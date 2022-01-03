@@ -22,7 +22,6 @@
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 //@AutoConfigureMockMvc
 //class ChatRoomControllerTest {
-//
 //    @Autowired
 //    MockMvc mockMvc;
 //
