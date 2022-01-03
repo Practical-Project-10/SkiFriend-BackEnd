@@ -140,7 +140,7 @@ class FreePostControllerTest {
         mockMvc.perform(builder.file(multipartFile1).file(multipartFile2)
                         .header("Authorization", this.token))
                         .andExpect(status().isOk())
-                        .andDo(print());;
+                        .andDo(print());
 
     }
 
@@ -188,8 +188,58 @@ class FreePostControllerTest {
 
     @Test
     @Order(9)
-    @DisplayName("게시글 삭제")
+    @DisplayName("댓글 작성")
     void test9() throws Exception {
+
+        Long postId = 1L;
+
+        String requestDto = objectMapper.writeValueAsString(comment1);
+
+        mockMvc.perform(post("/board/freeBoard/{postId}/comments", postId)
+                        .header("Authorization", this.token)
+                        .content(requestDto)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("댓글 수정")
+    void test10() throws Exception {
+
+        Long commentId = 1L;
+
+        String requestDto = objectMapper.writeValueAsString(comment1);
+
+        mockMvc.perform(put("/board/freeBoard/comments/{commentId}", commentId)
+                        .header("Authorization", this.token)
+                        .content(requestDto)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("댓글 삭제")
+    void test11() throws Exception {
+
+        Long commentId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/comments/{commentId}", commentId)
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("게시글 삭제")
+    void test12() throws Exception {
         Long postId = 1L;
 
         mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
@@ -214,6 +264,10 @@ class FreePostControllerTest {
     private FreePostDto.RequestDto post1 = FreePostDto.RequestDto.builder()
             .title("버민")
             .content("내용")
+            .build();
+
+    private CommentDto.RequestDto comment1 = CommentDto.RequestDto.builder()
+            .content("comment1")
             .build();
 
 }
