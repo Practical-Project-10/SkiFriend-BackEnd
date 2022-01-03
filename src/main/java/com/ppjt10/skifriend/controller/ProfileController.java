@@ -20,7 +20,7 @@ public class ProfileController {
     public String profile() {
         List<String> profiles = Arrays.asList(environment.getActiveProfiles());
         System.out.println("profiles 값 @@@@@@@@@: " + profiles);
-        List<String> realProfiles = Arrays.asList("real", "real1", "real2");
+        List<String> realProfiles = Arrays.asList("real1", "real2");
         String defaultProfile = profiles.isEmpty()? "default" : profiles.get(0);
 
         return profiles.stream()
