@@ -12,6 +12,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_c6ae523503a8_key -iv $encrypted_c6ae523503a8_iv
   -in skifriendproperty.tar.enc -out src/main/resources/skifriendproperty.tar
   -d
+- tar xvf skifriendproperty.tar
 #- openssl aes-256-cbc -K $encrypted_4dcb4773c2b1_key -iv $encrypted_4dcb4773c2b1_iv
 #  -in skifriendproperty.tar.enc -out skifriendproperty.tar -d
 - chmod +x gradlew
