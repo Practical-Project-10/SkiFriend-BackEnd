@@ -1,7 +1,6 @@
 package com.ppjt10.skifriend.redispubsub;
 
-import com.ppjt10.skifriend.dto.ChatMessageDto;
-import com.ppjt10.skifriend.entity.ChatMessage;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -13,7 +12,7 @@ public class RedisPublisher {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic channelTopic;
 
-    public void publish(ChatMessageDto.ResponseDto messageDto) {
+    public void publish(ChatMessageResponseDto messageDto) {
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), messageDto);
 

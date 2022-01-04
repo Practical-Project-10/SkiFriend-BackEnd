@@ -1,6 +1,6 @@
 package com.ppjt10.skifriend.config;
 
-import com.ppjt10.skifriend.dto.ChatMessageDto;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
@@ -52,7 +52,7 @@ public class StompHandler implements ChannelInterceptor {
 
 
             chatMessageService.connectMessage(
-                    ChatMessageDto.RequestDto.builder()
+                    ChatMessageRequestDto.builder()
                             .type(ChatMessage.MessageType.ENTER)
                             .roomId(roomId)
                             .sender(name)
@@ -72,7 +72,7 @@ public class StompHandler implements ChannelInterceptor {
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
-                chatMessageService.connectMessage(ChatMessageDto.RequestDto.builder()
+                chatMessageService.connectMessage(ChatMessageRequestDto.builder()
                         .type(ChatMessage.MessageType.QUIT)
                         .roomId(roomId)
                         .sender(name)
