@@ -46,3 +46,6 @@ deploy:
   deployment_group: skifriend-ci-group
   regoin: ap-northeast-2
   wait-until-deployed: true
+
+notifications:
+  slack: hanghae99:5JgRGVNOSe6wq6NkKtKaYXEH
