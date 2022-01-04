@@ -123,6 +123,12 @@ public class ChatRoomService {
             ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), writerId, senderId, carpoolId);
             chatRoomRepository.save(chatRoom);
 
+            //방 생성시 첫 메시지 강제전송
+            ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, userDetails.getUser(), ":)");
+
+            chatMessageRepository.save(initMsg);
+
+
             redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writerUsername, 0);
 
             //sender 정보
