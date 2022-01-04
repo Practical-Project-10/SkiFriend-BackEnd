@@ -1,8 +1,9 @@
 package com.ppjt10.skifriend.controller;
 
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -68,8 +69,9 @@ public class UserController {
 
     // 내가 쓴 카풀 게시물 불러오기
     @GetMapping("/user/info/carpool")
-    public ResponseEntity<List<CarpoolDto.ResponseDto>> myCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok().body(userService.findMyCarpools(userDetails.getUser()));
+    public ResponseEntity<List<CarpoolResponseDto>> myCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.findMyCarpools(user));
     }
 
     // 채팅 방에서 상대방 프로필 조회하기

@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.service;
 
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolBannerDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolFilterRequestDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.entity.Carpool;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -100,41 +99,39 @@ public class CarpoolService {
         carpoolRepository.deleteById(carpoolId);
     }
 
-    //region 카풀 카테고리 분류
+    //카풀 카테고리 분류
     @Transactional
-    public List<CarpoolResponseDto> sortCarpools(
-            String resortName,
-            CarpoolDto.CategoryRequestDto categoryRequestDto
-    ) {
+    public List<CarpoolResponseDto> sortCarpools(String resortName, CarpoolFilterRequestDto requestDto) {
         List<Carpool> sortedCategories;
-        if (categoryRequestDto.getMemberNum() > 0 && categoryRequestDto.getMemberNum() < 5) {
+        if (requestDto.getMemberNum() > 0 && requestDto.getMemberNum() < 5) {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc
                             (
                                     resortName,
-                                    categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
-                                    categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
-                                    categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
-                                    categoryRequestDto.getDate(), //빈 값은 "" 으로
-                                    categoryRequestDto.getMemberNum() // 빈 값은 숫자 맥스로
+                                    requestDto.getCarpoolType(), //빈 값은 "" 으로
+                                    requestDto.getStartLocation(), //빈 값은 "" 으로
+                                    requestDto.getEndLocation(), //빈 값은 "" 으로
+                                    requestDto.getDate(), //빈 값은 "" 으로
+                                    requestDto.getMemberNum() // 빈 값은 숫자 맥스로
                             );
         } else {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsGreaterThanEqualOrderByCreateAtDesc
                             (
                                     resortName,
-                                    categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
-                                    categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
-                                    categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
-                                    categoryRequestDto.getDate(), //빈 값은 "" 으로
-                                    categoryRequestDto.getMemberNum() // 빈 값은 숫자 맥스로
+                                    requestDto.getCarpoolType(), //빈 값은 "" 으로
+                                    requestDto.getStartLocation(), //빈 값은 "" 으로
+                                    requestDto.getEndLocation(), //빈 값은 "" 으로
+                                    requestDto.getDate(), //빈 값은 "" 으로
+                                    requestDto.getMemberNum() // 빈 값은 숫자 맥스로
                             );
         }
 
-        List<CarpoolResponseDto> categoryResponseDto = sortedCategories.stream()
-                .map(e -> generateCarpoolResponseDto(e))
-                .collect(Collectors.toList());
-        return categoryResponseDto;
+        List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
+        for(Carpool carpool : sortedCategories) {
+            carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
+        }
+        return carpoolResponseDtoList;
     }
 
     //카풀 상태 변경
@@ -148,7 +145,7 @@ public class CarpoolService {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
-        carpool.changeStatus();
+        carpool.setStatus();
     }
 
     //배너정보 내려주기

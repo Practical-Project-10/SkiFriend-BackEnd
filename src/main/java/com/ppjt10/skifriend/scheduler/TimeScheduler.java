@@ -37,7 +37,7 @@ public class TimeScheduler {
         String[] dateTime = currentTime.split(" ");
         List<Carpool> carpoolList = carpoolRepository.findAllByDateAndTime(dateTime[0], dateTime[1]);
         for(Carpool carpool : carpoolList) {
-            carpool.changeStatus();
+            carpool.setStatus();
         }
     }
 

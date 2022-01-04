@@ -1,8 +1,8 @@
 package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.CommentDto;
 import com.ppjt10.skifriend.dto.SignupDto;
+import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import org.junit.Before;
 import org.junit.jupiter.api.*;
@@ -236,17 +236,17 @@ class FreePostControllerTest {
 
     }
 
-//    @Test
-//    @Order(12)
-//    @DisplayName("게시글 삭제")
-//    void test12() throws Exception {
-//        Long postId = 1L;
-//
-//        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
-//                        .header("Authorization", this.token))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
+    @Test
+    @Order(12)
+    @DisplayName("게시글 삭제")
+    void test12() throws Exception {
+        Long postId = 1L;
+
+        mockMvc.perform(delete("/board/freeBoard/{postId}", postId)
+                        .header("Authorization", this.token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
 
     private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
@@ -266,7 +266,7 @@ class FreePostControllerTest {
             .content("내용")
             .build();
 
-    private CommentDto.RequestDto comment1 = CommentDto.RequestDto.builder()
+    private CommentRequestDto comment1 = CommentRequestDto.builder()
             .content("comment1")
             .build();
 
