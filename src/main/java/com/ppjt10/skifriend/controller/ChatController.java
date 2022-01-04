@@ -1,7 +1,9 @@
 package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ppjt10.skifriend.dto.ChatMessageDto;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
@@ -13,10 +15,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.ParseException;
 import java.util.List;
-
 
 @RequiredArgsConstructor
 @Controller
@@ -24,28 +24,21 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final JwtDecoder jwtDecoder;
 
-    //region 해당 방에서 했던 모든 메시지 조회
-    //사용 중
+    // 해당 방에서 했던 모든 메시지 조회
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public ResponseEntity<List<ChatMessageDto.ResponseDto>> getAllMessages(
-            @PathVariable String roomId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<List<ChatMessageResponseDto>> getAllMessages(@PathVariable String roomId,
+                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<ChatMessageDto.ResponseDto> responseDtos = chatMessageService.takeAllChatMessages(roomId, userDetails);
-
-        return ResponseEntity.ok().body(responseDtos);
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(chatMessageService.getAllMessages(roomId, user));
     }
-    //endregion
 
-    //region 채팅방 구독 및 메시지 보내기
-    //사용 중
+    // 채팅방 구독 및 메시지 보내기
     @MessageMapping("/chat/message")
-    public void chatMessage(
-            @Payload ChatMessageDto.RequestDto requestDto,
-            @Header("Authorization") String token
-    ) throws ParseException, JsonProcessingException {
-//        requestDto.setUserCount(redisRepository.getUserCount(requestDto.getRoomId()));
+    public void chatMessage(@Payload ChatMessageRequestDto requestDto,
+                            @Header("Authorization") String token
+    ) {
 
         token = token.substring(7);
 
@@ -53,7 +46,6 @@ public class ChatController {
 
         chatMessageService.sendChatMessage(requestDto);
     }
-    //endregion
 
 
 //    @MessageMapping("/chat/message/img")

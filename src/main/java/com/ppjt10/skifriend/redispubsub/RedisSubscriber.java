@@ -1,11 +1,9 @@
 package com.ppjt10.skifriend.redispubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.ChatMessageDto;
-import com.ppjt10.skifriend.entity.ChatMessage;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ public class RedisSubscriber {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 //            ChatMessage chatMessage = objectMapper.readValue(publishedMessage,ChatMessage.class);
-            ChatMessageDto.ResponseDto responseDto = objectMapper.readValue(publishedMessage,ChatMessageDto.ResponseDto.class);
+            ChatMessageResponseDto responseDto = objectMapper.readValue(publishedMessage,ChatMessageResponseDto.class);
 
             messagingTemplate.convertAndSend("/sub/chat/room/" + responseDto.getRoomId(), responseDto);
         } catch (Exception e) {
