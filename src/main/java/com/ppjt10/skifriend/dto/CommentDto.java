@@ -14,14 +14,5 @@ public class CommentDto {
         private String content;
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ResponseDto{
-        private Long commentId;
-        private String nickname;
-        private String content;
-        private String createdAt;
-    }
+
 }

@@ -1,6 +1,11 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.FreePostDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostDetailResponseDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostHotResponseDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostResponseDto;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.FreePostService;
 import lombok.RequiredArgsConstructor;
@@ -18,82 +23,59 @@ import java.util.List;
 public class FreePostController {
     private final FreePostService freePostService;
 
-    // 핫 게시물 내려주기
-    @GetMapping("/main")
-    public ResponseEntity<List<FreePostDto.HotResponseDto>> takeHotFreePosts() {
-
-        List<FreePostDto.HotResponseDto> responseDtos = freePostService.takeHotFreePosts();
-
-        return ResponseEntity.ok().body(responseDtos);
-    }
 
     //자유게시판 전체 조회
     @GetMapping("/board/freeBoard/{skiResort}")
-    public ResponseEntity<List<FreePostDto.AllResponseDto>> getFreePosts(
-            @PathVariable String skiResort,
-            @RequestParam int page,
-            @RequestParam int size
+    public ResponseEntity<List<FreePostResponseDto>> getFreePosts(@PathVariable String skiResort,
+                                                                  @RequestParam int page,
+                                                                  @RequestParam int size
     ) {
         page = page - 1;
-
-        List<FreePostDto.AllResponseDto> allResponseDtoList = freePostService.getFreePosts(skiResort, page, size);
-
-        return ResponseEntity.ok()
-                .body(allResponseDtoList);
+        return ResponseEntity.ok().body(freePostService.getFreePosts(skiResort, page, size));
     }
 
-    //region 자유 게시판 게시글 작성
+    //자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
-    public ResponseEntity<FreePostDto.AllResponseDto> writeFreePosts(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @PathVariable String skiResort,
-            @RequestPart(value = "requestDto", required = false) FreePostDto.RequestDto requestDto
-    ) throws IOException {
-        System.out.println("requestDto: " + requestDto);
-        System.out.println("img: " + image);
-        FreePostDto.AllResponseDto responseDto = freePostService.uploadFreePosts(userDetails, image, skiResort, requestDto);
-
-        return ResponseEntity.ok().body(responseDto);
-    }
-    //endregion
-
-    //region 자유 게시판 게시글 상세조회
-    @GetMapping("/board/freeBoard/{postId}/detail")
-    public ResponseEntity<FreePostDto.ResponseDto> readFreePost(
-            @PathVariable Long postId
+    public ResponseEntity<FreePostResponseDto> createFreePosts(@RequestPart(value = "image") MultipartFile image,
+                                                               @RequestPart(value = "requestDto") FreePostRequestDto requestDto,
+                                                               @PathVariable String skiResort,
+                                                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-
-        FreePostDto.ResponseDto responseDto = freePostService.getFreePost(postId);
-
-        return ResponseEntity.ok().body(responseDto);
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(freePostService.createFreePosts(image, requestDto, skiResort, user));
     }
-    //endregion
 
-    //region 자유 게시판 게시글 수정
+
+    //자유 게시판 게시글 상세조회
+    @GetMapping("/board/freeBoard/{postId}/detail")
+    public ResponseEntity<FreePostDetailResponseDto> getDetailFreePost(@PathVariable Long postId) {
+        return ResponseEntity.ok().body(freePostService.getDetailFreePost(postId));
+    }
+
+
+    //자유 게시판 게시글 수정
     @PutMapping("/board/freeBoard/{postId}")
-    public ResponseEntity<FreePostDto.AllResponseDto> editFreePost(
-            @PathVariable Long postId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestPart("image") MultipartFile image,
-            @RequestPart("requestDto") FreePostDto.RequestDto requestDto
-    ) throws IOException {
-
-        FreePostDto.AllResponseDto responseDto = freePostService.modifyFreePost(userDetails, requestDto, image, postId);
-
-        return ResponseEntity.ok().body(responseDto);
+    public ResponseEntity<FreePostResponseDto> updateFreePost(@RequestPart("image") MultipartFile image,
+                                                            @RequestPart("requestDto") FreePostRequestDto requestDto,
+                                                            @PathVariable Long postId,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(freePostService.updateFreePost(image, requestDto, postId, user));
     }
-    //endregion
 
-    //region 자유 게시판 게시글 삭제
+    // 자유 게시판 게시글 삭제
     @DeleteMapping("/board/freeBoard/{postId}")
-    public void deleteFreePost(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long postId
-    ) throws UnsupportedEncodingException {
-
-        freePostService.deleteFreePost(userDetails, postId);
-
+    public void deleteFreePost(@PathVariable Long postId,
+                               @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        freePostService.deleteFreePost(postId, user);
     }
-    //endregion
+
+    // 핫 게시물 내려주기
+    @GetMapping("/main")
+    public ResponseEntity<List<FreePostHotResponseDto>> takeHotFreePosts() {
+        return ResponseEntity.ok().body(freePostService.takeHotFreePosts());
+    }
 }
