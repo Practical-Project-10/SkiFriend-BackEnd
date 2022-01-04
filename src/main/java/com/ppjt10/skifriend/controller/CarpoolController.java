@@ -1,12 +1,12 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolBannerDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolFilterRequestDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CarpoolService;
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,9 +72,9 @@ public class CarpoolController {
     //region 카풀 카테고리 분류
     @PostMapping("/board/carpool/{skiResort}/category")
     public ResponseEntity<List<CarpoolResponseDto>> sortCategories(@PathVariable String skiResort,
-                                                                   @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto
+                                                                   @RequestBody CarpoolFilterRequestDto requestDto
     ) {
-        return ResponseEntity.ok().body(carpoolService.sortCarpools(skiResort, categoryRequestDto));
+        return ResponseEntity.ok().body(carpoolService.sortCarpools(skiResort, requestDto));
     }
     //endregion
 

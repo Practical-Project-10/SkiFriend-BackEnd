@@ -1,10 +1,7 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.dto.CommentDto;
-import com.ppjt10.skifriend.time.TimeConversion;
+import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
 import com.ppjt10.skifriend.time.Timestamped;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +32,7 @@ public class Comment extends Timestamped {
         this.content = content;
     }
 
-    public void update(CommentDto.RequestDto requestDto) {
+    public void update(CommentRequestDto requestDto) {
         this.content = requestDto.getContent();
     }
 }

@@ -2,9 +2,9 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -170,10 +169,10 @@ public class UserService {
 
     // 내가 쓴 카풀 게시물 목록 조회
     @Transactional
-    public List<CarpoolDto.ResponseDto> findMyCarpools(User user) {
+    public List<CarpoolResponseDto> findMyCarpools(User user) {
         List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
 
-        List<CarpoolDto.ResponseDto> carpoolListDto = new ArrayList<>();
+        List<CarpoolResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
             carpoolListDto.add(createCarpoolResponseDto(carpool));
         }
@@ -195,8 +194,8 @@ public class UserService {
         return createOtherReponseDto(user);
     }
 
-    private CarpoolDto.ResponseDto createCarpoolResponseDto(Carpool carpool) {
-        return CarpoolDto.ResponseDto.builder()
+    private CarpoolResponseDto createCarpoolResponseDto(Carpool carpool) {
+        return CarpoolResponseDto.builder()
                 .userId(carpool.getUser().getId())
                 .postId(carpool.getId())
                 .nickname(carpool.getUser().getNickname())
