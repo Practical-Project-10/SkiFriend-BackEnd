@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
-
-import com.ppjt10.skifriend.dto.CommentDto;
+import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -13,37 +13,36 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     private final CommentService commentService;
 
-    //region 자유 게시판 게시글 댓글 작성
+    // 자유 게시판 게시글 댓글 작성
     @PostMapping("/board/freeBoard/{postId}/comments")
-    public void writeFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody CommentDto.RequestDto requestDto,
-            @PathVariable Long postId
+    public void createComment(@PathVariable Long postId,
+                              @RequestBody CommentRequestDto requestDto,
+                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.writeComment(userDetails, requestDto, postId);
+        User user = userDetails.getUser();
+        commentService.createComment(postId, requestDto, user);
     }
-    //endregion
 
-    //region 자유 게시판 게시글 댓글 수정
+
+    // 자유 게시판 게시글 댓글 수정
     @PutMapping("/board/freeBoard/comments/{commentId}")
-    public void editFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody CommentDto.RequestDto requestDto,
-            @PathVariable Long commentId
-
+    public void updateComment(@PathVariable Long commentId,
+                              @RequestBody CommentRequestDto requestDto,
+                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.editComment(userDetails, requestDto, commentId);
+        User user = userDetails.getUser();
+        commentService.updateComment(commentId, requestDto, user);
     }
-    //endregion
 
-    //region 자유 게시판 게시글 댓글 삭제
+
+    //자유 게시판 게시글 댓글 삭제
     @DeleteMapping("/board/freeBoard/comments/{commentId}")
-    public void deleteFreePostComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long commentId
+    public void deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        commentService.deleteComment(userDetails, commentId);
+        User user = userDetails.getUser();
+        commentService.deleteComment(commentId, user);
     }
-    //endregion
 
 }

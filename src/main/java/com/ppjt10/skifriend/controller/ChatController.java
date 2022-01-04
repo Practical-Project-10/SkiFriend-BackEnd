@@ -2,10 +2,7 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.dto.ChatMessageDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
-import com.ppjt10.skifriend.repository.RedisRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
-import com.ppjt10.skifriend.security.jwt.HeaderTokenExtractor;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +13,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
