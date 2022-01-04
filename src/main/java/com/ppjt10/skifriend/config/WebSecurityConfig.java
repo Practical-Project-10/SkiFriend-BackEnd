@@ -136,6 +136,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 상세 탭
         skipPathList.add("GET,/main");
+        skipPathList.add("GET,/board/carpool/{skiResort}/banner");
         skipPathList.add("GET,/board/carpool/{skiResort}");
         skipPathList.add("GET,/board/carpool/category");
         skipPathList.add("GET,/board/freeBoard/**");

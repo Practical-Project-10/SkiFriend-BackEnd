@@ -59,4 +59,12 @@ public class CarpoolDto {
         private String date;
     }
 
+    //배너
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class BannerDto {
+        private String resortImg;
+    }
 }

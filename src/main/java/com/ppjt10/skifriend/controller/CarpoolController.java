@@ -78,4 +78,9 @@ public class CarpoolController {
         return ResponseEntity.ok().body(carpoolService.sortCarpools(skiResort, categoryRequestDto));
     }
     //endregion
+
+    @GetMapping("/board/carpool/{skiResort}/banner")
+    public ResponseEntity<CarpoolDto.BannerDto> getBanner(@PathVariable String skiResort){
+        return ResponseEntity.ok().body(carpoolService.getBanner(skiResort));
+    }
 }
