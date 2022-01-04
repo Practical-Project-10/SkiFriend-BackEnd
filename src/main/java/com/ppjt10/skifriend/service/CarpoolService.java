@@ -1,6 +1,9 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolBannerDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
@@ -12,12 +15,10 @@ import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,17 +29,38 @@ public class CarpoolService {
     private final CarpoolRepository carpoolRepository;
     private final SkiResortRepository skiResortRepository;
 
-    //카풀 게시글 작성
+    //카풀 전체 조회
     @Transactional
-    public CarpoolDto.ResponseDto createCarpool(String skiResortName, CarpoolDto.RequestDto requestDto, User user) {
-        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
-
+    public List<CarpoolResponseDto> getCarpools(String skiResortName, int page, int size) {
+        List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+        //해당 스키장의 카풀 정보 리스트 가져오기
+        Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(
+                skiResort,
+                PageRequest.of(page, size)
+        );
+        //Carpool 리스트
+        if (carpoolPage.hasContent()) {
+            for (Carpool carpool : carpoolPage.toList()) {
+                carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
+            }
+        }
+        return carpoolResponseDtoList;
+    }
 
+    //카풀 게시글 작성
+    @Transactional
+    public CarpoolResponseDto createCarpool(String resortName, CarpoolRequestDto requestDto, User user) {
+        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
+
+        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+
         Carpool carpool = new Carpool(user, requestDto, skiResort);
         carpoolRepository.save(carpool);
 
@@ -47,7 +69,7 @@ public class CarpoolService {
 
     //카풀 게시글 수정
     @Transactional
-    public CarpoolDto.ResponseDto updateCarpool(Long carpoolId, CarpoolDto.RequestDto requestDto, Long userid) {
+    public CarpoolResponseDto updateCarpool(Long carpoolId, CarpoolRequestDto requestDto, User user) {
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         DateValidator.validateDateForm(requestDto.getDate());
         TimeValidator.validateTimeForm(requestDto.getTime());
@@ -56,7 +78,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (carpool.getUser().getId() != userid) {
+        if (carpool.getUser() != user) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
@@ -66,12 +88,12 @@ public class CarpoolService {
 
     //카풀 게시글 삭제
     @Transactional
-    public void deleteCarpool(Long carpoolId, Long userid) {
+    public void deleteCarpool(Long carpoolId, User user) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (carpool.getUser().getId() != userid) {
+        if (carpool.getUser() != user) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
@@ -80,8 +102,8 @@ public class CarpoolService {
 
     //region 카풀 카테고리 분류
     @Transactional
-    public List<CarpoolDto.ResponseDto> sortCarpools(
-            String skiResortName,
+    public List<CarpoolResponseDto> sortCarpools(
+            String resortName,
             CarpoolDto.CategoryRequestDto categoryRequestDto
     ) {
         List<Carpool> sortedCategories;
@@ -89,7 +111,7 @@ public class CarpoolService {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc
                             (
-                                    skiResortName,
+                                    resortName,
                                     categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
                                     categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
@@ -100,7 +122,7 @@ public class CarpoolService {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsGreaterThanEqualOrderByCreateAtDesc
                             (
-                                    skiResortName,
+                                    resortName,
                                     categoryRequestDto.getCarpoolType(), //빈 값은 "" 으로
                                     categoryRequestDto.getStartLocation(), //빈 값은 "" 으로
                                     categoryRequestDto.getEndLocation(), //빈 값은 "" 으로
@@ -109,7 +131,7 @@ public class CarpoolService {
                             );
         }
 
-        List<CarpoolDto.ResponseDto> categoryResponseDto = sortedCategories.stream()
+        List<CarpoolResponseDto> categoryResponseDto = sortedCategories.stream()
                 .map(e -> generateCarpoolResponseDto(e))
                 .collect(Collectors.toList());
         return categoryResponseDto;
@@ -117,43 +139,32 @@ public class CarpoolService {
 
     //카풀 상태 변경
     @Transactional
-    public void changeStatus(Long carpoolId, Long userid) {
+    public void changeStatus(Long carpoolId, User user) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (carpool.getUser().getId() != userid) {
+        if (carpool.getUser() != user) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
         carpool.changeStatus();
     }
 
-
-    //카풀 전체 조회
-    public List<CarpoolDto.ResponseDto> getCarpools(String skiResortName, int page, int size) {
-        List<CarpoolDto.ResponseDto> carpoolResponseDtoList = new ArrayList<>();
-        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
-                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+    //배너정보 내려주기
+    @Transactional
+    public CarpoolBannerDto getBanner(String resortName) {
+        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 리조트가 존재하지 않습니다.")
         );
-        //해당 스키장의 카풀 정보 리스트 가져오기
-        Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(
-                skiResort,
-                PageRequest.of(page, size)
-        );
-
-        //Carpool 리스트
-        if (carpoolPage.hasContent()) {
-            for (Carpool carpool : carpoolPage.toList()) {
-                carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
-            }
-        }
-
-        return carpoolResponseDtoList;
+        return CarpoolBannerDto.builder()
+                .resortImg(skiResort.getResortImg())
+                .build();
     }
 
-    private CarpoolDto.ResponseDto generateCarpoolResponseDto(Carpool carpool) {
-        return CarpoolDto.ResponseDto.builder()
+    //CarpoolResponseDto 생성
+    private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
+        return CarpoolResponseDto.builder()
                 .postId(carpool.getId())
                 .userId(carpool.getUser().getId())
                 .nickname(carpool.getUser().getNickname())
@@ -169,17 +180,6 @@ public class CarpoolService {
                 .memberNum(carpool.getMemberNum())
                 .notice(carpool.getNotice())
                 .status(carpool.isStatus())
-                .build();
-    }
-
-    //배너
-    @Transactional
-    public CarpoolDto.BannerDto getBanner(String resortName) {
-        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
-                () -> new IllegalArgumentException("해당 리조트가 존재하지 않습니다.")
-        );
-        return CarpoolDto.BannerDto.builder()
-                .resortImg(skiResort.getResortImg())
                 .build();
     }
 }

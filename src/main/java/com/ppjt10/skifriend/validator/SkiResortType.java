@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.validator;
 
-import java.util.Arrays;
-
 public enum SkiResortType {
     HIGHONE("HighOne"),
     YONGPYONG("YongPyong"),
@@ -18,12 +16,5 @@ public enum SkiResortType {
 
     public String getSkiResortType(){
         return this.skiResortType;
-    }
-
-    public static SkiResortType findBySkiResortType(String type){
-        return Arrays.stream(SkiResortType.values())
-                .filter(e->e.getSkiResortType().equals(type))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 SkiResort Type이 아닙니다."));
     }
 }

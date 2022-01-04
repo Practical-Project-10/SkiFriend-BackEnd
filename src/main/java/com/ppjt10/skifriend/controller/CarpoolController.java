@@ -1,11 +1,13 @@
 package com.ppjt10.skifriend.controller;
 
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolBannerDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.CarpoolService;
 import com.ppjt10.skifriend.dto.CarpoolDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,71 +18,69 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class CarpoolController {
+
     private final CarpoolService carpoolService;
 
     //카풀 게시물 조회
     @GetMapping("/board/carpool/{skiResort}")
-    public ResponseEntity<List<CarpoolDto.ResponseDto>> getCarpools(@PathVariable String skiResort,
-                                                                    @RequestParam int page,
-                                                                    @RequestParam int size
+    public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort,
+                                                                @RequestParam int page,
+                                                                @RequestParam int size
     ) {
         page = page - 1;
-        List<CarpoolDto.ResponseDto> responseDtoList = carpoolService.getCarpools(skiResort, page, size);
-        return ResponseEntity.ok()
-                .body(responseDtoList);
+        return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort, page, size));
     }
 
     //카풀 게시물 작성
     @PostMapping("/board/carpool/{skiResort}")
-    public ResponseEntity<CarpoolDto.ResponseDto> createCarpool(@PathVariable String skiResort,
-                              @RequestBody CarpoolDto.RequestDto requestDto,
-                              @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<CarpoolResponseDto> createCarpool(@PathVariable String skiResort,
+                                                            @RequestBody CarpoolRequestDto requestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        CarpoolDto.ResponseDto carpoolResponseDto = carpoolService.createCarpool(skiResort, requestDto, user);
-        return ResponseEntity.ok()
-                .body(carpoolResponseDto);
+        return ResponseEntity.ok().body(carpoolService.createCarpool(skiResort, requestDto, user));
     }
 
-    //카풀 게시뭏 수정
+    //카풀 게시물 수정
     @PutMapping("/board/carpool/{carpoolId}")
-    public ResponseEntity<CarpoolDto.ResponseDto> updateCarpool(@PathVariable Long carpoolId,
-                              @RequestBody CarpoolDto.RequestDto requestDto,
-                              @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<CarpoolResponseDto> updateCarpool(@PathVariable Long carpoolId,
+                                                            @RequestBody CarpoolRequestDto requestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        CarpoolDto.ResponseDto carpoolResponseDto = carpoolService.updateCarpool(carpoolId, requestDto, user.getId()); // 유저 아이디랑 게시글을 작성한 아이디랑 같은지 비교하는 파트 추가 필요
-        return ResponseEntity.ok()
-                .body(carpoolResponseDto);
+        return ResponseEntity.ok().body(carpoolService.updateCarpool(carpoolId, requestDto, user));
     }
-//
+
     //카풀 게시글 삭제
     @DeleteMapping("/board/carpool/{carpoolId}")
     public void deleteCarpool(@PathVariable Long carpoolId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        carpoolService.deleteCarpool(carpoolId, user.getId());
+        carpoolService.deleteCarpool(carpoolId, user);
     }
 
-    // 카풀 모집 완료 기능
+    // 카풀 모집 완료 상태로 변경
     @PostMapping("/board/carpool/{carpoolId}/status")
-    public void changeStatus(@PathVariable Long carpoolId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        carpoolService.changeStatus(carpoolId, userDetails.getUser().getId());
+    public void changeStatus(@PathVariable Long carpoolId,
+                             @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        carpoolService.changeStatus(carpoolId, user);
     }
 
     //region 카풀 카테고리 분류
     @PostMapping("/board/carpool/{skiResort}/category")
-    public ResponseEntity<List<CarpoolDto.ResponseDto>> sortCategories(
-            @PathVariable String skiResort,
-            @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto
+    public ResponseEntity<List<CarpoolResponseDto>> sortCategories(@PathVariable String skiResort,
+                                                                   @RequestBody CarpoolDto.CategoryRequestDto categoryRequestDto
     ) {
         return ResponseEntity.ok().body(carpoolService.sortCarpools(skiResort, categoryRequestDto));
     }
     //endregion
 
+    //배너
     @GetMapping("/board/carpool/{skiResort}/banner")
-    public ResponseEntity<CarpoolDto.BannerDto> getBanner(@PathVariable String skiResort){
+    public ResponseEntity<CarpoolBannerDto> getBanner(@PathVariable String skiResort) {
         return ResponseEntity.ok().body(carpoolService.getBanner(skiResort));
     }
 }

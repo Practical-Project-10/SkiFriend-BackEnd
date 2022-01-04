@@ -1,6 +1,6 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.dto.CarpoolDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
 import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,7 +53,7 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolDto.RequestDto requestDto, SkiResort skiResort) {
+    public Carpool(User user, CarpoolRequestDto requestDto, SkiResort skiResort) {
         this.user = user;
         this.carpoolType = requestDto.getCarpoolType();
         this.title = requestDto.getTitle();
@@ -68,7 +68,7 @@ public class Carpool extends Timestamped {
         this.status = true;
     }
 
-    public void update(CarpoolDto.RequestDto requestDto) {
+    public void update(CarpoolRequestDto requestDto) {
         this.carpoolType = requestDto.getCarpoolType();
         this.startLocation = requestDto.getStartLocation();
         this.endLocation = requestDto.getEndLocation();
@@ -79,8 +79,8 @@ public class Carpool extends Timestamped {
         this.memberNum = requestDto.getMemberNum();
         this.notice = requestDto.getNotice();
     }
-    
-    public void changeStatus(){
+
+    public void changeStatus() {
         this.status = false;
     }
 }

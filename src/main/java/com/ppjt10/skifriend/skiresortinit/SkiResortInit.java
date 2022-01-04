@@ -7,6 +7,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 @Component
 @RequiredArgsConstructor
 public class SkiResortInit implements ApplicationRunner {
@@ -14,6 +16,7 @@ public class SkiResortInit implements ApplicationRunner {
     private final SkiResortRepository skiResortRepository;
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args) throws Exception {
 
         Boolean isHighOne = skiResortRepository.existsByResortName("HighOne");
