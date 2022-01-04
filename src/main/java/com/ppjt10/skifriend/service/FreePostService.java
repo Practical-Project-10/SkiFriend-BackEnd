@@ -58,19 +58,21 @@ public class FreePostService {
         }
 
         String imageUrl;
-        if (image == null) {
+        if(image == null) {
             imageUrl = "No Post Image";
-        } else {
-            if (!image.isEmpty()) {
+        }
+        else {
+            if(!image.isEmpty()) {
                 try {
                     imageUrl = s3Uploader.upload(image, imageDirName);
                 } catch (Exception err) {
                     imageUrl = "No Post Image";
                 }
-            } else {
+            } else  {
                 imageUrl = "No Post Image";
             }
         }
+
 
 
         FreePost freePost = new FreePost(
@@ -156,22 +158,21 @@ public class FreePostService {
         }
 
         String imageUrl = freePost.getImage();
-        if (!image.isEmpty()) {
-            if (!imageUrl.equals("No Post Image")) {
+        if(!image.isEmpty()) {
+            if(!imageUrl.equals("No Post Image")) {
                 try {
                     String oldImageUrl = URLDecoder.decode(imageUrl.replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(oldImageUrl);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
 
-            if (!image.getOriginalFilename().equals("delete")) {
+            if(!image.getOriginalFilename().equals("delete")) {
                 try {
                     imageUrl = s3Uploader.upload(image, imageDirName);
                 } catch (Exception err) {
                     imageUrl = "No Post Image";
                 }
-            } else {
+            } else{
                 imageUrl = "No Post Image";
             }
         }
@@ -271,7 +272,9 @@ public class FreePostService {
             String skiResortName,
             int page,
             int size
-    ) {
+    )
+    {
+
         List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
 
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
