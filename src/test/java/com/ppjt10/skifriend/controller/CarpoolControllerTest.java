@@ -2,8 +2,9 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.CarpoolDto;
 import com.ppjt10.skifriend.dto.SignupDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
+import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ class CarpoolControllerTest {
             .password("asdf12!!")
             .build();
 
-    private final List<CarpoolDto.ResponseDto> createdCarpools = new ArrayList<>();
+    private final List<CarpoolResponseDto> createdCarpools = new ArrayList<>();
 
     @BeforeEach
     public void setup() {
@@ -103,7 +104,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀 제공")
                 .title("한자리 급구")
                 .startLocation("서울")
@@ -119,14 +120,14 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         String skiResort = "HighOne";
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.postForEntity(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.postForEntity(
                 "/board/carpool/" + skiResort,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        CarpoolDto.ResponseDto carpoolResponse = response.getBody();
+        CarpoolResponseDto carpoolResponse = response.getBody();
         assertNotNull(carpoolResponse);
         assertEquals(carpoolResponse.getPostId(), 1L);
         assertEquals(carpoolResponse.getNickname(), user1.getNickname());
@@ -188,7 +189,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolUpdateRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolUpdateRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀 제공")
                 .title("한자리 급구")
                 .startLocation("대구")
@@ -205,15 +206,15 @@ class CarpoolControllerTest {
 
         String skiResort = "HighOne";
         long carpoolId = 1L;
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.exchange(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.exchange(
                 "/board/carpool/" + carpoolId,
                 HttpMethod.PUT,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        CarpoolDto.ResponseDto carpoolResponse = response.getBody();
+        CarpoolResponseDto carpoolResponse = response.getBody();
         assertNotNull(carpoolResponse);
         assertEquals(carpoolResponse.getPostId(), 1L);
         assertEquals(carpoolResponse.getNickname(), user1.getNickname());
@@ -233,11 +234,11 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(headers);
 
         long carpoolId = 1L;
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.exchange(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.exchange(
                 "/board/carpool/" + carpoolId,
                 HttpMethod.DELETE,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -250,7 +251,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀")
                 .title("한자리 급구")
                 .startLocation("서울")
@@ -266,10 +267,10 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         String skiResort = "HighOne";
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.postForEntity(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.postForEntity(
                 "/board/carpool/" + skiResort,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertTrue(
@@ -285,7 +286,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀 제공")
                 .startLocation("서울")
                 .endLocation("하이원")
@@ -300,10 +301,10 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         String skiResort = "HighOne";
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.postForEntity(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.postForEntity(
                 "/board/carpool/" + skiResort,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertTrue(
@@ -319,7 +320,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀 제공")
                 .title("한자리 급구")
                 .startLocation("서울")
@@ -335,10 +336,10 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         String skiResort = "HighOne";
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.postForEntity(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.postForEntity(
                 "/board/carpool/" + skiResort,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertTrue(
@@ -354,7 +355,7 @@ class CarpoolControllerTest {
 
         headers.set("Authorization", token);
 
-        CarpoolDto.RequestDto carpoolRequest = CarpoolDto.RequestDto.builder()
+        CarpoolRequestDto carpoolRequest = CarpoolRequestDto.builder()
                 .carpoolType("카풀 제공")
                 .title("한자리 급구")
                 .startLocation("서울")
@@ -370,10 +371,10 @@ class CarpoolControllerTest {
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
         String skiResort = "HighOne";
-        ResponseEntity<CarpoolDto.ResponseDto> response = restTemplate.postForEntity(
+        ResponseEntity<CarpoolResponseDto> response = restTemplate.postForEntity(
                 "/board/carpool/" + skiResort,
                 request,
-                CarpoolDto.ResponseDto.class);
+                CarpoolResponseDto.class);
 
         //then
         assertTrue(
@@ -381,8 +382,6 @@ class CarpoolControllerTest {
                         || response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
-
-
 
     @Getter
     @Setter

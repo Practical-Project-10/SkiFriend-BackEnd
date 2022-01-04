@@ -78,7 +78,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (carpool.getUser() != user) {
+        if (!carpool.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
@@ -93,7 +93,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (carpool.getUser() != user) {
+        if (!carpool.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
