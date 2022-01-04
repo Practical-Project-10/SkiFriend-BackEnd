@@ -16,7 +16,11 @@ public class SkiResort {
     @Column(nullable = false, unique = true)
     private String resortName;
 
-    public SkiResort(String resortName){
+    @Column(nullable = false, unique = true)
+    private String resortImg;
+
+    public SkiResort(String resortName, String resortImg){
         this.resortName = resortName;
+        this.resortImg = resortImg;
     }
 }
