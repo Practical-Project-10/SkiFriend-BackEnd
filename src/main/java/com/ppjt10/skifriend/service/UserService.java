@@ -57,10 +57,10 @@ public class UserService {
                 String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                 user.setProfileImg(profileImgUrl);
             } catch (Exception e) {
-                user.setProfileImg("No Post Image");
+                user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
             }
         } else {
-            user.setProfileImg("No Post Image");
+            user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
@@ -94,8 +94,6 @@ public class UserService {
         user.update(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
-        System.out.println("Original파일이름!!!!!!! : " + profileImg.getOriginalFilename());
-        System.out.println("name파일이름!!!!!!! : " + profileImg.getName());
         if (!profileImg.isEmpty()) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
             if (!user.getProfileImg().equals("No Post Image")) {
@@ -110,10 +108,10 @@ public class UserService {
                     String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                     user.setProfileImg(profileImgUrl);
                 } catch (Exception e) {
-                    user.setProfileImg("No Post Image");
+                    user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
                 }
             } else {
-                user.setProfileImg("No Post Image");
+                user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
             }
         }
 

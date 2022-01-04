@@ -53,17 +53,7 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.phoneNum = requestDto.getPhoneNum();
         this.password = enPassword;
-    }
-
-    public User(UserDto.RequestDto requestDto, String enPassword){
-        this.username = requestDto.getUsername();
-        this.nickname = requestDto.getNickname();
-        this.phoneNum = requestDto.getPhoneNum();
-        this.password = enPassword;
-        this.gender = requestDto.getGender();
-        this.ageRange = requestDto.getAgeRange();
-        this.career = requestDto.getCareer();
-        this.selfIntro = requestDto.getSelfIntro();
+        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png";
     }
 
     public void setProfileImg(String imgPath){
