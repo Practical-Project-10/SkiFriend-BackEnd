@@ -1,8 +1,7 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.dto.FreePostDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import com.ppjt10.skifriend.time.Timestamped;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,7 +38,7 @@ public class FreePost extends Timestamped {
     @Column
     private int commentCnt;
 
-    public void update(FreePostDto.RequestDto requestDto, String image) {
+    public void update(FreePostRequestDto requestDto, String image) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.Image = image;

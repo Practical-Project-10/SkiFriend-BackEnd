@@ -2,8 +2,8 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.CommentDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
 import com.ppjt10.skifriend.dto.SignupDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -261,7 +261,7 @@ class FreePostControllerTest {
             .password("asdf12!!")
             .build();
 
-    private FreePostDto.RequestDto post1 = FreePostDto.RequestDto.builder()
+    private FreePostRequestDto post1 = FreePostRequestDto.builder()
             .title("버민")
             .content("내용")
             .build();

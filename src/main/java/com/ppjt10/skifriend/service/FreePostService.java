@@ -2,18 +2,17 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.CommentDto;
-import com.ppjt10.skifriend.dto.FreePostDto;
-import com.ppjt10.skifriend.dto.LikesDto;
-import com.ppjt10.skifriend.entity.Comment;
-import com.ppjt10.skifriend.entity.FreePost;
-import com.ppjt10.skifriend.entity.Likes;
-import com.ppjt10.skifriend.entity.SkiResort;
+import com.ppjt10.skifriend.dto.commentdto.CommentResponseDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostDetailResponseDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostHotResponseDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
+import com.ppjt10.skifriend.dto.freepostdto.FreePostResponseDto;
+import com.ppjt10.skifriend.dto.likeDto.LikesResponseDto;
+import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.CommentRepository;
 import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.repository.LikesRepository;
 import com.ppjt10.skifriend.repository.SkiResortRepository;
-import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,139 +37,119 @@ public class FreePostService {
     private final SkiResortRepository skiResortRepository;
     private final CommentRepository commentRepository;
 
-    //region 자유 게시판 게시글 작성
+    //자유게시글 전체 조회
     @Transactional
-    public FreePostDto.AllResponseDto uploadFreePosts(
-            UserDetailsImpl userDetails,
-            MultipartFile image,
-            String resortName,
-            FreePostDto.RequestDto requestDto
-    ) throws IOException {
-//        SkiResortType.findBySkiResortType(skiResort);
+    public List<FreePostResponseDto> getFreePosts(String resortName, int page, int size) {
+        List<FreePostResponseDto> freePostResponseDtoList = new ArrayList<>();
+
         SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
-        if (userDetails == null) {
-            throw new IllegalArgumentException("회원가입 후 이용해주세요.");
-        }
+        //해당 스키장의 자유게시글 리스트 가져오기
+        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(
+                skiResort,
+                PageRequest.of(page, size)
+        );
 
-        String imageUrl;
-        if(image == null) {
-            imageUrl = "No Post Image";
-        }
-        else {
-            if(!image.isEmpty()) {
-                try {
-                    imageUrl = s3Uploader.upload(image, imageDirName);
-                } catch (Exception err) {
-                    imageUrl = "No Post Image";
-                }
-            } else  {
-                imageUrl = "No Post Image";
+        //게시글 리스트
+        if (freePostPage.hasContent()) {
+            for (FreePost freePost : freePostPage.toList()) {
+                freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
             }
         }
+        return freePostResponseDtoList;
+    }
 
-
-
-        FreePost freePost = new FreePost(
-                userDetails.getUser(),
-                skiResort,
-                requestDto.getTitle(),
-                requestDto.getContent(),
-                imageUrl
+    //자유 게시판 게시글 작성
+    @Transactional
+    public FreePostResponseDto createFreePosts(MultipartFile image,
+                                               FreePostRequestDto requestDto,
+                                               String resortName,
+                                               User user
+    ) {
+        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+
+        String imageUrl;
+
+        if (!image.isEmpty()) {
+            try {
+                imageUrl = s3Uploader.upload(image, imageDirName);
+            } catch (Exception err) {
+                imageUrl = "No Post Image";
+            }
+        } else {
+            imageUrl = "No Post Image";
+        }
+
+        FreePost freePost = new FreePost(user, skiResort, requestDto.getTitle(), requestDto.getContent(), imageUrl);
 
         freePostRepository.save(freePost);
 
         return generateFreePostResponseDto(freePost);
 
     }
-    //endregion
 
-    //region 자유 게시판 게시글 상세 조회
+    //자유 게시판 게시글 상세 조회
     @Transactional
-    public FreePostDto.ResponseDto getFreePost(
-            Long postId
+    public FreePostDetailResponseDto getDetailFreePost(Long postId) {
+
+        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+        );
+
+        List<Likes> likesList = likesRepository.findAllByFreePostId(postId);
+        List<LikesResponseDto> likesResponseDtoList = new ArrayList<>();
+        for (Likes likes : likesList) {
+            likesResponseDtoList.add(generateLikesResponseDto(likes));
+        }
+
+        List<Comment> commentList = commentRepository.findAllByFreePostId(postId);
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        for (Comment comment : commentList) {
+            commentResponseDtoList.add(generateCommentResponseDto(comment));
+        }
+
+        return generateFreePostDetailResponseDto(freePost, likesResponseDtoList, commentResponseDtoList);
+    }
+
+    // 자유 게시판 게시글 수정
+    @Transactional
+    public FreePostResponseDto updateFreePost(MultipartFile image,
+                                              FreePostRequestDto requestDto,
+                                              Long postId,
+                                              User user
     ) {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
+        );
 
-        List<Likes> likes = likesRepository.findAllByFreePostId(postId);
-
-        List<LikesDto.ResponseDto> likesResponseDtoList = likes.stream()
-                .map(e -> toLikesResponseDto(e))
-                .collect(Collectors.toList());
-
-        List<Comment> comments = commentRepository.findAllByFreePostId(postId);
-
-        List<CommentDto.ResponseDto> commentResponseDtoList = comments.stream()
-                .map(e -> toCommentResponseDto(e))
-                .collect(Collectors.toList());
-
-        FreePostDto.ResponseDto freeResponseDto = FreePostDto.ResponseDto.builder()
-                .postId(postId)
-                .nickname(freePost.getUser().getNickname())
-                .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
-                .title(freePost.getTitle())
-                .content(freePost.getContent())
-                .image(freePost.getImage())
-                .likeCnt(freePost.getLikeCnt())
-                .commentCnt(freePost.getCommentCnt())
-                .likesDtoList(likesResponseDtoList)
-                .commentDtoList(commentResponseDtoList)
-                .build();
-
-        return freeResponseDto;
-    }
-
-    private LikesDto.ResponseDto toLikesResponseDto(Likes likes) {
-        return LikesDto.ResponseDto.builder()
-                .userId(likes.getUser().getId())
-                .build();
-    }
-
-    private CommentDto.ResponseDto toCommentResponseDto(Comment comment) {
-        return CommentDto.ResponseDto.builder()
-                .commentId(comment.getId())
-                .nickname(comment.getUser().getNickname())
-                .content(comment.getContent())
-                .createdAt(TimeConversion.timePostConversion(comment.getCreateAt()))
-                .build();
-    }
-    //endregion
-
-    //region 자유 게시판 게시글 수정
-    @Transactional
-    public FreePostDto.AllResponseDto modifyFreePost(
-            UserDetailsImpl userDetails,
-            FreePostDto.RequestDto requestDto,
-            MultipartFile image,
-            Long postId
-    ) throws IOException {
-        FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
-
-        if (userDetails.getUser().getId() != freePost.getUser().getId()) {
+        if (!user.getId().equals(freePost.getUser().getId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
         String imageUrl = freePost.getImage();
-        if(!image.isEmpty()) {
-            if(!imageUrl.equals("No Post Image")) {
+        // 수정하려는 이미지가 빈 값이 아닐 때
+        if (!image.isEmpty()) {
+            // 이전에 업로드된 이미지가 존재할 경우 삭제
+            if (!imageUrl.equals("No Post Image")) {
                 try {
                     String oldImageUrl = URLDecoder.decode(imageUrl.replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(oldImageUrl);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
 
-            if(!image.getOriginalFilename().equals("delete")) {
+            // 수정하려는 이미지가 delete가 아닐 때
+            if (!image.getOriginalFilename().equals("delete")) {
                 try {
                     imageUrl = s3Uploader.upload(image, imageDirName);
                 } catch (Exception err) {
                     imageUrl = "No Post Image";
                 }
-            } else{
+            } else {
                 imageUrl = "No Post Image";
             }
         }
@@ -181,57 +158,62 @@ public class FreePostService {
 
         return generateFreePostResponseDto(freePost);
     }
-    //endregion
 
-    //region 자유 게시판 게시글 삭제
+    //자유 게시판 게시글 삭제
     @Transactional
-    public void deleteFreePost(
-            UserDetailsImpl userDetails,
-            Long postId
-    ) throws UnsupportedEncodingException {
+    public void deleteFreePost(Long postId, User user)  {
+
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
-        if (userDetails.getUser().getId() != freePost.getUser().getId()) {
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
+        );
+
+        if (!user.getId().equals(freePost.getUser().getId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
-        String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-        s3Uploader.deleteFromS3(oldImageUrl);
+
+        try{
+            String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldImageUrl);
+        } catch (Exception exception){
+        }
+
         commentRepository.deleteAllByFreePostId(postId);
         likesRepository.deleteAllByFreePostId(postId);
         freePostRepository.deleteById(postId);
     }
-    //endregion
 
-    //region HOT게시물 가져오기
+    // HOT게시물 가져오기
     @Transactional
-    public List<FreePostDto.HotResponseDto> takeHotFreePosts() {
-        FreePost highOne = extractHotFreePost(SkiResortType.HIGHONE.getSkiResortType());
-        FreePost yongPyong = extractHotFreePost(SkiResortType.YONGPYONG.getSkiResortType());
-        FreePost vivaldi = extractHotFreePost(SkiResortType.VIVALDIPARK.getSkiResortType());
-        FreePost phoenix = extractHotFreePost(SkiResortType.PHOENIX.getSkiResortType());
-        FreePost wellihilli = extractHotFreePost(SkiResortType.WELLIHILLIPARK.getSkiResortType());
-        FreePost konJiam = extractHotFreePost(SkiResortType.KONJIAM.getSkiResortType());
+    public List<FreePostHotResponseDto> takeHotFreePosts() {
+        FreePost hotHighOne = extractHotFreePost(SkiResortType.HIGHONE.getSkiResortType());
+        FreePost hotYongPyong = extractHotFreePost(SkiResortType.YONGPYONG.getSkiResortType());
+        FreePost hotVivaldi = extractHotFreePost(SkiResortType.VIVALDIPARK.getSkiResortType());
+        FreePost hotPhoenix = extractHotFreePost(SkiResortType.PHOENIX.getSkiResortType());
+        FreePost hotWellihilli = extractHotFreePost(SkiResortType.WELLIHILLIPARK.getSkiResortType());
+        FreePost hotKonJiam = extractHotFreePost(SkiResortType.KONJIAM.getSkiResortType());
         List<FreePost> populatedResortPosts = new ArrayList<>();
-        exceptionProcessHotFreePost(populatedResortPosts, highOne);
-        exceptionProcessHotFreePost(populatedResortPosts, yongPyong);
-        exceptionProcessHotFreePost(populatedResortPosts, vivaldi);
-        exceptionProcessHotFreePost(populatedResortPosts, phoenix);
-        exceptionProcessHotFreePost(populatedResortPosts, wellihilli);
-        exceptionProcessHotFreePost(populatedResortPosts, konJiam);
-        List<FreePostDto.HotResponseDto> resortTabDtoList = populatedResortPosts.stream()
-                .map(e -> toHotResponseDto(e))
-                .collect(Collectors.toList());
-        return resortTabDtoList;
+        exceptionProcessHotFreePost(populatedResortPosts, hotHighOne);
+        exceptionProcessHotFreePost(populatedResortPosts, hotYongPyong);
+        exceptionProcessHotFreePost(populatedResortPosts, hotVivaldi);
+        exceptionProcessHotFreePost(populatedResortPosts, hotPhoenix);
+        exceptionProcessHotFreePost(populatedResortPosts, hotWellihilli);
+        exceptionProcessHotFreePost(populatedResortPosts, hotKonJiam);
+
+        List<FreePostHotResponseDto> freePostHotResponseDtoList = new ArrayList<>();
+        for(FreePost freePost : populatedResortPosts) {
+            freePostHotResponseDtoList.add(generateFreePostHotResponseDto(freePost));
+        }
+        return freePostHotResponseDtoList;
     }
 
     // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
-    private FreePost extractHotFreePost(String skiResort) {
+    private FreePost extractHotFreePost(String resortName) {
         try {
-            SkiResort foundSkiResort = skiResortRepository.findByResortName(skiResort).orElseThrow(
+            SkiResort foundSkiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 skiResort가 없습니다")
             );
             Long skiResortId = foundSkiResort.getId();
-            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(3), skiResortId);
+            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(12), skiResortId);
             HashMap<Long, Integer> duplicatedCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
                 Long postId = likes.getFreePost().getId();
@@ -256,8 +238,9 @@ public class FreePostService {
         }
     }
 
-    private FreePostDto.HotResponseDto toHotResponseDto(FreePost freePost) {
-        return FreePostDto.HotResponseDto.builder()
+    // FreePostHotResponseDto 생성
+    private FreePostHotResponseDto generateFreePostHotResponseDto(FreePost freePost) {
+        return FreePostHotResponseDto.builder()
                 .postId(freePost.getId())
                 .title(freePost.getTitle())
                 .skiResort(freePost.getSkiResort().getResortName())
@@ -267,37 +250,9 @@ public class FreePostService {
                 .build();
     }
 
-    //자유게시글 전체 조회
-    public List<FreePostDto.AllResponseDto> getFreePosts(
-            String skiResortName,
-            int page,
-            int size
-    )
-    {
-
-        List<FreePostDto.AllResponseDto> freePostResponseDtoList = new ArrayList<>();
-
-        SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
-                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
-        );
-
-        //해당 스키장의 자유게시글 리스트 가져오기
-        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(
-                skiResort,
-                PageRequest.of(page, size)
-        );
-
-        //게시글 리스트
-        if (freePostPage.hasContent()) {
-            for (FreePost freePost : freePostPage.toList()) {
-                freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
-            }
-        }
-        return freePostResponseDtoList;
-    }
-
-    private FreePostDto.AllResponseDto generateFreePostResponseDto(FreePost freePost) {
-        return FreePostDto.AllResponseDto.builder()
+    // FreePostResponseDto 생성
+    private FreePostResponseDto generateFreePostResponseDto(FreePost freePost) {
+        return FreePostResponseDto.builder()
                 .postId(freePost.getId())
                 .userId(freePost.getUser().getId())
                 .nickname(freePost.getUser().getNickname())
@@ -307,5 +262,40 @@ public class FreePostService {
                 .commentCnt(freePost.getCommentCnt())
                 .build();
     }
-    //endregion
+
+    // LikesResponseDto 생성
+    private LikesResponseDto generateLikesResponseDto(Likes likes) {
+        return LikesResponseDto.builder()
+                .userId(likes.getUser().getId())
+                .build();
+    }
+
+    // CommentResponseDto 생성
+    private CommentResponseDto generateCommentResponseDto(Comment comment) {
+        return CommentResponseDto.builder()
+                .commentId(comment.getId())
+                .nickname(comment.getUser().getNickname())
+                .content(comment.getContent())
+                .createdAt(TimeConversion.timePostConversion(comment.getCreateAt()))
+                .build();
+    }
+
+    // FreePostDetailResponseDto 생성
+    private FreePostDetailResponseDto generateFreePostDetailResponseDto(FreePost freePost,
+                                                                        List<LikesResponseDto> likesResponseDtoList,
+                                                                        List<CommentResponseDto> commentResponseDtoList
+    ) {
+        return FreePostDetailResponseDto.builder()
+                .postId(freePost.getId())
+                .nickname(freePost.getUser().getNickname())
+                .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
+                .title(freePost.getTitle())
+                .content(freePost.getContent())
+                .image(freePost.getImage())
+                .likeCnt(freePost.getLikeCnt())
+                .commentCnt(freePost.getCommentCnt())
+                .likesDtoList(likesResponseDtoList)
+                .commentDtoList(commentResponseDtoList)
+                .build();
+    }
 }

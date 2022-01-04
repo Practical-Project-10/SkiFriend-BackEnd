@@ -7,12 +7,6 @@ import lombok.NoArgsConstructor;
 
 
 public class LikesDto {
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ResponseDto{
-        private Long userId;
-    }
+
 
 }
