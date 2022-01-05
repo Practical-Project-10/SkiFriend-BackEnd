@@ -125,7 +125,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         // 회원 관리 API 허용
-        skipPathList.add("POST,/user/test/signup");
         skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/signup/idcheck");
         skipPathList.add("POST,/user/signup/nicknamecheck");
@@ -138,7 +137,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/main");
         skipPathList.add("GET,/board/carpool/{skiResort}/banner");
         skipPathList.add("GET,/board/carpool/{skiResort}");
-        skipPathList.add("GET,/board/carpool/category");
+        skipPathList.add("POST,/board/carpool/{skiResort}/category");
         skipPathList.add("GET,/board/freeBoard/**");
         skipPathList.add("GET,/skiResort/{skiResort}");
 
@@ -146,7 +145,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/webjars/**");
         skipPathList.add("GET,/ws-stomp/**");
         skipPathList.add("GET,/chat/room");
-//        skipPathList.add("POST,/chat/**");
         skipPathList.add("GET,/chat/user");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
