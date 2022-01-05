@@ -72,7 +72,7 @@ public class FreePostService {
 
         String imageUrl;
 
-        if (!image.isEmpty()) {
+        if (image != null) {
             try {
                 imageUrl = s3Uploader.upload(image, imageDirName);
             } catch (Exception err) {
@@ -104,7 +104,7 @@ public class FreePostService {
             likesResponseDtoList.add(generateLikesResponseDto(likes));
         }
 
-        List<Comment> commentList = commentRepository.findAllByFreePostId(postId);
+        List<Comment> commentList = commentRepository.findAllByFreePostIdOrderByCreateAtDesc(postId);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
         for (Comment comment : commentList) {
             commentResponseDtoList.add(generateCommentResponseDto(comment));
@@ -130,7 +130,7 @@ public class FreePostService {
 
         String imageUrl = freePost.getImage();
         // 수정하려는 이미지가 빈 값이 아닐 때
-        if (!image.isEmpty()) {
+        if (image != null) {
             // 이전에 업로드된 이미지가 존재할 경우 삭제
             if (!imageUrl.equals("No Post Image")) {
                 try {

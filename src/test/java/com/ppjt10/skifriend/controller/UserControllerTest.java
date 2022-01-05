@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
 
@@ -133,13 +134,9 @@ class UserControllerTest {
             headers.set("Authorization", token);
 
             String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "10대", "초보", "hihihi"));
-            MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
-            MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
 
             ResultActions resultActions = mockMvc.perform(multipart("/user/profile")
-                            .file(file1)
-                            .file(file2)
                             .file(file3).headers(headers)
                             .accept(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8"))
@@ -155,13 +152,9 @@ class UserControllerTest {
             headers.set("Authorization", token);
 
             String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남자", "10대", "초보", "hihihi"));
-            MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
-            MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
 
             ResultActions resultActions = mockMvc.perform(multipart("/user/profile")
-                            .file(file1)
-                            .file(file2)
                             .file(file3).headers(headers)
                             .accept(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8"))
@@ -177,13 +170,9 @@ class UserControllerTest {
             headers.set("Authorization", token);
 
             String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "십대", "초보", "hihihi"));
-            MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
-            MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
 
             ResultActions resultActions = mockMvc.perform(multipart("/user/profile")
-                            .file(file1)
-                            .file(file2)
                             .file(file3).headers(headers)
                             .accept(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8"))
@@ -199,13 +188,9 @@ class UserControllerTest {
             headers.set("Authorization", token);
 
             String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "10대", "신입", "hihihi"));
-            MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
-            MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
 
             ResultActions resultActions = mockMvc.perform(multipart("/user/profile")
-                            .file(file1)
-                            .file(file2)
                             .file(file3).headers(headers)
                             .accept(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8"))
@@ -222,29 +207,21 @@ class UserControllerTest {
             @Test
             @DisplayName("프로필 수정 성공")
             void test8() throws Exception {
-                headers.set("Authorization", token);
 
-                String content = objectMapper.writeValueAsString(new UserProfileUpdateDto("diddl99!", "avdkd", "초보", "hello world!"));
-                MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
-                MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
-                MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
+                String content = objectMapper.writeValueAsString(updateDto);
 
-                MockMultipartHttpServletRequestBuilder builder = multipart("/user/info");
-                builder.with(request -> {
-                    request.setMethod("PUT");
-                    return request;
+                MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/user/info");
+
+                builder.with(request1 -> {
+                    request1.setMethod("PUT");
+                    return request1;
                 });
 
-                ResultActions resultActions = mockMvc.perform(builder
-                                .file(file1)
-                                .file(file2)
-                                .file(file3).headers(headers)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .characterEncoding("UTF-8"))
+                MockMultipartFile multipartFile3 = new MockMultipartFile("requestDto", "", "application/json", content.getBytes());
+                mockMvc.perform(builder.file(multipartFile3)
+                                .header("Authorization", token))
                         .andExpect(status().isOk())
                         .andDo(print());
-
-                System.out.println(resultActions);
             }
 
             @Test
@@ -269,6 +246,12 @@ class UserControllerTest {
             }
         }
     }
+
+    private UserProfileUpdateDto updateDto = UserProfileUpdateDto.builder()
+            .nickname("asdf")
+            .career("초보")
+            .selfIntro("안냥")
+            .build();
 
     @Getter
     @Setter

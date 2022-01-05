@@ -28,9 +28,9 @@ public class UserController {
 
     // 유저 프로필 작성
     @PostMapping("/user/profile")
-    public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
-                                                             @RequestPart("vacImg") MultipartFile vacImg,
-                                                             @RequestPart("requestDto") UserProfileRequestDto requestDto,
+    public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
+                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
+                                                             @RequestPart(value = "requestDto") UserProfileRequestDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
@@ -46,13 +46,14 @@ public class UserController {
 
     // 유저 정보 수정하기
     @PutMapping("/user/info")
-    public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
-                                                             @RequestPart("vacImg") MultipartFile vacImg,
-                                                             @RequestPart("requestDto") UserProfileUpdateDto requestDto,
+    public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
+                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
+                                                             @RequestPart(value = "requestDto") UserProfileUpdateDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.updateUserProfile(profileImg, vacImg, requestDto, user));
+        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, vacImg, requestDto, user);
+        return ResponseEntity.ok().body(userResponseDto);
     }
 
     // 유저 삭제하기(회원 탈퇴)

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -32,8 +33,8 @@ public class FreePostController {
 
     //자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
-    public ResponseEntity<FreePostResponseDto> createFreePosts(@RequestPart(value = "image") MultipartFile image,
-                                                               @RequestPart(value = "requestDto") FreePostRequestDto requestDto,
+    public ResponseEntity<FreePostResponseDto> createFreePosts(@RequestPart(value = "image", required = false) MultipartFile image,
+                                                               @RequestPart(value = "requestDto", required = false) FreePostRequestDto requestDto,
                                                                @PathVariable String skiResort,
                                                                @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -51,10 +52,10 @@ public class FreePostController {
 
     //자유 게시판 게시글 수정
     @PutMapping("/board/freeBoard/{postId}")
-    public ResponseEntity<FreePostResponseDto> updateFreePost(@RequestPart("image") MultipartFile image,
-                                                            @RequestPart("requestDto") FreePostRequestDto requestDto,
-                                                            @PathVariable Long postId,
-                                                            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<FreePostResponseDto> updateFreePost(@RequestPart(value = "image", required = false) MultipartFile image,
+                                                              @RequestPart(value = "requestDto", required = false) FreePostRequestDto requestDto,
+                                                              @PathVariable Long postId,
+                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
         return ResponseEntity.ok().body(freePostService.updateFreePost(image, requestDto, postId, user));
