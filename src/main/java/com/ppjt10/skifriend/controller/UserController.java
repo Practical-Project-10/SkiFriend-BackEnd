@@ -1,8 +1,8 @@
 package com.ppjt10.skifriend.controller;
 
-import com.ppjt10.skifriend.dto.SignupDto;
-import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
+import com.ppjt10.skifriend.dto.userdto.*;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.UserService;
@@ -21,64 +21,71 @@ public class UserController {
 
     // 유저 핸드폰 번호 공개하기
     @GetMapping("/user/info/phoneNum")
-    public ResponseEntity<SignupDto.PhoneNumDto> getPhoneNum(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok().body(userService.getPhoneNum(userDetails.getUser().getId()));
+    public ResponseEntity<SignupPhoneNumDto> getPhoneNum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.getPhoneNum(user));
     }
 
     // 유저 프로필 작성
     @PostMapping("/user/profile")
-    public ResponseEntity<UserDto.ResponseDto> writeUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
-                                                                @RequestPart("vacImg") MultipartFile vacImg,
-                                                                @RequestPart("requestDto") UserDto.ProfileRequestDto requestDto,
-                                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
-
-        return ResponseEntity.ok().body(userService.writeUserProfile(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
+    public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
+                                                             @RequestPart("vacImg") MultipartFile vacImg,
+                                                             @RequestPart("requestDto") UserProfileRequestDto requestDto,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.createUserProfile(profileImg, vacImg, requestDto, user));
     }
 
     // 유저 정보 조회하기
     @GetMapping("/user/info")
-    public ResponseEntity<UserDto.ResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok().body(userService.getUserInfo(userDetails.getUser().getId()));
-    }
-
-    // 비밀번호 수정하기
-    @PutMapping("/user/info/password")
-    public void updatePassword(
-            @RequestBody UserDto.PasswordDto passwordDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ){
-        userService.updatePassword(passwordDto, userDetails.getUser().getId());
+    public ResponseEntity<UserResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.getUserProfile(user));
     }
 
     // 유저 정보 수정하기
     @PutMapping("/user/info")
-    public ResponseEntity<UserDto.ResponseDto> updateUserInfo(@RequestPart("profileImg") MultipartFile profileImg,
-                                                              @RequestPart("vacImg") MultipartFile vacImg,
-                                                              @RequestPart("requestDto") UserDto.UpdateRequestDto requestDto,
-                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        return ResponseEntity.ok().body(userService.updateUserInfo(profileImg, vacImg, requestDto, userDetails.getUser().getId()));
+    public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart("profileImg") MultipartFile profileImg,
+                                                             @RequestPart("vacImg") MultipartFile vacImg,
+                                                             @RequestPart("requestDto") UserProfileUpdateDto requestDto,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.updateUserProfile(profileImg, vacImg, requestDto, user));
     }
 
     // 유저 삭제하기(회원 탈퇴)
     @DeleteMapping("/user/info")
-    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok().body(userService.deleteUser(userDetails.getUser().getId()));
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.deleteUser(user));
+    }
+
+    // 비밀번호 수정하기
+    @PutMapping("/user/info/password")
+    public void updatePassword(@RequestBody UserPasswordUpdateDto passwordDto,
+                               @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        userService.updatePassword(passwordDto, user);
     }
 
     // 내가 쓴 카풀 게시물 불러오기
     @GetMapping("/user/info/carpool")
-    public ResponseEntity<List<CarpoolResponseDto>> myCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<List<CarpoolResponseDto>> getMyCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.findMyCarpools(user));
+        return ResponseEntity.ok().body(userService.getMyCarpools(user));
     }
 
     // 채팅 방에서 상대방 프로필 조회하기
     @GetMapping("/user/introduction/{longRoomId}")
-    public ResponseEntity<UserDto.OtherResponseDto> getOtherProfile(
-            @PathVariable Long longRoomId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, userDetails.getUser().getId()));
+    public ResponseEntity<UserProfileOtherDto> getOtherProfile(@PathVariable Long longRoomId,
+                                                               @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, user));
     }
 }

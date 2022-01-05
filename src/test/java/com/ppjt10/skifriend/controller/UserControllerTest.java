@@ -2,8 +2,10 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.SignupDto;
-import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupRequestDto;
+import com.ppjt10.skifriend.dto.userdto.UserPasswordUpdateDto;
+import com.ppjt10.skifriend.dto.userdto.UserProfileRequestDto;
+import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,7 @@ class UserControllerTest {
 
     private String token = "";
 
-    private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
+    private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("beomin12")
             .nickname("버민")
             .password("asdf12!!")
@@ -130,7 +132,7 @@ class UserControllerTest {
         void test4() throws Exception {
             headers.set("Authorization", token);
 
-            String content = objectMapper.writeValueAsString(new UserDto.ProfileRequestDto("남","10대", "초보", "hihihi"));
+            String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "10대", "초보", "hihihi"));
             MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
@@ -152,7 +154,7 @@ class UserControllerTest {
         void test5() throws Exception {
             headers.set("Authorization", token);
 
-            String content = objectMapper.writeValueAsString(new UserDto.ProfileRequestDto("남자","10대", "초보", "hihihi"));
+            String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남자", "10대", "초보", "hihihi"));
             MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
@@ -174,7 +176,7 @@ class UserControllerTest {
         void test6() throws Exception {
             headers.set("Authorization", token);
 
-            String content = objectMapper.writeValueAsString(new UserDto.ProfileRequestDto("남","십대", "초보", "hihihi"));
+            String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "십대", "초보", "hihihi"));
             MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
@@ -196,7 +198,7 @@ class UserControllerTest {
         void test7() throws Exception {
             headers.set("Authorization", token);
 
-            String content = objectMapper.writeValueAsString(new UserDto.ProfileRequestDto("남","10대", "신입", "hihihi"));
+            String content = objectMapper.writeValueAsString(new UserProfileRequestDto("남", "10대", "신입", "hihihi"));
             MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
             MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
@@ -222,7 +224,7 @@ class UserControllerTest {
             void test8() throws Exception {
                 headers.set("Authorization", token);
 
-                String content = objectMapper.writeValueAsString(new UserDto.UpdateRequestDto("diddl99!","avdkd", "초보", "hello world!"));
+                String content = objectMapper.writeValueAsString(new UserProfileUpdateDto("diddl99!", "avdkd", "초보", "hello world!"));
                 MockMultipartFile file1 = new MockMultipartFile("profileImg", "empty.txt", "text/plain", "".getBytes());
                 MockMultipartFile file2 = new MockMultipartFile("vacImg", "empty.txt", "text/plain", "".getBytes());
                 MockMultipartFile file3 = new MockMultipartFile("requestDto", "jsondata", "application/json", content.getBytes(StandardCharsets.UTF_8));
@@ -250,7 +252,7 @@ class UserControllerTest {
             void test9() throws Exception {
                 headers.set("Authorization", token);
 
-                UserDto.PasswordDto userDto = UserDto.PasswordDto.builder()
+                UserPasswordUpdateDto userDto = UserPasswordUpdateDto.builder()
                         .password(user1Login.getPassword())
                         .newPassword("abcd1234!")
                         .build();
@@ -260,7 +262,7 @@ class UserControllerTest {
                 HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
                 // when
-                ResponseEntity<Object> response = restTemplate.exchange( "/user/info/password", HttpMethod.PUT, request, Object.class);
+                ResponseEntity<Object> response = restTemplate.exchange("/user/info/password", HttpMethod.PUT, request, Object.class);
 
                 // then
                 assertEquals(HttpStatus.OK, response.getStatusCode());

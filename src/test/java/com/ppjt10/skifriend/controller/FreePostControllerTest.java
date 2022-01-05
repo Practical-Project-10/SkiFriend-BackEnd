@@ -1,9 +1,9 @@
 package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupRequestDto;
 import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -249,7 +249,7 @@ class FreePostControllerTest {
     }
 
 
-    private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
+    private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("beomin121")
             .nickname("버민1")
             .password("asdf12!!")
