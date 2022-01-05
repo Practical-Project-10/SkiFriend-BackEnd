@@ -91,12 +91,9 @@ class FreePostControllerTest {
         String request = objectMapper.writeValueAsString(post1);
 
 
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", "empty.txt", "multipart/form-data", "".getBytes());
-
-        MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
+        MockMultipartFile multipartFile1 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(multipart("/board/{skiResort}/freeBoard", "HighOne")
                         .file(multipartFile1)
-                        .file(multipartFile2)
                         .contentType("multipart/mixed")
                         .characterEncoding("UTF-8")
                         .header(HttpHeaders.AUTHORIZATION, this.token))
@@ -134,10 +131,8 @@ class FreePostControllerTest {
             return request1;
         });
 
-        MockMultipartFile multipartFile1 = new MockMultipartFile("image", "empty.txt", "multipart/form-data", "".getBytes());
-
-        MockMultipartFile multipartFile2 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
-        mockMvc.perform(builder.file(multipartFile1).file(multipartFile2)
+        MockMultipartFile multipartFile1 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
+        mockMvc.perform(builder.file(multipartFile1)
                         .header("Authorization", this.token))
                         .andExpect(status().isOk())
                         .andDo(print());

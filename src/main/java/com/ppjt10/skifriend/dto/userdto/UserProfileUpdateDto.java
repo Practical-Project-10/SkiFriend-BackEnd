@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileUpdateDto {
-    private String password;
     private String nickname;
     private String career;
     private String selfIntro;

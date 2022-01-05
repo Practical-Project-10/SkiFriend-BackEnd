@@ -50,7 +50,7 @@ public class UserService {
         user.createUserProfile(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
-        if (!profileImg.isEmpty()) {
+        if (profileImg != null) {
             try {
                 String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                 user.setProfileImg(profileImgUrl);
@@ -62,7 +62,7 @@ public class UserService {
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
-        if (!vacImg.isEmpty()) {
+        if (vacImg != null) {
             try {
                 String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
                 user.setVacImg(vacImgUrl);
@@ -90,16 +90,17 @@ public class UserService {
         user.update(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
-        if (!profileImg.isEmpty()) {
+        if (profileImg != null) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
             if (!user.getProfileImg().equals(defaultImg)) {
                 try {
                     String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
 
-            if(!profileImg.getOriginalFilename().equals("delete")){
+            if (!profileImg.getOriginalFilename().equals("delete")) {
                 try {
                     String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                     user.setProfileImg(profileImgUrl);
@@ -112,13 +113,14 @@ public class UserService {
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
-        if (!vacImg.isEmpty()) {
+        if (vacImg != null) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
             if (!user.getVacImg().equals("No Post Image")) {
                 try {
                     String source = URLDecoder.decode(user.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
 
             try {
@@ -187,7 +189,7 @@ public class UserService {
         User other;
         if (chatUserInfoList.get(0).getUser().getId().equals(user.getId())) {
             other = chatUserInfoList.get(1).getUser();
-        } else{
+        } else {
             other = chatUserInfoList.get(0).getUser();
         }
 
