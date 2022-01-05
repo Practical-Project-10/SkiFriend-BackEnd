@@ -9,6 +9,8 @@ REPOSITORY=/home/ubuntu/app/step
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/zip/*.jar $REPOSITORY/"
 
+sudo rm -rf $REPOSITORY/zip/*.jar
+
 cp $REPOSITORY/zip/*.jar $REPOSITORY/
 
 echo "> 새 어플리케이션 배포"
