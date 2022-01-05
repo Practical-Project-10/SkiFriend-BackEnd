@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.User;
@@ -15,7 +14,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.text.ParseException;
 import java.util.List;
 
 @RequiredArgsConstructor

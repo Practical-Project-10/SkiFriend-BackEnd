@@ -30,7 +30,7 @@ public class FreePost extends Timestamped {
     private String content;
 
     @Column
-    private String Image;
+    private String image;
 
     @Column
     private int likeCnt;
@@ -41,7 +41,7 @@ public class FreePost extends Timestamped {
     public void update(FreePostRequestDto requestDto, String image) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
-        this.Image = image;
+        this.image = image;
     }
 
     public FreePost(User user, SkiResort skiResort, String title, String content, String image) {
@@ -49,7 +49,7 @@ public class FreePost extends Timestamped {
         this.skiResort = skiResort;
         this.title = title;
         this.content = content;
-        this.Image = image;
+        this.image = image;
     }
 
     public void setLikeCnt(int likeCnt){

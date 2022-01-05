@@ -59,12 +59,12 @@ public class RedisRepository {
 
 
     // 과거에 읽었던 메세지 개수 가져오기
-    public int getNotVerifiedMessage(String roomId, String name) {
+    public int getLastReadMsgCnt(String roomId, String name) {
         return Math.toIntExact(Long.valueOf(Optional.ofNullable(valueOperations.get(MESSAGE_COUNT + "_" + roomId + "_" + name)).orElse(0)));
     }
 
     // 채팅방에서 DISCONNECT 시점에 읽은 메세지 개수 저장
-    public void setNotVerifiedMessage(String roomId, String name, int chatMessageCount) {
+    public void setLastReadMsgCnt(String roomId, String name, int chatMessageCount) {
         valueOperations.set(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount);
     }
 

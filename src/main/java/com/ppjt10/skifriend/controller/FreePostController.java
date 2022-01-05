@@ -71,7 +71,7 @@ public class FreePostController {
 
     // 핫 게시물 내려주기
     @GetMapping("/main")
-    public ResponseEntity<List<FreePostHotResponseDto>> takeHotFreePosts() {
-        return ResponseEntity.ok().body(freePostService.takeHotFreePosts());
+    public ResponseEntity<List<FreePostHotResponseDto>> getHotFreePosts() {
+        return ResponseEntity.ok().body(freePostService.getHotFreePosts());
     }
 }

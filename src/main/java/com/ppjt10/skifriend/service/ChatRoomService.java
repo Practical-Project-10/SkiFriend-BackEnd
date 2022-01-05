@@ -110,7 +110,7 @@ public class ChatRoomService {
             chatMessageRepository.save(initMsg);
 
             // 작성자가 안 읽은 메시지 수를 저장
-            redisRepository.setNotVerifiedMessage(chatRoom.getRoomId(), writerUsername, 0);
+            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 0);
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender, chatRoom);
@@ -142,7 +142,7 @@ public class ChatRoomService {
     ) {
         String roomId = chatRoom.getRoomId();
         int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
-        int pastMsgCnt = redisRepository.getNotVerifiedMessage(roomId, user.getUsername());
+        int pastMsgCnt = redisRepository.getLastReadMsgCnt(roomId, user.getUsername());
         int notVerifiedMsgCnt = presentChatMsgCnt - pastMsgCnt;
 
         return ChatRoomListResponseDto.builder()
