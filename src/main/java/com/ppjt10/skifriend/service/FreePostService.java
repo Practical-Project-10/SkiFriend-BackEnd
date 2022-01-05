@@ -104,7 +104,7 @@ public class FreePostService {
             likesResponseDtoList.add(generateLikesResponseDto(likes));
         }
 
-        List<Comment> commentList = commentRepository.findAllByFreePostId(postId);
+        List<Comment> commentList = commentRepository.findAllByFreePostIdOrderByCreateAtDesc(postId);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
         for (Comment comment : commentList) {
             commentResponseDtoList.add(generateCommentResponseDto(comment));
