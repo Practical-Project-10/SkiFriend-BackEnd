@@ -43,7 +43,7 @@ public class UserService {
 
         // 유효성 검사
         GenderType.findByGenderType(requestDto.getGender());
-        AgeRangeType.findByageRangeType(requestDto.getAgeRange());
+        AgeRangeType.findByAgeRangeType(requestDto.getAgeRange());
         CareerType.findByCareerType(requestDto.getCareer());
 
         // 유저 프로필 작성

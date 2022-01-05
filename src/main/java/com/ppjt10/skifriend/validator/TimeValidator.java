@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 
 public class TimeValidator {
     public static void validateTimeForm(String time) {
-
         try {
             SimpleDateFormat timeFormater = new SimpleDateFormat("HH:mm");
             timeFormater.setLenient(false);
