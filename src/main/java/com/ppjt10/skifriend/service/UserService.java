@@ -35,7 +35,7 @@ public class UserService {
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
     private final String vacImgDirName = "Vaccine";
-
+    private final String defaultImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
 
     // 유저 프로필 작성
     @Transactional
@@ -92,7 +92,7 @@ public class UserService {
         // 프로필 이미지 저장 및 저장 경로 업데이트
         if (!profileImg.isEmpty()) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
-            if (!user.getProfileImg().equals("No Post Image")) {
+            if (!user.getProfileImg().equals(defaultImg)) {
                 try {
                     String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
@@ -104,10 +104,10 @@ public class UserService {
                     String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                     user.setProfileImg(profileImgUrl);
                 } catch (Exception e) {
-                    user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+                    user.setProfileImg(defaultImg);
                 }
             } else {
-                user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+                user.setProfileImg(defaultImg);
             }
         }
 
