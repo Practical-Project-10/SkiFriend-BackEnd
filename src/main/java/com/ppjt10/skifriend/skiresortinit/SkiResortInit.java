@@ -17,7 +17,7 @@ public class SkiResortInit implements ApplicationRunner {
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args)  {
 
         Boolean isHighOne = skiResortRepository.existsByResortName("HighOne");
         if (!isHighOne) {

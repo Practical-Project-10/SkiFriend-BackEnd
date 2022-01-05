@@ -14,7 +14,6 @@ import com.ppjt10.skifriend.repository.FreePostRepository;
 import com.ppjt10.skifriend.repository.LikesRepository;
 import com.ppjt10.skifriend.repository.SkiResortRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
-import com.ppjt10.skifriend.validator.SkiResortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +35,7 @@ public class FreePostService {
     private final SkiResortRepository skiResortRepository;
     private final CommentRepository commentRepository;
 
-    //자유게시글 전체 조회
+    // 자유게시글 전체 조회
     @Transactional
     public List<FreePostResponseDto> getFreePosts(String resortName, int page, int size) {
         List<FreePostResponseDto> freePostResponseDtoList = new ArrayList<>();
@@ -45,7 +44,7 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
-        //해당 스키장의 자유게시글 리스트 가져오기
+        // 해당 스키장의 자유게시글 리스트 가져오기
         Page<FreePost> freePostPage = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(
                 skiResort,
                 PageRequest.of(page, size)
@@ -60,7 +59,7 @@ public class FreePostService {
         return freePostResponseDtoList;
     }
 
-    //자유 게시판 게시글 작성
+    // 자유 게시판 게시글 작성
     @Transactional
     public FreePostResponseDto createFreePosts(MultipartFile image,
                                                FreePostRequestDto requestDto,
@@ -91,7 +90,7 @@ public class FreePostService {
 
     }
 
-    //자유 게시판 게시글 상세 조회
+    // 자유 게시판 게시글 상세 조회
     @Transactional
     public FreePostDetailResponseDto getDetailFreePost(Long postId) {
 
@@ -160,7 +159,7 @@ public class FreePostService {
 
     //자유 게시판 게시글 삭제
     @Transactional
-    public void deleteFreePost(Long postId, User user)  {
+    public void deleteFreePost(Long postId, User user) {
 
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
@@ -170,10 +169,10 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
 
-        try{
+        try {
             String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
             s3Uploader.deleteFromS3(oldImageUrl);
-        } catch (Exception exception){
+        } catch (Exception exception) {
         }
 
         commentRepository.deleteAllByFreePostId(postId);
@@ -183,23 +182,17 @@ public class FreePostService {
 
     // HOT게시물 가져오기
     @Transactional
-    public List<FreePostHotResponseDto> takeHotFreePosts() {
-        FreePost hotHighOne = extractHotFreePost(SkiResortType.HIGHONE.getSkiResortType());
-        FreePost hotYongPyong = extractHotFreePost(SkiResortType.YONGPYONG.getSkiResortType());
-        FreePost hotVivaldi = extractHotFreePost(SkiResortType.VIVALDIPARK.getSkiResortType());
-        FreePost hotPhoenix = extractHotFreePost(SkiResortType.PHOENIX.getSkiResortType());
-        FreePost hotWellihilli = extractHotFreePost(SkiResortType.WELLIHILLIPARK.getSkiResortType());
-        FreePost hotKonJiam = extractHotFreePost(SkiResortType.KONJIAM.getSkiResortType());
+    public List<FreePostHotResponseDto> getHotFreePosts() {
+        List<SkiResort> skiResortList = skiResortRepository.findAll();
         List<FreePost> populatedResortPosts = new ArrayList<>();
-        exceptionProcessHotFreePost(populatedResortPosts, hotHighOne);
-        exceptionProcessHotFreePost(populatedResortPosts, hotYongPyong);
-        exceptionProcessHotFreePost(populatedResortPosts, hotVivaldi);
-        exceptionProcessHotFreePost(populatedResortPosts, hotPhoenix);
-        exceptionProcessHotFreePost(populatedResortPosts, hotWellihilli);
-        exceptionProcessHotFreePost(populatedResortPosts, hotKonJiam);
-
+        for (SkiResort skiResort : skiResortList) {
+            FreePost skiResortHotFreePost = extractHotFreePost(skiResort.getResortName());
+            if (skiResortHotFreePost != null) {
+                populatedResortPosts.add(skiResortHotFreePost);
+            }
+        }
         List<FreePostHotResponseDto> freePostHotResponseDtoList = new ArrayList<>();
-        for(FreePost freePost : populatedResortPosts) {
+        for (FreePost freePost : populatedResortPosts) {
             freePostHotResponseDtoList.add(generateFreePostHotResponseDto(freePost));
         }
         return freePostHotResponseDtoList;
@@ -227,13 +220,6 @@ public class FreePostService {
             return freePostRepository.findById(findId).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 존재하지 않습니다"));
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    //실시간 Resort 별 Hot 게시물 에러처리
-    private void exceptionProcessHotFreePost(List<FreePost> populatedResortPosts, FreePost skiResort) {
-        if (skiResort != null) {
-            populatedResortPosts.add(skiResort);
         }
     }
 

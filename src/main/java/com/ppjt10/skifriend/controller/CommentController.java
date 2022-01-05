@@ -35,7 +35,7 @@ public class CommentController {
     }
 
 
-    //자유 게시판 게시글 댓글 삭제
+    // 자유 게시판 게시글 댓글 삭제
     @DeleteMapping("/board/freeBoard/comments/{commentId}")
     public void deleteComment(
             @PathVariable Long commentId,

@@ -187,7 +187,7 @@ public class UserSignupTest {
                             signupDto.getPhoneNum());
                 });
 
-                assertEquals("닉네임 값이 없습니다.", exception.getMessage());
+                assertEquals("닉네임을 7자리 이하로 입력해주세요.", exception.getMessage());
             }
         }
     }

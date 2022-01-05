@@ -16,9 +16,10 @@ public enum GenderType {
 
     public static void findByGenderType(String gender){
         for(GenderType genderType : GenderType.values()) {
-            if(!genderType.getGenderType().equals(gender)) {
-                throw new IllegalArgumentException("올바른 Gender Type이 아닙니다.");
+            if(genderType.getGenderType().equals(gender)) {
+                return;
             }
         }
+        throw new IllegalArgumentException("올바른 Gender Type이 아닙니다.");
     }
 }

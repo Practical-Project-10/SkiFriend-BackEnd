@@ -21,7 +21,7 @@ public class CarpoolController {
 
     private final CarpoolService carpoolService;
 
-    //카풀 게시물 조회
+    // 카풀 게시물 조회
     @GetMapping("/board/carpool/{skiResort}")
     public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort,
                                                                 @RequestParam int page,
@@ -31,7 +31,7 @@ public class CarpoolController {
         return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort, page, size));
     }
 
-    //카풀 게시물 작성
+    // 카풀 게시물 작성
     @PostMapping("/board/carpool/{skiResort}")
     public ResponseEntity<CarpoolResponseDto> createCarpool(@PathVariable String skiResort,
                                                             @RequestBody CarpoolRequestDto requestDto,
@@ -41,7 +41,7 @@ public class CarpoolController {
         return ResponseEntity.ok().body(carpoolService.createCarpool(skiResort, requestDto, user));
     }
 
-    //카풀 게시물 수정
+    // 카풀 게시물 수정
     @PutMapping("/board/carpool/{carpoolId}")
     public ResponseEntity<CarpoolResponseDto> updateCarpool(@PathVariable Long carpoolId,
                                                             @RequestBody CarpoolRequestDto requestDto,
@@ -51,7 +51,7 @@ public class CarpoolController {
         return ResponseEntity.ok().body(carpoolService.updateCarpool(carpoolId, requestDto, user));
     }
 
-    //카풀 게시글 삭제
+    // 카풀 게시글 삭제
     @DeleteMapping("/board/carpool/{carpoolId}")
     public void deleteCarpool(@PathVariable Long carpoolId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -69,16 +69,15 @@ public class CarpoolController {
         carpoolService.changeStatus(carpoolId, user);
     }
 
-    //region 카풀 카테고리 분류
+    // 카풀 카테고리 분류
     @PostMapping("/board/carpool/{skiResort}/category")
     public ResponseEntity<List<CarpoolResponseDto>> sortCategories(@PathVariable String skiResort,
                                                                    @RequestBody CarpoolFilterRequestDto requestDto
     ) {
         return ResponseEntity.ok().body(carpoolService.sortCarpools(skiResort, requestDto));
     }
-    //endregion
 
-    //배너
+    // 배너 가져오기
     @GetMapping("/board/carpool/{skiResort}/banner")
     public ResponseEntity<CarpoolBannerDto> getBanner(@PathVariable String skiResort) {
         return ResponseEntity.ok().body(carpoolService.getBanner(skiResort));
