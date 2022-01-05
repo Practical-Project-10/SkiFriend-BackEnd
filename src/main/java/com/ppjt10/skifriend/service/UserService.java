@@ -2,9 +2,9 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.SignupDto;
-import com.ppjt10.skifriend.dto.UserDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
+import com.ppjt10.skifriend.dto.userdto.*;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
@@ -39,8 +39,7 @@ public class UserService {
 
     // 유저 프로필 작성
     @Transactional
-    public UserDto.ResponseDto writeUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserDto.ProfileRequestDto requestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
+    public UserResponseDto createUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileRequestDto requestDto, User user) {
 
         // 유효성 검사
         GenderType.findByGenderType(requestDto.getGender());
@@ -48,7 +47,7 @@ public class UserService {
         CareerType.findByCareerType(requestDto.getCareer());
 
         // 유저 프로필 작성
-        user.wirteProfile(requestDto);
+        user.createUserProfile(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
         if (!profileImg.isEmpty()) {
@@ -74,20 +73,18 @@ public class UserService {
             user.setVacImg("No Post Image");
         }
 
-        return createUserResponseDto(user);
+        return generateUserResponseDto(user);
     }
 
     // 유저 프로필 조회
     @Transactional
-    public UserDto.ResponseDto getUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
-        return createUserResponseDto(user);
+    public UserResponseDto getUserProfile(User user) {
+        return generateUserResponseDto(user);
     }
 
     // 유저 프로필 수정
     @Transactional
-    public UserDto.ResponseDto updateUserInfo(MultipartFile profileImg, MultipartFile vacImg, UserDto.UpdateRequestDto requestDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
+    public UserResponseDto updateUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileUpdateDto requestDto, User user) {
 
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
         user.update(requestDto);
@@ -132,18 +129,22 @@ public class UserService {
             }
         }
 
-        return createUserResponseDto(user);
+        return generateUserResponseDto(user);
     }
 
     // 유저 비밀번호 수정
     @Transactional
-    public void updatePassword(UserDto.PasswordDto passwordDto, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
+    public void updatePassword(UserPasswordUpdateDto passwordDto, User user) {
 
+        // 기존 비밀번호랑 일치하면 비밀번호 업데이트
         if (passwordEncoder.matches(passwordDto.getPassword(), user.getPassword())) {
-            UserInfoValidator.checkPassword(passwordDto.getNewPassword());
+            // 새 비밀번호 유효성 검사
+            UserInfoValidator.validatePassword(passwordDto.getNewPassword());
+
+            // 새 비밀번호 암호화
             String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
-            user.setPassword(enPassword);
+
+            user.updatePassword(enPassword);
         } else {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
@@ -151,50 +152,49 @@ public class UserService {
 
     // 유저 탈퇴
     @Transactional
-    public String deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+    public String deleteUser(User user) {
+        userRepository.deleteById(user.getId());
 
         return "회원탈퇴 되었습니다.";
     }
 
     // 내 폰 번호 공개
     @Transactional
-    public SignupDto.PhoneNumDto getPhoneNum(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원 정보가 없습니다."));
+    public SignupPhoneNumDto getPhoneNum(User user) {
 
-        return SignupDto.PhoneNumDto.builder()
+        return SignupPhoneNumDto.builder()
                 .phoneNumber(user.getPhoneNum())
                 .build();
     }
 
     // 내가 쓴 카풀 게시물 목록 조회
     @Transactional
-    public List<CarpoolResponseDto> findMyCarpools(User user) {
+    public List<CarpoolResponseDto> getMyCarpools(User user) {
         List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
 
         List<CarpoolResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
-            carpoolListDto.add(createCarpoolResponseDto(carpool));
+            carpoolListDto.add(generateCarpoolResponseDto(carpool));
         }
 
         return carpoolListDto;
     }
 
     @Transactional
-    public UserDto.OtherResponseDto getOtherProfile(Long longRoomId, Long userId) {
+    public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
 
-        User user = new User();
-        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
-            if (chatUserInfo.getUser().getId() != userId) {
-                user = chatUserInfo.getUser();
-            }
+        User other;
+        if (chatUserInfoList.get(0).getUser().getId().equals(user.getId())) {
+            other = chatUserInfoList.get(1).getUser();
+        } else{
+            other = chatUserInfoList.get(0).getUser();
         }
 
-        return createOtherReponseDto(user);
+        return generateOtherReponseDto(other);
     }
 
-    private CarpoolResponseDto createCarpoolResponseDto(Carpool carpool) {
+    private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
         return CarpoolResponseDto.builder()
                 .userId(carpool.getUser().getId())
                 .postId(carpool.getId())
@@ -214,8 +214,8 @@ public class UserService {
                 .build();
     }
 
-    private UserDto.ResponseDto createUserResponseDto(User user) {
-        return UserDto.ResponseDto.builder()
+    private UserResponseDto generateUserResponseDto(User user) {
+        return UserResponseDto.builder()
                 .username(user.getUsername())
                 .phoneNum(user.getPhoneNum())
                 .nickname(user.getNickname())
@@ -228,8 +228,8 @@ public class UserService {
                 .build();
     }
 
-    private UserDto.OtherResponseDto createOtherReponseDto(User user) {
-        return UserDto.OtherResponseDto.builder()
+    private UserProfileOtherDto generateOtherReponseDto(User user) {
+        return UserProfileOtherDto.builder()
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
                 .vacImg(user.getVacImg())

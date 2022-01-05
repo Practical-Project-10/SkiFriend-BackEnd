@@ -2,9 +2,9 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.SignupDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolRequestDto;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupRequestDto;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ class CarpoolControllerTest {
 
     private String token = "";
 
-    private SignupDto.RequestDto user1 = SignupDto.RequestDto.builder()
+    private SignupRequestDto user1 = SignupRequestDto.builder()
             .username("beomin12")
             .nickname("버민")
             .password("asdf12!!")

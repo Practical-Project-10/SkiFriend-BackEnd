@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ppjt10.skifriend.dto.UserDto;
+import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.jwt.JwtTokenUtils;
 import org.springframework.security.core.Authentication;
@@ -29,7 +29,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         //UserId, Nickname 내려주기
         response.setContentType("application/json");
         User user = userDetails.getUser();
-        UserDto.LoginResponseDto responseDto = UserDto.LoginResponseDto.builder()
+        UserLoginResponseDto responseDto = UserLoginResponseDto.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())
                 .isProfile(user.getAgeRange() != null)

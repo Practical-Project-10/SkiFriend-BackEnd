@@ -48,7 +48,7 @@ public class ChatRoomService {
                         () -> new IllegalArgumentException("")
                 );
             }
-            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other.getNickname(), other.getUsername(), other.getProfileImg()));
+            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
         }
 
         return chatRoomListResponseDtoList;
@@ -137,23 +137,22 @@ public class ChatRoomService {
     private ChatRoomListResponseDto generateChatRoomListResponseDto(
             ChatRoom chatRoom,
             ChatMessage chatMessage,
-            String nickname,
-            String username,
-            String userProfile
+            User other,
+            User user
     ) {
         String roomId = chatRoom.getRoomId();
         int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
-        int pastMsgCnt = redisRepository.getNotVerifiedMessage(roomId, username);
+        int pastMsgCnt = redisRepository.getNotVerifiedMessage(roomId, user.getUsername());
         int notVerifiedMsgCnt = presentChatMsgCnt - pastMsgCnt;
 
         return ChatRoomListResponseDto.builder()
                 .roomId(roomId)
                 .longRoomId(chatRoom.getId())
-                .roomName(nickname)
+                .roomName(other.getNickname())
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .notVerifiedMsgCnt(notVerifiedMsgCnt)
-                .userProfile(userProfile)
+                .userProfile(other.getProfileImg())
                 .build();
     }
 
