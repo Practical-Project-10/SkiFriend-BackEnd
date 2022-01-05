@@ -18,9 +18,10 @@ public enum AgeRangeType {
 
     public static void findByAgeRangeType(String ageRange){
         for(AgeRangeType ageRangeType : AgeRangeType.values()) {
-            if(!ageRangeType.getAgeRangeType().equals(ageRange)) {
-                throw new IllegalArgumentException("올바른 AgeRange Type이 아닙니다.");
+            if(ageRangeType.getAgeRangeType().equals(ageRange)) {
+                return;
             }
         }
+        throw new IllegalArgumentException("올바른 AgeRange Type이 아닙니다.");
     }
 }

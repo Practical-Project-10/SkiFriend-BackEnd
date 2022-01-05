@@ -18,10 +18,11 @@ public enum CareerType {
 
     public static void findByCareerType(String career){
         for(CareerType careerType : CareerType.values()) {
-            if(!careerType.getCareerType().equals(career)) {
-                throw new IllegalArgumentException("올바른 Career Type이 아닙니다.");
+            if(careerType.getCareerType().equals(career)) {
+                return;
             }
         }
+        throw new IllegalArgumentException("올바른 Career Type이 아닙니다.");
     }
 
 }

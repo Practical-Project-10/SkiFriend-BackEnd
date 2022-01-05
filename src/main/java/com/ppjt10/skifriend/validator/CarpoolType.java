@@ -16,9 +16,10 @@ public enum CarpoolType {
 
     public static void findByCarpoolType(String carpool){
         for(CarpoolType carpoolType : CarpoolType.values()) {
-            if(!carpoolType.getCarpoolType().equals(carpool)) {
-                throw new IllegalArgumentException("올바른 Carpool Type이 아닙니다.");
+            if(carpoolType.getCarpoolType().equals(carpool)) {
+                return;
             }
         }
+        throw new IllegalArgumentException("올바른 Carpool Type이 아닙니다.");
     }
 }
