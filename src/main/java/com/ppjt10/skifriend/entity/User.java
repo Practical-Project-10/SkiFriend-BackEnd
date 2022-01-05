@@ -54,7 +54,7 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.phoneNum = requestDto.getPhoneNum();
         this.password = enPassword;
-        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png";
+        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
     }
 
     public void setProfileImg(String imgPath) {

@@ -18,10 +18,6 @@ public class ChatRoom {
     @Column
     private String roomId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(nullable = false)
-//    private Carpool carpool;
-
     @Column
     private String title;
 

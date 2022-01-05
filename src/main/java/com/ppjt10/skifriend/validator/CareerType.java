@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.validator;
 
-import java.util.Arrays;
-
 public enum CareerType {
     BEGINNER("초보"),
     TWOTHREEYEAR("1~3년"),
@@ -18,10 +16,12 @@ public enum CareerType {
         return type;
     }
 
-    public static CareerType findByCareerType(String type){
-        return Arrays.stream(CareerType.values())
-                .filter(e->e.getCareerType().equals(type))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 Career Type이 아닙니다."));
+    public static void findByCareerType(String career){
+        for(CareerType careerType : CareerType.values()) {
+            if(!careerType.getCareerType().equals(career)) {
+                throw new IllegalArgumentException("올바른 Career Type이 아닙니다.");
+            }
+        }
     }
+
 }

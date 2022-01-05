@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.validator;
 
-import java.util.Arrays;
-
 public enum AgeRangeType {
     TEENS("10대"),
     TWENTIES("20대"),
@@ -14,14 +12,15 @@ public enum AgeRangeType {
         this.type = type;
     }
 
-    public String getageRangeType() {
+    public String getAgeRangeType() {
         return type;
     }
 
-    public static AgeRangeType findByageRangeType(String type){
-        return Arrays.stream(AgeRangeType.values())
-                .filter(e->e.getageRangeType().equals(type))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 AgeRange Type이 아닙니다."));
+    public static void findByAgeRangeType(String ageRange){
+        for(AgeRangeType ageRangeType : AgeRangeType.values()) {
+            if(!ageRangeType.getAgeRangeType().equals(ageRange)) {
+                throw new IllegalArgumentException("올바른 AgeRange Type이 아닙니다.");
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.User;

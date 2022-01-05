@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.validator;
 
-import java.util.Arrays;
-
 public enum CarpoolType {
     REQUEST("카풀 요청"),
     OFFER("카풀 제공");
@@ -16,10 +14,11 @@ public enum CarpoolType {
         return this.carpoolType;
     }
 
-    public static CarpoolType findByCarpoolType(String type){
-        return Arrays.stream(CarpoolType.values())
-                .filter(e->e.getCarpoolType().equals(type))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("올바른 Carpool Type이 아닙니다."));
+    public static void findByCarpoolType(String carpool){
+        for(CarpoolType carpoolType : CarpoolType.values()) {
+            if(!carpoolType.getCarpoolType().equals(carpool)) {
+                throw new IllegalArgumentException("올바른 Carpool Type이 아닙니다.");
+            }
+        }
     }
 }

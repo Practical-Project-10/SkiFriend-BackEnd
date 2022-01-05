@@ -1,7 +1,6 @@
 package com.ppjt10.skifriend.validator;
 
 import lombok.RequiredArgsConstructor;
-
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -16,8 +15,8 @@ public class UserInfoValidator {
         }
 
         // 닉네임 형식 확인
-        if (nickname == null) {
-            throw new IllegalArgumentException("닉네임 값이 없습니다.");
+        if (nickname == null || nickname.length() > 7) {
+            throw new IllegalArgumentException("닉네임을 7자리 이하로 입력해주세요.");
         }
 
         // 휴대전화번호 형식 확인

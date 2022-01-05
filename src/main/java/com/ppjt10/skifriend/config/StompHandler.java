@@ -32,7 +32,6 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            System.out.println("CONNECT!!!!" + accessor.getFirstNativeHeader("Authorization").substring(7));
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
         }
         else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
@@ -66,7 +65,7 @@ public class StompHandler implements ChannelInterceptor {
                 System.out.println("DISCONNECT 클라이언트 유저 이름: " + name);
                 int chatMessageCount = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
                 System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
-                redisRepository.setNotVerifiedMessage(roomId, name, chatMessageCount);
+                redisRepository.setLastReadMsgCnt(roomId, name, chatMessageCount);
 
                 // 마지막 접속 시간 체크
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
@@ -78,7 +77,7 @@ public class StompHandler implements ChannelInterceptor {
                         .sender(name)
                         .build());
             }
-//            redisRepository.removeUserEnterInfo(sessionId);
+            redisRepository.removeUserEnterInfo(sessionId);
         }
 
         return message;
