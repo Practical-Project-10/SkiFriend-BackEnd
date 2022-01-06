@@ -7,9 +7,11 @@ function find_idle_profile()
 {
     RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
 
+    SERVICE_URL=$(changePortToReal)
+
     if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
     then
-        CURRENT_PROFILE=real2
+        CURRENT_PROFILE=${SERVICE_URL}
     else
         CURRENT_PROFILE=$(curl -s http://localhost/profile)
     fi
@@ -35,4 +37,18 @@ function find_idle_port()
     else
       echo "8082"
     fi
+}
+
+function changePortToReal()
+{
+    CURRENT_PORT=$(cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38)
+
+    if [ ${CURRENT_PORT} == 8081 ]
+    then
+        SERVICE_URL=real1
+    else
+        SERVICE_URL=real2
+    fi
+
+    echo "${SERVICE_URL}"
 }

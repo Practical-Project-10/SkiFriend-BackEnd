@@ -67,11 +67,12 @@ public class FreePostService {
         );
 
         String imageUrl;
-
         if (image != null) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.getOriginalFilename());
             try {
                 imageUrl = s3Uploader.upload(image, imageDirName);
             } catch (Exception err) {
+                System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
                 imageUrl = "No Post Image";
             }
         } else {
