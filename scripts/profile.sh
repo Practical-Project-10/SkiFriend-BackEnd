@@ -5,11 +5,9 @@
 # 쉬고 있는 profile 찾기: real1이 사용중이면 real2가 쉬고 있고, 반대면 real1이 쉬고 있음
 function find_idle_profile()
 {
-    echo "> 현재 포트 가져오기!!!!!!!!!!!! cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38"
-    SERVICE_URL=$(cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38)
-    echo "> $SERVICE_URL 현재 설정된 포트!!!!!!!!!!!!!!!!!!!!"
-
     RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
+
+    SERVICE_URL=$(changePortToReal)
 
     if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
     then
@@ -39,4 +37,20 @@ function find_idle_port()
     else
       echo "8082"
     fi
+}
+
+function changePortToReal()
+{
+    echo "> 현재 포트 가져오기!!!!!!!!!!!! cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38"
+    CURRENT_PORT=$(cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38)
+    echo "> $CURRENT_PORT 현재 설정된 포트!!!!!!!!!!!!!!!!!!!!"
+
+    if [ ${CURRENT_PORT} == 8081 ]
+    then
+        SERVICE_URL=real1
+    else
+        SERVICE_URL=real2
+    fi
+
+    echo "${SERVICE_URL}"
 }
