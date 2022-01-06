@@ -3,7 +3,7 @@ jdk:
 - openjdk8
 branches:
   only:
-  - master
+  - release/travis
 cache:
   directories:
   - "$HOME/.m2/repository"
@@ -26,7 +26,7 @@ deploy:
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
   on:
-    branch: master
+    branch: release/travis
   bucket: skifriend-ci-bucket
   region: ap-northeast-2
   skip_cleanup: true
@@ -37,7 +37,7 @@ deploy:
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
   on:
-    branch: master
+    branch: release/travis
   bucket: skifriend-ci-bucket
   key: SkiFriend-BackEnd.zip
   bundle_type: zip
