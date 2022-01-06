@@ -134,6 +134,7 @@ public class ChatRoomService {
                 .build();
     }
 
+    // 채팅방 목록 조회
     private ChatRoomListResponseDto generateChatRoomListResponseDto(
             ChatRoom chatRoom,
             ChatMessage chatMessage,
