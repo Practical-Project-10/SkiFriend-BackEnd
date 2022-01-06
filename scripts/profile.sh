@@ -5,7 +5,9 @@
 # 쉬고 있는 profile 찾기: real1이 사용중이면 real2가 쉬고 있고, 반대면 real1이 쉬고 있음
 function find_idle_profile()
 {
+    echo "> 현재 포트 가져오기!!!!!!!!!!!! cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38"
     SERVICE_URL=$(cat /etc/nginx/conf.d/service-url.inc | cut -c 35-38)
+    echo "> $SERVICE_URL 현재 설정된 포트!!!!!!!!!!!!!!!!!!!!"
 
     RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
 
