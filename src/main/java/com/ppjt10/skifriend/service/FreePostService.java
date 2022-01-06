@@ -37,7 +37,7 @@ public class FreePostService {
 
     // 자유게시글 전체 조회
     @Transactional
-    public List<FreePostResponseDto> getFreePosts(String resortName, int page, int size) {
+    public List<FreePostResponseDto> getFreePosts(String resortName) {
         List<FreePostResponseDto> freePostResponseDtoList = new ArrayList<>();
 
         SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
@@ -45,17 +45,13 @@ public class FreePostService {
         );
 
         // 해당 스키장의 자유게시글 리스트 가져오기
-        Page<FreePost> freePostPage = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(
-                skiResort,
-                PageRequest.of(page, size)
-        );
+        List<FreePost> freePostList = freePostRepository.findAllBySkiResortOrderByCreateAtDesc(skiResort);
 
         //게시글 리스트
-        if (freePostPage.hasContent()) {
-            for (FreePost freePost : freePostPage.toList()) {
-                freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
-            }
+        for (FreePost freePost : freePostList) {
+            freePostResponseDtoList.add(generateFreePostResponseDto(freePost));
         }
+
         return freePostResponseDtoList;
     }
 
