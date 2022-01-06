@@ -41,39 +41,41 @@ public class UserService {
     @Transactional
     public UserResponseDto createUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileRequestDto requestDto, User user) {
 
+        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
         // 유효성 검사
         GenderType.findByGenderType(requestDto.getGender());
         AgeRangeType.findByAgeRangeType(requestDto.getAgeRange());
         CareerType.findByCareerType(requestDto.getCareer());
 
         // 유저 프로필 작성
-        user.createUserProfile(requestDto);
+        dbUser.createUserProfile(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
         if (profileImg != null) {
             try {
                 String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-                user.setProfileImg(profileImgUrl);
+                dbUser.setProfileImg(profileImgUrl);
             } catch (Exception e) {
-                user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+                dbUser.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
             }
         } else {
-            user.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+            dbUser.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
         if (vacImg != null) {
             try {
                 String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                user.setVacImg(vacImgUrl);
+                dbUser.setVacImg(vacImgUrl);
             } catch (Exception e) {
-                user.setVacImg("No Post Image");
+                dbUser.setVacImg("No Post Image");
             }
         } else {
-            user.setVacImg("No Post Image");
+            dbUser.setVacImg("No Post Image");
         }
 
-        return generateUserResponseDto(user);
+        return generateUserResponseDto(dbUser);
     }
 
     // 유저 프로필 조회
@@ -86,15 +88,17 @@ public class UserService {
     @Transactional
     public UserResponseDto updateUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileUpdateDto requestDto, User user) {
 
+        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
-        user.update(requestDto);
+        dbUser.update(requestDto);
 
         // 프로필 이미지 저장 및 저장 경로 업데이트
         if (profileImg != null) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
-            if (!user.getProfileImg().equals(defaultImg)) {
+            if (!dbUser.getProfileImg().equals(defaultImg)) {
                 try {
-                    String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    String source = URLDecoder.decode(dbUser.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
                 } catch (Exception e) {
                 }
@@ -103,21 +107,21 @@ public class UserService {
             if (!profileImg.getOriginalFilename().equals("delete")) {
                 try {
                     String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-                    user.setProfileImg(profileImgUrl);
+                    dbUser.setProfileImg(profileImgUrl);
                 } catch (Exception e) {
-                    user.setProfileImg(defaultImg);
+                    dbUser.setProfileImg(defaultImg);
                 }
             } else {
-                user.setProfileImg(defaultImg);
+                dbUser.setProfileImg(defaultImg);
             }
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
         if (vacImg != null) {
             // 빈 이미지가 아닐때만 기존 이미지 삭제
-            if (!user.getVacImg().equals("No Post Image")) {
+            if (!dbUser.getVacImg().equals("No Post Image")) {
                 try {
-                    String source = URLDecoder.decode(user.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    String source = URLDecoder.decode(dbUser.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
                 } catch (Exception e) {
                 }
@@ -125,21 +129,23 @@ public class UserService {
 
             try {
                 String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                user.setVacImg(vacImgUrl);
+                dbUser.setVacImg(vacImgUrl);
             } catch (Exception e) {
-                user.setVacImg("No Post Image");
+                dbUser.setVacImg("No Post Image");
             }
         }
 
-        return generateUserResponseDto(user);
+        return generateUserResponseDto(dbUser);
     }
 
     // 유저 비밀번호 수정
     @Transactional
     public void updatePassword(UserPasswordUpdateDto passwordDto, User user) {
 
+        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
         // 기존 비밀번호랑 일치하면 비밀번호 업데이트
-        if (passwordEncoder.matches(passwordDto.getPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(passwordDto.getPassword(), dbUser.getPassword())) {
             // 새 비밀번호 유효성 검사
             UserInfoValidator.validatePassword(passwordDto.getNewPassword());
 
@@ -193,7 +199,7 @@ public class UserService {
             other = chatUserInfoList.get(0).getUser();
         }
 
-        return generateOtherReponseDto(other);
+        return generateOtherResponseDto(other);
     }
 
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
@@ -230,7 +236,7 @@ public class UserService {
                 .build();
     }
 
-    private UserProfileOtherDto generateOtherReponseDto(User user) {
+    private UserProfileOtherDto generateOtherResponseDto(User user) {
         return UserProfileOtherDto.builder()
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
