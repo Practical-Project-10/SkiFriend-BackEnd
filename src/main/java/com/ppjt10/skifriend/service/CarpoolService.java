@@ -30,22 +30,19 @@ public class CarpoolService {
 
     //카풀 전체 조회
     @Transactional
-    public List<CarpoolResponseDto> getCarpools(String skiResortName, int page, int size) {
+    public List<CarpoolResponseDto> getCarpools(String skiResortName) {
         List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
         //해당 스키장의 카풀 정보 리스트 가져오기
-        Page<Carpool> carpoolPage = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(
-                skiResort,
-                PageRequest.of(page, size)
-        );
+        List<Carpool> carpoolList = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(skiResort);
+
         //Carpool 리스트
-        if (carpoolPage.hasContent()) {
-            for (Carpool carpool : carpoolPage.toList()) {
-                carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
-            }
+        for (Carpool carpool : carpoolList) {
+            carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
         }
+
         return carpoolResponseDtoList;
     }
 

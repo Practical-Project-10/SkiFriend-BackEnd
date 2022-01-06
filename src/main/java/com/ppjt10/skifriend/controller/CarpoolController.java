@@ -23,12 +23,8 @@ public class CarpoolController {
 
     // 카풀 게시물 조회
     @GetMapping("/board/carpool/{skiResort}")
-    public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort,
-                                                                @RequestParam int page,
-                                                                @RequestParam int size
-    ) {
-        page = page - 1;
-        return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort, page, size));
+    public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort) {
+        return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort));
     }
 
     // 카풀 게시물 작성

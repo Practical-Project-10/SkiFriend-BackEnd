@@ -23,12 +23,8 @@ public class FreePostController {
 
     //자유게시판 전체 조회
     @GetMapping("/board/freeBoard/{skiResort}")
-    public ResponseEntity<List<FreePostResponseDto>> getFreePosts(@PathVariable String skiResort,
-                                                                  @RequestParam int page,
-                                                                  @RequestParam int size
-    ) {
-        page = page - 1;
-        return ResponseEntity.ok().body(freePostService.getFreePosts(skiResort, page, size));
+    public ResponseEntity<List<FreePostResponseDto>> getFreePosts(@PathVariable String skiResort) {
+        return ResponseEntity.ok().body(freePostService.getFreePosts(skiResort));
     }
 
     //자유 게시판 게시글 작성

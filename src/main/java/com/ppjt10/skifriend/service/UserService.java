@@ -152,7 +152,7 @@ public class UserService {
             // 새 비밀번호 암호화
             String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
 
-            user.updatePassword(enPassword);
+            dbUser.updatePassword(enPassword);
         } else {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
