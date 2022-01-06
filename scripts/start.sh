@@ -7,9 +7,11 @@ source ${ABSDIR}/profile.sh
 REPOSITORY=/home/ubuntu/app/step
 
 echo "> Build 파일 복사"
-echo "> cp $REPOSITORY/zip/*.jar $REPOSITORY/"
+echo "> cp $REPOSITORY/zip/skiFriend-0.0.1-SNAPSHOT.jar $REPOSITORY/"
 
 sudo cp $REPOSITORY/zip/skiFriend-0.0.1-SNAPSHOT.jar $REPOSITORY/
+
+sudo rm -rf $REPOSITORY/nohup.out
 
 echo "> 새 어플리케이션 배포"
 JAR_NAME=$(ls -tr $REPOSITORY/skiFriend-0.0.1-SNAPSHOT.jar | tail -n 1)
