@@ -107,24 +107,30 @@ public class ChatMessageService {
 
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
-
+        ChatMessageResponseDto messageDto;
 
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
             message.setMessage(message.getUser().getNickname() + "님의 번호는 " + message.getMessage() + "입니다");
+            messageDto = ChatMessageResponseDto.builder()
+                    .roomId(message.getChatRoom().getRoomId())
+                    .type(message.getType())
+                    .message(message.getMessage())
+                    .sender(message.getUser().getNickname())
+                    .senderImg(message.getUser().getProfileImg())
+                    .build();
         } else {
             chatMessageRepository.save(message);
+            messageDto = ChatMessageResponseDto.builder()
+                    .roomId(message.getChatRoom().getRoomId())
+                    .type(message.getType())
+                    .messageId(message.getId())
+                    .message(message.getMessage())
+                    .sender(message.getUser().getNickname())
+                    .senderImg(message.getUser().getProfileImg())
+                    .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
+                    .build();
         }
 
-
-        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
-                .roomId(message.getChatRoom().getRoomId())
-                .type(message.getType())
-                .messageId(message.getId())
-                .message(message.getMessage())
-                .sender(message.getUser().getNickname())
-                .senderImg(message.getUser().getProfileImg())
-                .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
-                .build();
 
         System.out.println("전송");
         redisPublisher.publish(messageDto);
