@@ -50,12 +50,12 @@ public class StompHandler implements ChannelInterceptor {
             redisRepository.setUserNameInfo(sessionId, name);
 
 
-            chatMessageService.connectMessage(
-                    ChatMessageRequestDto.builder()
-                            .type(ChatMessage.MessageType.ENTER)
-                            .roomId(roomId)
-                            .sender(name)
-                            .build());
+//            chatMessageService.connectMessage(
+//                    ChatMessageRequestDto.builder()
+//                            .type(ChatMessage.MessageType.ENTER)
+//                            .roomId(roomId)
+//                            .sender(name)
+//                            .build());
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
@@ -71,11 +71,11 @@ public class StompHandler implements ChannelInterceptor {
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
-                chatMessageService.connectMessage(ChatMessageRequestDto.builder()
-                        .type(ChatMessage.MessageType.QUIT)
-                        .roomId(roomId)
-                        .sender(name)
-                        .build());
+//                chatMessageService.connectMessage(ChatMessageRequestDto.builder()
+//                        .type(ChatMessage.MessageType.QUIT)
+//                        .roomId(roomId)
+//                        .sender(name)
+//                        .build());
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }
