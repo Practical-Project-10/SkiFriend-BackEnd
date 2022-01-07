@@ -52,17 +52,17 @@ public class StompHandler implements ChannelInterceptor {
             System.out.println("클라이언트 유저 이름: " + name);
             redisRepository.setUserNameInfo(sessionId, name);
 
-            User user = userRepository.findByUsername(name).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-            );
+//            User user = userRepository.findByUsername(name).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+//            );
 
-            chatMessageService.phoneNumMessage(
-                    ChatMessageRequestDto.builder()
-                            .type(ChatMessage.MessageType.PHONE_NUM)
-                            .roomId(roomId)
-                            .sender(name)
-                            .message(user.getPhoneNum())
-                            .build());
+//            chatMessageService.phoneNumMessage(
+//                    ChatMessageRequestDto.builder()
+//                            .type(ChatMessage.MessageType.PHONE_NUM)
+//                            .roomId(roomId)
+//                            .sender(name)
+//                            .message(user.getPhoneNum())
+//                            .build());
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
