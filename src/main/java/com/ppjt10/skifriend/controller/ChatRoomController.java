@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.controller;
 
+import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomCarpoolInfoDto;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomListResponseDto;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomResponseDto;
 import com.ppjt10.skifriend.entity.User;
@@ -39,6 +40,12 @@ public class ChatRoomController {
     ) {
         User user = userDetails.getUser();
         return ResponseEntity.ok().body(chatRoomService.getRoom(roomId, user));
+    }
+
+    // 특정 채팅방에서 게시물 정보 조회
+    @GetMapping("/chat/room/{roomId}/carpool")
+    public ResponseEntity<ChatRoomCarpoolInfoDto> getCarpoolInChatRoom(@PathVariable String roomId) {
+        return ResponseEntity.ok().body(chatRoomService.getCarpoolInChatRoom(roomId));
     }
 
 }
