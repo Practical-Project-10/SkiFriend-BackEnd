@@ -185,11 +185,8 @@ public class ChatMessageService {
         return ChatMessagePhoneNumDto.builder()
                 .roomId(chatMessage.getChatRoom().getRoomId())
                 .type(chatMessage.getType())
-//                .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-//                .sender(chatMessage.getUser().getNickname())
-//                .senderImg(chatMessage.getUser().getProfileImg())
-//                .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
+                .sender(chatMessage.getUser().getNickname())
                 .build();
 
     }
