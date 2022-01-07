@@ -50,8 +50,8 @@ public class ChatMessageService {
 
         List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
-        for(ChatMessage chatMessage : chatMessageList) {
-            chatMessageResponseDtoList.add(generateChatMessageResponseDto(chatMessage));
+        for(int i=1; i<chatMessageList.size(); i++) {
+            chatMessageResponseDtoList.add(generateChatMessageResponseDto(chatMessageList.get(i)));
         }
 
         return chatMessageResponseDtoList;
