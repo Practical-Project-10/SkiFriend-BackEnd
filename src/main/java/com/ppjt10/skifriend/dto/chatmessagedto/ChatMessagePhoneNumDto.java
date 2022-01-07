@@ -15,5 +15,6 @@ public class ChatMessagePhoneNumDto {
     private ChatMessage.MessageType type;
     private String roomId;
     private String message;
+    private String sender;
 
 }

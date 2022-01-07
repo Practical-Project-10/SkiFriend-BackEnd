@@ -82,6 +82,10 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
+        if(sender.getCareer() == null) {
+            throw new IllegalArgumentException("프로필 작성을 진행하셔야 채팅방에 입장하실 수 있습니다");
+        }
+
         Long writerId = carpool.getUser().getId();
         Long senderId = sender.getId();
         if (writerId.equals(senderId)) {
