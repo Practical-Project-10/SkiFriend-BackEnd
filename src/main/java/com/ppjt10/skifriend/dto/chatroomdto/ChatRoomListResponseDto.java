@@ -23,6 +23,6 @@ public class ChatRoomListResponseDto implements Comparable<ChatRoomListResponseD
 
     @Override
     public int compareTo(ChatRoomListResponseDto chatRoomListResponseDto) {
-        return this.lastMsgTime.compareTo(chatRoomListResponseDto.getLastMsgTime());
+        return chatRoomListResponseDto.getLastMsgTime().compareTo(this.lastMsgTime);
     }
 }
