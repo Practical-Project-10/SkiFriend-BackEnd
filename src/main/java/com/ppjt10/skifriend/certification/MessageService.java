@@ -15,29 +15,31 @@ import org.springframework.stereotype.Service;
 public class MessageService {
     private final SmsRedisRepository smsRedisRepository;
 
-//    @Value("${twililo.apikey}")
-//    private String apiKey;
-//
-//    @Value("${twililo.apisecret}")
-//    private String apiSecret;
-//
-//    @Value("${twililo.fromphone}")
-//    private String fromPhoneNum;
+    private final String SKIFRIEND = "[스키프렌드]";
+
+    @Value("${twililo.apikey}")
+    private String apiKey;
+
+    @Value("${twililo.apisecret}")
+    private String apiSecret;
+
+    @Value("${twililo.fromphone}")
+    private String fromPhoneNum;
 
     // 인증번호 전송하기
     public String getSmsRedisRepository(SignupPhoneNumDto requestDto) {
 
         // 랜덤한 인증 번호 생성
-        String randomNum = String.valueOf((int)(Math.random() * 9000) + 1000);
+        String randomNum = String.valueOf((int) (Math.random() * 9000) + 1000);
 
         // 발신 정보 설정
-//        Twilio.init(apiKey, apiSecret);
-//        String toPhoneNum = "+" + 82 + requestDto.getPhoneNumber();
-//
-//        Message message = Message.creator(
-//                new PhoneNumber(toPhoneNum),
-//                new PhoneNumber(fromPhoneNum),
-//                randomNum).create();
+        Twilio.init(apiKey, apiSecret);
+        String toPhoneNum = "+" + 82 + requestDto.getPhoneNumber();
+
+        Message message = Message.creator(
+                new PhoneNumber(toPhoneNum),
+                new PhoneNumber(fromPhoneNum),
+                SKIFRIEND + randomNum).create();
 
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
@@ -59,13 +61,13 @@ public class MessageService {
 
     public void createChatRoomAlert(String phoneNumber, String msg) {
         // 발신 정보 설정
-//        Twilio.init(apiKey, apiSecret);
-//        String toPhoneNum = "+" + 82 + phoneNumber;
-//
-//        Message message = Message.creator(
-//                new PhoneNumber(toPhoneNum),
-//                new PhoneNumber(fromPhoneNum),
-//                msg).create();
+        Twilio.init(apiKey, apiSecret);
+        String toPhoneNum = "+" + 82 + phoneNumber;
+
+        Message message = Message.creator(
+                new PhoneNumber(toPhoneNum),
+                new PhoneNumber(fromPhoneNum),
+                SKIFRIEND + msg).create();
 
         System.out.println(phoneNumber + "에게 채팅방 생성 알림 전송 : " + msg);
     }

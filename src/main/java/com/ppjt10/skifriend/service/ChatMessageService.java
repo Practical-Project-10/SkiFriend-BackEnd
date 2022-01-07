@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 
-import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
@@ -50,7 +50,7 @@ public class ChatMessageService {
         List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
         for(int i=1; i<chatMessageList.size(); i++) {
-            chatMessageResponseDtoList.add(generateChatMessageResponseDto(chatMessageList.get(i)));
+            chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
         }
 
         return chatMessageResponseDtoList;
@@ -107,58 +107,88 @@ public class ChatMessageService {
 
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
-        chatMessageRepository.save(message);
+        if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
+            String phoneNum = message.getUser().getPhoneNum();
+            message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
+            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
 
-        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
-                .roomId(message.getChatRoom().getRoomId())
-                .type(message.getType())
-                .messageId(message.getId())
-                .message(message.getMessage())
-                .sender(message.getUser().getNickname())
-                .senderImg(message.getUser().getProfileImg())
-                .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
-                .build();
+            System.out.println("전화번호 전송");
+            redisPublisher.publishPhoneNum(messageDto);
+            System.out.println("전화번호 전송 성공");
 
-        System.out.println("전송");
-        redisPublisher.publish(messageDto);
-        System.out.println("성공");
+        } else {
+            chatMessageRepository.save(message);
+
+            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message);
+
+            System.out.println("전송");
+            redisPublisher.publish(messageDto);
+            System.out.println("성공");
+        }
+
+
     }
 
     // 상대방 전화번호 알림 메시지
-    public void phoneNumMessage(ChatMessageRequestDto requestDto) {
+//    public void phoneNumMessage(ChatMessageRequestDto requestDto) {
+//
+//        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+//
+//        User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
+//                () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
+//        );
+//
+//        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
+//
+//        if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
+//            message.setMessage(message.getUser().getNickname() + "님의 번호는 " + message.getMessage() + "입니다");
+//        }
+//
+//        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
+//                .roomId(message.getChatRoom().getRoomId())
+//                .type(message.getType())
+//                .message(message.getMessage())
+//                .build();
+//
+//        System.out.println("전송");
+//        redisPublisher.publish(messageDto);
+//        System.out.println("성공");
+//    }
 
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
-
-        User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
-                () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
-        );
-
-        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
-
-        if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
-            message.setMessage(message.getUser().getNickname() + "님의 번호는 " + message.getMessage() + "입니다");
-        }
-
-        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
-                .roomId(message.getChatRoom().getRoomId())
-                .type(message.getType())
-                .message(message.getMessage())
-                .build();
-
-        System.out.println("전송");
-        redisPublisher.publish(messageDto);
-        System.out.println("성공");
-    }
-
-
-    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+    // 저장된 메시지 목록 조회
+    private ChatMessageResponseDto generateChatMessageListResponseDto(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
+                .message(chatMessage.getMessage())
                 .sender(chatMessage.getUser().getNickname())
                 .senderImg(chatMessage.getUser().getProfileImg())
-                .message(chatMessage.getMessage())
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
+
+    // 메시지 보내기
+    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+        return ChatMessageResponseDto.builder()
+                .roomId(chatMessage.getChatRoom().getRoomId())
+                .type(chatMessage.getType())
+                .messageId(chatMessage.getId())
+                .message(chatMessage.getMessage())
+                .sender(chatMessage.getUser().getNickname())
+                .senderImg(chatMessage.getUser().getProfileImg())
+                .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
+                .build();
+    }
+
+    // 전화번호 보내기
+    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage) {
+        return ChatMessagePhoneNumDto.builder()
+                .roomId(chatMessage.getChatRoom().getRoomId())
+                .type(chatMessage.getType())
+                .message(chatMessage.getMessage())
+                .sender(chatMessage.getUser().getNickname())
+                .build();
+
+    }
+
 }

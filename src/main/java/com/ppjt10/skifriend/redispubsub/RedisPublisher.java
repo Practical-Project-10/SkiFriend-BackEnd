@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.redispubsub;
 
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,5 +17,9 @@ public class RedisPublisher {
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), messageDto);
 
+    }
+
+    public void publishPhoneNum(ChatMessagePhoneNumDto messageDto) {
+        redisTemplate.convertAndSend(channelTopic.getTopic(), messageDto);
     }
 }
