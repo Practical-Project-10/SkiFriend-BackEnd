@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class MessageService {
     private final SmsRedisRepository smsRedisRepository;
 
-    private final String SKIFRIEND = "[스키프렌드]";
+    private final String SKIFRIEND = "[스키프렌드] ";
 
     @Value("${twililo.apikey}")
     private String apiKey;
@@ -31,6 +31,7 @@ public class MessageService {
 
         // 랜덤한 인증 번호 생성
         String randomNum = String.valueOf((int) (Math.random() * 9000) + 1000);
+        System.out.println("인증번호" + randomNum);
 
         // 발신 정보 설정
         Twilio.init(apiKey, apiSecret);
@@ -44,7 +45,7 @@ public class MessageService {
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
 
-        return "문자 전송이 완료되었습니다. 인증번호는 " + randomNum + " 입니다.";
+        return "문자 전송이 완료되었습니다.";
     }
 
     // 인증 번호 검증
