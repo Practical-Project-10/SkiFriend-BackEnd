@@ -23,12 +23,11 @@ import java.util.List;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    //    private final SimpMessageSendingOperations messaging;
 //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
-    private final S3Uploader s3Uploader;
-    private final String imageDirName = "chatMessage";
+//    private final S3Uploader s3Uploader;
+//    private final String imageDirName = "chatMessage";
 
     // 채팅방 String Id 값 가져오기, Url 생성에 이용
     public String getRoomId(String destination) {
