@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarpoolFilterRequestDto{
     private String carpoolType;
-    private int memberNum;
+    private String memberNum;
     private String startLocation;
     private String endLocation;
     private String date;
+    private Boolean status;
 }

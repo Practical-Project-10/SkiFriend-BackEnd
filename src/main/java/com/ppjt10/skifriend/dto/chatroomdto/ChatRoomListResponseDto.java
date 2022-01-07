@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatRoomListResponseDto{
+public class ChatRoomListResponseDto implements Comparable<ChatRoomListResponseDto>{
     private String roomName;
     private String roomId;
     private Long longRoomId;
@@ -17,4 +17,12 @@ public class ChatRoomListResponseDto{
     private String lastMsgTime;
     private String userProfile;
     private int notVerifiedMsgCnt;
+
+
+
+
+    @Override
+    public int compareTo(ChatRoomListResponseDto chatRoomListResponseDto) {
+        return this.lastMsgTime.compareTo(chatRoomListResponseDto.getLastMsgTime());
+    }
 }

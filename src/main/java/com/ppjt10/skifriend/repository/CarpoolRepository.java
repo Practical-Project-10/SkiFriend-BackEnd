@@ -12,24 +12,24 @@ import java.util.Optional;
 
 public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
 
-    List<Carpool> findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc(
+    List<Carpool> findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingOrderByCreateAtDesc(
             String resortName,
             String carpoolType,
             String startLocation,
             String endLocation,
             String date,
-            int memberNum
+            String memberNum
     );
 
-    List<Carpool> findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsGreaterThanEqualOrderByCreateAtDesc(
+    List<Carpool> findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingAndStatusOrderByCreateAtDesc(
             String resortName,
             String carpoolType,
             String startLocation,
             String endLocation,
             String date,
-            int memberNum
+            String memberNum,
+            boolean status
     );
-
 
     List<Carpool> findAllByUser(User user);
 

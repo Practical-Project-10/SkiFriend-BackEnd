@@ -51,6 +51,8 @@ public class ChatRoomService {
             chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
         }
 
+        chatRoomListResponseDtoList.sort(ChatRoomListResponseDto::compareTo);
+
         return chatRoomListResponseDtoList;
     }
 

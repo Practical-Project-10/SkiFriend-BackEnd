@@ -45,7 +45,7 @@ public class Carpool extends Timestamped {
     private int price;
 
     @Column(nullable = false)
-    private int memberNum;
+    private String memberNum;
 
     @Column(nullable = false)
     private String notice;

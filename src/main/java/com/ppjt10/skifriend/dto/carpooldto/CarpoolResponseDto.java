@@ -23,7 +23,7 @@ public class CarpoolResponseDto{
     private String date;
     private String time;
     private int price;
-    private int memberNum;
+    private String memberNum;
     private String notice;
     private boolean status;
 }
