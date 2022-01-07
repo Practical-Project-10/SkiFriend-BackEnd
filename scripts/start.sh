@@ -5,7 +5,7 @@ ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
 REPOSITORY=/home/ubuntu/app/step
-IMAGEPATH=/home/ubuntu/app/
+IMAGEPATH=/home/ubuntu/app
 
 echo "> 이미지 저장 폴더 만들기"
 sudo mkdir ~/app/imageCollection
