@@ -118,7 +118,7 @@ public class ChatRoomService {
             chatMessageRepository.save(initMsg);
 
             // 작성자가 안 읽은 메시지 수를 저장
-            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 0);
+            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 1);
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender, chatRoom);
