@@ -108,12 +108,14 @@ public class ChatMessageService {
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
-            message.setMessage(message.getUser().getNickname() + "님의 번호는 " + message.getMessage() + "입니다");
+            String phoneNum = message.getUser().getPhoneNum();
+            message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
             ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
 
             System.out.println("전화번호 전송");
             redisPublisher.publishPhoneNum(messageDto);
             System.out.println("전화번호 전송 성공");
+
         } else {
             chatMessageRepository.save(message);
 
