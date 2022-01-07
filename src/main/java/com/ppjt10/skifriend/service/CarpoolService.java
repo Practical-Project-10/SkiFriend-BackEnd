@@ -100,7 +100,7 @@ public class CarpoolService {
     @Transactional
     public List<CarpoolResponseDto> sortCarpools(String resortName, CarpoolFilterRequestDto requestDto) {
         List<Carpool> sortedCategories;
-        if (requestDto.getStatus() == null) {
+        if (!requestDto.getStatus()) {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingOrderByCreateAtDesc
                             (
