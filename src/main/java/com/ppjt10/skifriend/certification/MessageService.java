@@ -5,6 +5,7 @@ import com.ppjt10.skifriend.dto.signupdto.SignupSmsCertificationDto;
 import com.ppjt10.skifriend.service.SignupService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +53,13 @@ public class MessageService {
         System.out.println(randomNum);
 
         // 발신 정보 설정
-//        HashMap<String, String> params = makeParams(requestDto.getPhoneNumber(), randomNum);
-//
-//        try {
-//            coolsms.send(params);
-//        } catch (CoolsmsException e) {
-//            System.out.println(e.getMessage());
-//        }
+        HashMap<String, String> params = makeParams(requestDto.getPhoneNumber(), randomNum);
+
+        try {
+            coolsms.send(params);
+        } catch (CoolsmsException e) {
+            System.out.println(e.getMessage());
+        }
 
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);

@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.service;
 
 
 import com.ppjt10.skifriend.certification.MessageService;
+import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomCarpoolInfoDto;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomListResponseDto;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomResponseDto;
 import com.ppjt10.skifriend.entity.*;
@@ -72,6 +73,7 @@ public class ChatRoomService {
         return generateChatRoomResponseDto(chatRoom, opponent.getNickname());
     }
 
+
     // 채팅방 생성 메소드
     @Transactional
     public ChatRoomResponseDto createChatRoom(Long carpoolId, User sender) {
@@ -125,7 +127,15 @@ public class ChatRoomService {
             return generateChatRoomResponseDto(chatRoom, writerNickname);
         }
     }
-    //endregion
+
+    // 해당 채팅방에서 카풀 게시물 정보 조회 메소드
+    public ChatRoomCarpoolInfoDto getCarpoolInChatRoom(String roomId) {
+            ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+            Carpool carpool = carpoolRepository.findById(chatRoom.getCarpoolId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다")
+            );
+            return generateChatRoomCarpoolInfoDto(carpool);
+    }
 
     // 채팅방 생성
     private ChatRoomResponseDto generateChatRoomResponseDto(ChatRoom chatRoom, String nickName) {
@@ -157,6 +167,21 @@ public class ChatRoomService {
                 .notVerifiedMsgCnt(notVerifiedMsgCnt)
                 .userProfile(other.getProfileImg())
                 .build();
+    }
+
+    // 해당 채팅방에서 게시물 정보 조회
+    private ChatRoomCarpoolInfoDto generateChatRoomCarpoolInfoDto(Carpool carpool){
+        return ChatRoomCarpoolInfoDto.builder()
+                .title(carpool.getTitle())
+                .startLocation(carpool.getStartLocation())
+                .endLocation(carpool.getEndLocation())
+                .date(carpool.getDate())
+                .time(carpool.getTime())
+                .memberNum(carpool.getMemberNum())
+                .price(carpool.getPrice())
+                .notice(carpool.getNotice())
+                .build();
+
     }
 
 }
