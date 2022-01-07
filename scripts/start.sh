@@ -7,6 +7,9 @@ source ${ABSDIR}/profile.sh
 REPOSITORY=/home/ubuntu/app/step
 IMAGEPATH=/home/ubuntu/app/
 
+echo "> 이미지 저장 폴더 만들기"
+sudo mkdir ~/app/imageCollection
+
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/zip/skiFriend-0.0.1-SNAPSHOT.jar $REPOSITORY/"
 
