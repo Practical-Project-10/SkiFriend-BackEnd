@@ -110,6 +110,9 @@ public class ChatMessageService {
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
             String phoneNum = message.getUser().getPhoneNum();
             message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
+
+            chatMessageRepository.save(message);
+
             ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
 
             System.out.println("전화번호 전송");
