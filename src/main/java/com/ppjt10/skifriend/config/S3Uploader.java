@@ -69,7 +69,7 @@ public class S3Uploader {
 
     // 로컬에 파일 업로드 하기
     private Optional<File> convert(MultipartFile file) throws IOException {
-        
+
         System.out.println("이미지 경로!!!!!!!!!!!!!!!!!!!!!!!! : " + System.getProperty("user.dir") + "/" + file.getOriginalFilename());
 
         File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
