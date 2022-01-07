@@ -51,6 +51,8 @@ public class ChatRoomService {
             chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
         }
 
+
+
         return chatRoomListResponseDtoList;
     }
 
