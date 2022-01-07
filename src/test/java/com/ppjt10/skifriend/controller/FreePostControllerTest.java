@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupRequestDto;
+
 import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
