@@ -5,6 +5,7 @@ ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
 REPOSITORY=/home/ubuntu/app/step
+IMAGEPATH=/home/ubuntu/app/
 
 echo "> Build 파일 복사"
 echo "> cp $REPOSITORY/zip/skiFriend-0.0.1-SNAPSHOT.jar $REPOSITORY/"
@@ -31,6 +32,7 @@ echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
 nohup java -jar \
     -Dspring.config.location=classpath:/application.properties,classpath:/application-$IDLE_PROFILE.properties \
     -Dspring.profiles.active=$IDLE_PROFILE \
+    -Dimage.path=$IMAGEPATH \
     $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
 
 #    ,/home/ubuntu/app/application-oauth.properties,/home/ubuntu/app/application-real-db.properties
