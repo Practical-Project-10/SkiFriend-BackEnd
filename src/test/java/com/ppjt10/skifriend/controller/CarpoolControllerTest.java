@@ -112,7 +112,7 @@ class CarpoolControllerTest {
                 .date("2021-12-01")
                 .time("17:00")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의")
                 .build();
 
@@ -197,7 +197,7 @@ class CarpoolControllerTest {
                 .date("2021-12-01")
                 .time("17:00")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의하세요!")
                 .build();
 
@@ -259,7 +259,7 @@ class CarpoolControllerTest {
                 .date("2021-12-01")
                 .time("17:00")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의")
                 .build();
 
@@ -293,7 +293,7 @@ class CarpoolControllerTest {
                 .date("2021-12-01")
                 .time("17:00")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의")
                 .build();
 
@@ -328,7 +328,7 @@ class CarpoolControllerTest {
                 .date("2021-12-01")
                 .time("17시00분")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의")
                 .build();
 
@@ -363,7 +363,7 @@ class CarpoolControllerTest {
                 .date("2021년12월01일")
                 .time("17시00분")
                 .price(10000)
-                .memberNum(4)
+                .memberNum("4")
                 .notice("주의")
                 .build();
 
