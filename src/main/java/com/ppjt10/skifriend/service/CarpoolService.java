@@ -100,9 +100,9 @@ public class CarpoolService {
     @Transactional
     public List<CarpoolResponseDto> sortCarpools(String resortName, CarpoolFilterRequestDto requestDto) {
         List<Carpool> sortedCategories;
-        if (requestDto.getMemberNum() > 0 && requestDto.getMemberNum() < 5) {
+        if (requestDto.getStatus() == null) {
             sortedCategories =
-                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsOrderByCreateAtDesc
+                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingOrderByCreateAtDesc
                             (
                                     resortName,
                                     requestDto.getCarpoolType(), //빈 값은 "" 으로
@@ -113,14 +113,15 @@ public class CarpoolService {
                             );
         } else {
             sortedCategories =
-                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsGreaterThanEqualOrderByCreateAtDesc
+                    carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingAndStatusOrderByCreateAtDesc
                             (
                                     resortName,
                                     requestDto.getCarpoolType(), //빈 값은 "" 으로
                                     requestDto.getStartLocation(), //빈 값은 "" 으로
                                     requestDto.getEndLocation(), //빈 값은 "" 으로
                                     requestDto.getDate(), //빈 값은 "" 으로
-                                    requestDto.getMemberNum() // 빈 값은 숫자 맥스로
+                                    requestDto.getMemberNum(), // 빈 값은 숫자 맥스로
+                                    requestDto.getStatus()
                             );
         }
 
