@@ -65,16 +65,19 @@ public class ChatRoomService {
         // 채팅방에 있는 모든 유저 정보 가져오기
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
 
-        if(!chatUserInfoList.get(0).getUser().getId().equals(userId) && !chatUserInfoList.get(1).getUser().getId().equals(userId)) {
+        if (!chatUserInfoList.get(0).getUserId().equals(userId) && !chatUserInfoList.get(1).getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 채팅방에 참여중이 아닙니다");
         }
 
-        User opponent;
-        if(chatUserInfoList.get(0).getUser().getId().equals(userId)) {
-            opponent = chatUserInfoList.get(1).getUser();
+        Long opponentId;
+        if (chatUserInfoList.get(0).getUserId().equals(userId)) {
+            opponentId = chatUserInfoList.get(1).getUserId();
         } else {
-            opponent = chatUserInfoList.get(0).getUser();
+            opponentId = chatUserInfoList.get(0).getUserId();
         }
+        User opponent = userRepository.findById(opponentId).orElseThrow(
+                () -> new IllegalArgumentException("유저가 없어용")
+        );
         return generateChatRoomResponseDto(chatRoom, opponent.getNickname());
     }
 
@@ -87,11 +90,11 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
-        if(sender.getCareer() == null) {
+        if (sender.getCareer() == null) {
             throw new IllegalArgumentException("프로필 작성을 진행하셔야 채팅방에 입장하실 수 있습니다");
         }
 
-        Long writerId = carpool.getUser().getId();
+        Long writerId = carpool.getUserId();
         Long senderId = sender.getId();
         if (writerId.equals(senderId)) {
             throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
@@ -118,7 +121,7 @@ public class ChatRoomService {
             chatRoomRepository.save(chatRoom);
 
             //방 생성시 첫 메시지 강제전송
-            ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, sender, ":)");
+            ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, sender.getId(), ":)");
 
             chatMessageRepository.save(initMsg);
 
@@ -126,11 +129,11 @@ public class ChatRoomService {
             redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 1);
 
             //sender 정보
-            ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender, chatRoom);
+            ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);
 
             //카풀 작성자 정보
-            ChatUserInfo chatUserInfoWriter = new ChatUserInfo(writer, chatRoom);
+            ChatUserInfo chatUserInfoWriter = new ChatUserInfo(writer.getId(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoWriter);
 
             return generateChatRoomResponseDto(chatRoom, writerNickname);
@@ -139,11 +142,11 @@ public class ChatRoomService {
 
     // 해당 채팅방에서 카풀 게시물 정보 조회 메소드
     public ChatRoomCarpoolInfoDto getCarpoolInChatRoom(String roomId) {
-            ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
-            Carpool carpool = carpoolRepository.findById(chatRoom.getCarpoolId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다")
-            );
-            return generateChatRoomCarpoolInfoDto(carpool);
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+        Carpool carpool = carpoolRepository.findById(chatRoom.getCarpoolId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다")
+        );
+        return generateChatRoomCarpoolInfoDto(carpool);
     }
 
     // 채팅방 생성
@@ -179,7 +182,7 @@ public class ChatRoomService {
     }
 
     // 해당 채팅방에서 게시물 정보 조회
-    private ChatRoomCarpoolInfoDto generateChatRoomCarpoolInfoDto(Carpool carpool){
+    private ChatRoomCarpoolInfoDto generateChatRoomCarpoolInfoDto(Carpool carpool) {
         return ChatRoomCarpoolInfoDto.builder()
                 .title(carpool.getTitle())
                 .startLocation(carpool.getStartLocation())

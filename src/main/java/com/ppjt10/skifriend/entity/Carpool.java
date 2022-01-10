@@ -15,9 +15,8 @@ public class Carpool extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
@@ -53,8 +52,8 @@ public class Carpool extends Timestamped {
     @Column(nullable = false)
     private boolean status;
 
-    public Carpool(User user, CarpoolRequestDto requestDto, SkiResort skiResort) {
-        this.user = user;
+    public Carpool(Long userId, CarpoolRequestDto requestDto, SkiResort skiResort) {
+        this.userId = userId;
         this.carpoolType = requestDto.getCarpoolType();
         this.title = requestDto.getTitle();
         this.skiResort = skiResort;

@@ -26,7 +26,7 @@ import java.util.List;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-//    private final MessageService messageService;
+    //    private final MessageService messageService;
 //    private final ChatUserInfoRepository chatUserInfoRepository;
 //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
@@ -48,13 +48,13 @@ public class ChatMessageService {
     public List<ChatMessageResponseDto> getAllMessages(String roomId, User user) {
         Long userId = user.getId();
         ChatRoom foundChatRoom = chatRoomRepository.findByRoomId(roomId);
-        if(!foundChatRoom.getSenderId().equals(userId) && !foundChatRoom.getWriterId().equals(userId)) {
+        if (!foundChatRoom.getSenderId().equals(userId) && !foundChatRoom.getWriterId().equals(userId)) {
             throw new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다");
         }
 
         List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
-        for(int i=1; i<chatMessageList.size(); i++) {
+        for (int i = 1; i < chatMessageList.size(); i++) {
             chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
         }
 
@@ -100,7 +100,6 @@ public class ChatMessageService {
     //endregion
 
 
-
     // 채팅방 메시지 보내기
     public void sendChatMessage(ChatMessageRequestDto requestDto) {
 
@@ -122,11 +121,12 @@ public class ChatMessageService {
 //            );
 //        }
 
-        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
+        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user.getId(), requestDto.getMessage());
 
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
-            String phoneNum = message.getUser().getPhoneNum();
-            message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
+
+            String phoneNum = user.getPhoneNum();
+            message.setMessage(phoneNum.substring(0, 3) + "-" + phoneNum.substring(3, 7) + "-" + phoneNum.substring(7));
 
             chatMessageRepository.save(message);
 
@@ -180,36 +180,72 @@ public class ChatMessageService {
 
     // 저장된 메시지 목록 조회
     private ChatMessageResponseDto generateChatMessageListResponseDto(ChatMessage chatMessage) {
+        String profileImg;
+        String nickname;
+        try {
+            User user = userRepository.findById(chatMessage.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+            profileImg = user.getProfileImg();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+            profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+        }
+
+
         return ChatMessageResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
-                .senderImg(chatMessage.getUser().getProfileImg())
+                .sender(nickname)
+                .senderImg(profileImg)
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 
     // 메시지 보내기
     private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+        String profileImg;
+        String nickname;
+        try {
+            User user = userRepository.findById(chatMessage.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+            profileImg = user.getProfileImg();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+            profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+        }
         return ChatMessageResponseDto.builder()
                 .roomId(chatMessage.getChatRoom().getRoomId())
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
-                .senderImg(chatMessage.getUser().getProfileImg())
+                .sender(nickname)
+                .senderImg(profileImg)
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 
     // 전화번호 보내기
     private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage) {
+
+        String nickname;
+        try {
+            User user = userRepository.findById(chatMessage.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return ChatMessagePhoneNumDto.builder()
                 .roomId(chatMessage.getChatRoom().getRoomId())
                 .type(chatMessage.getType())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
+                .sender(nickname)
                 .build();
 
     }
