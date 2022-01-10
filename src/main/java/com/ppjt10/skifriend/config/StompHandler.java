@@ -67,6 +67,9 @@ public class StompHandler implements ChannelInterceptor {
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
+                // 마지막 접속 시간 및 메시지 수 체크
+                redisRepository.setLastMsgTimeCnt(roomId, name, currentTime, chatMessageCount);
+
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }

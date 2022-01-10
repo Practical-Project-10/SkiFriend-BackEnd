@@ -20,6 +20,7 @@ public class RedisRepository {
     public static final String ENTER_INFO = "ENTER_INFO";
     public static final String NAME_INFO = "NAME_INFO";
     public static final String LAST_MESSAGE_TIME = "LAST_MESSAGE_TIME";
+    public static final String LAST_MSG_TIME_CNT = "LAST_MSG_TIME_CNT";
 
 
     @Resource(name = "redisTemplate")
@@ -73,8 +74,21 @@ public class RedisRepository {
         timeOperations.set(LAST_MESSAGE_TIME + "_" + roomId + "_" + name, name + "/" + time);
     }
 
+    // 마지막으로 읽은 시간들 가져오기
     public List<String> getLastMessageReadTime() {
         Set<String> keys = timeOperations.getOperations().keys(LAST_MESSAGE_TIME+"*");
         return timeOperations.multiGet(keys);
     }
+
+    // 마지막으로 읽은 시간 체크 및 메시지 수 체크
+    public void setLastMsgTimeCnt(String roomId, String name, String time, int chatMessageCount) {
+        timeOperations.set(LAST_MSG_TIME_CNT + "_" + roomId + "_" + name, roomId + "/" + name + "/" + time + "/" + chatMessageCount);
+    }
+
+    // 마지막으로 읽은 시간 체크 및 메시지 수 가져오기
+    public List<String> getLastMsgTimeCnt() {
+        Set<String> keys = timeOperations.getOperations().keys(LAST_MSG_TIME_CNT + "*");
+        return timeOperations.multiGet(keys);
+    }
+
 }

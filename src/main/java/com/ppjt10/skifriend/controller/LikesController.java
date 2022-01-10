@@ -17,8 +17,8 @@ public class LikesController {
 
     // 좋아요 기능
     @PostMapping("/board/freeBoard/{postId}/likes")
-    public void changeLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public String changeLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        likesService.changeLike(postId, user);
+        return likesService.changeLike(postId, user);
     }
 }
