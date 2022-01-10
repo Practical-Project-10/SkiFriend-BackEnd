@@ -44,7 +44,7 @@ public class TimeScheduler {
 
     // 15분 마다 실행
     @Transactional
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0 0/1 * * *")
     public void chatAlertScheduler() {
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -62,7 +62,7 @@ public class TimeScheduler {
             Long timeDiff = Duration.between(lastMessageTime, currentTime).getSeconds();
             int presentMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
             int restMsgCnt = presentMsgCnt - lastMsgCnt;
-            if((timeDiff / 30) > 0 && restMsgCnt >0) {
+            if((timeDiff / 3600) > 0 && restMsgCnt >0) {
                 userNameList.add(lastMsgName);
             }
         }
@@ -70,7 +70,8 @@ public class TimeScheduler {
             User user = userRepository.findByUsername(lastMessageName).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 유저가 없습니다")
             );
-            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+//            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+            System.out.println("알림왔대, 채팅방 확인좀해라");
         }
     }
 }
