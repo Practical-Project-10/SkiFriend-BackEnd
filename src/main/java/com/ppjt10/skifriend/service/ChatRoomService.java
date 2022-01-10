@@ -42,11 +42,11 @@ public class ChatRoomService {
             User other;
             if (chatRoom.getSenderId().equals(userId)) {
                 other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
-                        () -> new IllegalArgumentException("")
+                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
                 );
             } else {
                 other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
-                        () -> new IllegalArgumentException("")
+                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
                 );
             }
             chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
@@ -64,6 +64,11 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         // 채팅방에 있는 모든 유저 정보 가져오기
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+
+        if(!chatUserInfoList.get(0).getUser().getId().equals(userId) && !chatUserInfoList.get(1).getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("해당 채팅방에 참여중이 아닙니다");
+        }
+
         User opponent;
         if(chatUserInfoList.get(0).getUser().getId().equals(userId)) {
             opponent = chatUserInfoList.get(1).getUser();
@@ -81,6 +86,10 @@ public class ChatRoomService {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
+
+        if(sender.getCareer() == null) {
+            throw new IllegalArgumentException("프로필 작성을 진행하셔야 채팅방에 입장하실 수 있습니다");
+        }
 
         Long writerId = carpool.getUser().getId();
         Long senderId = sender.getId();
@@ -114,7 +123,7 @@ public class ChatRoomService {
             chatMessageRepository.save(initMsg);
 
             // 작성자가 안 읽은 메시지 수를 저장
-            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 0);
+            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 1);
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender, chatRoom);

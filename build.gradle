@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'junit:junit:4.13.1'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
@@ -42,7 +43,7 @@ dependencies {
     implementation 'com.auth0:java-jwt:3.13.0'
 
     // Message SMS
-    implementation 'net.nurigo:javaSDK:2.2'
+    implementation group: "com.twilio.sdk", name: "twilio", version: "8.24.0"
 
     // AWS S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'

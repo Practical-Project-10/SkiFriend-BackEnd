@@ -2,8 +2,10 @@ package com.ppjt10.skifriend.config;
 
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
+import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class StompHandler implements ChannelInterceptor {
     private final JwtDecoder jwtDecoder;
     private final ChatMessageService chatMessageService;
+//    private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final ChatMessageRepository chatMessageRepository;
 
@@ -49,13 +52,6 @@ public class StompHandler implements ChannelInterceptor {
             System.out.println("클라이언트 유저 이름: " + name);
             redisRepository.setUserNameInfo(sessionId, name);
 
-
-//            chatMessageService.connectMessage(
-//                    ChatMessageRequestDto.builder()
-//                            .type(ChatMessage.MessageType.ENTER)
-//                            .roomId(roomId)
-//                            .sender(name)
-//                            .build());
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
@@ -71,11 +67,6 @@ public class StompHandler implements ChannelInterceptor {
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
-//                chatMessageService.connectMessage(ChatMessageRequestDto.builder()
-//                        .type(ChatMessage.MessageType.QUIT)
-//                        .roomId(roomId)
-//                        .sender(name)
-//                        .build());
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }

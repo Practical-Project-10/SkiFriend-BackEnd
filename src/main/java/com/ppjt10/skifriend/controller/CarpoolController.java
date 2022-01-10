@@ -20,7 +20,7 @@ import java.util.List;
 public class CarpoolController {
 
     private final CarpoolService carpoolService;
-//
+
     // 카풀 게시물 조회
     @GetMapping("/board/carpool/{skiResort}")
     public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort) {
@@ -47,7 +47,7 @@ public class CarpoolController {
         return ResponseEntity.ok().body(carpoolService.updateCarpool(carpoolId, requestDto, user));
     }
 
-    // 카풀 게시글 삭제
+    // 카풀 게시물 삭제
     @DeleteMapping("/board/carpool/{carpoolId}")
     public void deleteCarpool(@PathVariable Long carpoolId,
                               @AuthenticationPrincipal UserDetailsImpl userDetails

@@ -1,15 +1,18 @@
 package com.ppjt10.skifriend.service;
 
 
-import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.certification.MessageService;
+import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
+import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
+import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +26,13 @@ import java.util.List;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    //    private final SimpMessageSendingOperations messaging;
+//    private final MessageService messageService;
+//    private final ChatUserInfoRepository chatUserInfoRepository;
 //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
-    private final S3Uploader s3Uploader;
-    private final String imageDirName = "chatMessage";
+//    private final S3Uploader s3Uploader;
+//    private final String imageDirName = "chatMessage";
 
     // 채팅방 String Id 값 가져오기, Url 생성에 이용
     public String getRoomId(String destination) {
@@ -51,7 +55,7 @@ public class ChatMessageService {
         List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
         for(int i=1; i<chatMessageList.size(); i++) {
-            chatMessageResponseDtoList.add(generateChatMessageResponseDto(chatMessageList.get(i)));
+            chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
         }
 
         return chatMessageResponseDtoList;
@@ -106,27 +110,50 @@ public class ChatMessageService {
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
 
+//        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+//        User opponent;
+//        if(chatUserInfoList.get(0).getUser().getId() != user.getId()) {
+//            opponent = userRepository.findById(chatUserInfoList.get(1).getUser().getId()).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+//            );
+//        } else {
+//            opponent = userRepository.findById(chatUserInfoList.get(0).getUser().getId()).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+//            );
+//        }
+
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
-        chatMessageRepository.save(message);
+        if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
+            String phoneNum = message.getUser().getPhoneNum();
+            message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
 
-        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
-                .roomId(message.getChatRoom().getRoomId())
-                .type(message.getType())
-                .messageId(message.getId())
-                .message(message.getMessage())
-                .sender(message.getUser().getNickname())
-                .senderImg(message.getUser().getProfileImg())
-                .createdAt(TimeConversion.timeChatConversion(message.getCreateAt()))
-                .build();
+            chatMessageRepository.save(message);
 
-        System.out.println("전송");
-        redisPublisher.publish(messageDto);
-        System.out.println("성공");
+//            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
+
+
+            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
+
+            System.out.println("전화번호 전송");
+            redisPublisher.publishPhoneNum(messageDto);
+            System.out.println("전화번호 전송 성공");
+
+        } else {
+            chatMessageRepository.save(message);
+
+            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message);
+
+            System.out.println("전송");
+            redisPublisher.publish(messageDto);
+            System.out.println("성공");
+        }
+
+
     }
 
-    // 채팅방 입장 구독 퇴장 메시지
-//    public void connectMessage(ChatMessageRequestDto requestDto) {
+    // 상대방 전화번호 알림 메시지
+//    public void phoneNumMessage(ChatMessageRequestDto requestDto) {
 //
 //        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
 //
@@ -136,18 +163,14 @@ public class ChatMessageService {
 //
 //        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 //
-//        if (ChatMessage.MessageType.ENTER.equals(message.getType()))
-//            message.setMessage(message.getUser().getNickname() + "님이 입장하셨습니다.");
-//        else if (ChatMessage.MessageType.QUIT.equals(message.getType())) {
-//            message.setMessage(message.getUser().getNickname() + "님이 퇴장하셨습니다.");
+//        if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
+//            message.setMessage(message.getUser().getNickname() + "님의 번호는 " + message.getMessage() + "입니다");
 //        }
-//
 //
 //        ChatMessageResponseDto messageDto = ChatMessageResponseDto.builder()
 //                .roomId(message.getChatRoom().getRoomId())
 //                .type(message.getType())
 //                .message(message.getMessage())
-//                .sender(message.getUser().getNickname())
 //                .build();
 //
 //        System.out.println("전송");
@@ -155,15 +178,40 @@ public class ChatMessageService {
 //        System.out.println("성공");
 //    }
 
-
-    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+    // 저장된 메시지 목록 조회
+    private ChatMessageResponseDto generateChatMessageListResponseDto(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
+                .message(chatMessage.getMessage())
                 .sender(chatMessage.getUser().getNickname())
                 .senderImg(chatMessage.getUser().getProfileImg())
-                .message(chatMessage.getMessage())
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
+
+    // 메시지 보내기
+    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+        return ChatMessageResponseDto.builder()
+                .roomId(chatMessage.getChatRoom().getRoomId())
+                .type(chatMessage.getType())
+                .messageId(chatMessage.getId())
+                .message(chatMessage.getMessage())
+                .sender(chatMessage.getUser().getNickname())
+                .senderImg(chatMessage.getUser().getProfileImg())
+                .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
+                .build();
+    }
+
+    // 전화번호 보내기
+    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage) {
+        return ChatMessagePhoneNumDto.builder()
+                .roomId(chatMessage.getChatRoom().getRoomId())
+                .type(chatMessage.getType())
+                .message(chatMessage.getMessage())
+                .sender(chatMessage.getUser().getNickname())
+                .build();
+
+    }
+
 }
