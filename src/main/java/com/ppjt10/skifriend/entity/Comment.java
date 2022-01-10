@@ -15,9 +15,8 @@ public class Comment extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
@@ -26,8 +25,8 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    public Comment(User user, FreePost freePost, String content){
-        this.user = user;
+    public Comment(Long userId, FreePost freePost, String content){
+        this.userId = userId;
         this.freePost = freePost;
         this.content = content;
     }

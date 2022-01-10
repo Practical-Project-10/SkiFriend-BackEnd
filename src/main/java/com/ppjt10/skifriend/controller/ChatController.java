@@ -37,9 +37,7 @@ public class ChatController {
     public void chatMessage(@Payload ChatMessageRequestDto requestDto,
                             @Header("Authorization") String token
     ) {
-
         token = token.substring(7);
-
         requestDto.setSender(jwtDecoder.decodeUsername(token));
 
         chatMessageService.sendChatMessage(requestDto);

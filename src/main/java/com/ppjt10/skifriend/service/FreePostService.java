@@ -9,14 +9,9 @@ import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostResponseDto;
 import com.ppjt10.skifriend.dto.likeDto.LikesResponseDto;
 import com.ppjt10.skifriend.entity.*;
-import com.ppjt10.skifriend.repository.CommentRepository;
-import com.ppjt10.skifriend.repository.FreePostRepository;
-import com.ppjt10.skifriend.repository.LikesRepository;
-import com.ppjt10.skifriend.repository.SkiResortRepository;
+import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +29,7 @@ public class FreePostService {
     private final LikesRepository likesRepository;
     private final SkiResortRepository skiResortRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     // 자유게시글 전체 조회
     @Transactional
@@ -79,7 +75,7 @@ public class FreePostService {
             imageUrl = "No Post Image";
         }
 
-        FreePost freePost = new FreePost(user, skiResort, requestDto.getTitle(), requestDto.getContent(), imageUrl);
+        FreePost freePost = new FreePost(user.getId(), skiResort, requestDto.getTitle(), requestDto.getContent(), imageUrl);
 
         freePostRepository.save(freePost);
 
@@ -121,7 +117,7 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
         );
 
-        if (!user.getId().equals(freePost.getUser().getId())) {
+        if (!user.getId().equals(freePost.getUserId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
@@ -162,7 +158,7 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
         );
 
-        if (!user.getId().equals(freePost.getUser().getId())) {
+        if (!user.getId().equals(freePost.getUserId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
 
@@ -234,10 +230,19 @@ public class FreePostService {
 
     // FreePostResponseDto 생성
     private FreePostResponseDto generateFreePostResponseDto(FreePost freePost) {
+        String nickname;
+        try {
+            User user = userRepository.findById(freePost.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return FreePostResponseDto.builder()
                 .postId(freePost.getId())
-                .userId(freePost.getUser().getId())
-                .nickname(freePost.getUser().getNickname())
+                .userId(freePost.getUserId())
+                .nickname(nickname)
                 .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .likeCnt(freePost.getLikeCnt())
@@ -248,15 +253,24 @@ public class FreePostService {
     // LikesResponseDto 생성
     private LikesResponseDto generateLikesResponseDto(Likes likes) {
         return LikesResponseDto.builder()
-                .userId(likes.getUser().getId())
+                .userId(likes.getUserId())
                 .build();
     }
 
     // CommentResponseDto 생성
     private CommentResponseDto generateCommentResponseDto(Comment comment) {
+        String nickname;
+        try {
+            User user = userRepository.findById(comment.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return CommentResponseDto.builder()
                 .commentId(comment.getId())
-                .nickname(comment.getUser().getNickname())
+                .nickname(nickname)
                 .content(comment.getContent())
                 .createdAt(TimeConversion.timePostConversion(comment.getCreateAt()))
                 .build();
@@ -267,9 +281,18 @@ public class FreePostService {
                                                                         List<LikesResponseDto> likesResponseDtoList,
                                                                         List<CommentResponseDto> commentResponseDtoList
     ) {
+        String nickname;
+        try {
+            User user = userRepository.findById(freePost.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return FreePostDetailResponseDto.builder()
                 .postId(freePost.getId())
-                .nickname(freePost.getUser().getNickname())
+                .nickname(nickname)
                 .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .content(freePost.getContent())

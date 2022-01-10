@@ -14,9 +14,7 @@ public class RedisPublisher {
     private final ChannelTopic channelTopic;
 
     public void publish(ChatMessageResponseDto messageDto) {
-
         redisTemplate.convertAndSend(channelTopic.getTopic(), messageDto);
-
     }
 
     public void publishPhoneNum(ChatMessagePhoneNumDto messageDto) {

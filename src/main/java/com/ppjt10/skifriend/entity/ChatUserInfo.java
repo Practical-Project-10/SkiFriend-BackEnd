@@ -13,16 +13,15 @@ public class ChatUserInfo {
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private ChatRoom chatRoom;
 
-    public ChatUserInfo(User user, ChatRoom chatRoom) {
-        this.user = user;
+    public ChatUserInfo(Long userId, ChatRoom chatRoom) {
+        this.userId = userId;
         this.chatRoom = chatRoom;
     }
 }

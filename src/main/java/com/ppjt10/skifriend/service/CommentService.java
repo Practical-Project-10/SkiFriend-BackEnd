@@ -23,7 +23,7 @@ public class CommentService {
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다"));
 
-        Comment comment = new Comment(user, freePost, requestDto.getContent());
+        Comment comment = new Comment(user.getId(), freePost, requestDto.getContent());
 
         commentRepository.save(comment);
 
@@ -38,7 +38,7 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
 
-        if(!user.getId().equals(comment.getUser().getId())) {
+        if(!user.getId().equals(comment.getUserId())) {
             throw new IllegalArgumentException("댓글 작성자만 댓글을 수정할 수 있습니다");
         }
 
@@ -53,7 +53,7 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다")
         );
 
-        if(!user.getId().equals(comment.getUser().getId())) {
+        if(!user.getId().equals(comment.getUserId())) {
             throw new IllegalArgumentException("댓글 작성자만 댓글을 삭제할 수 있습니다");
         }
 

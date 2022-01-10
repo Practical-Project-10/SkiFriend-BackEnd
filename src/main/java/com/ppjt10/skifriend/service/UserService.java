@@ -56,10 +56,10 @@ public class UserService {
                 String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
                 dbUser.setProfileImg(profileImgUrl);
             } catch (Exception e) {
-                dbUser.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+                dbUser.setProfileImg(defaultImg);
             }
         } else {
-            dbUser.setProfileImg("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/6950b535-5658-4604-8039-dd9d4e3a1119profile+picture.png");
+            dbUser.setProfileImg(defaultImg);
         }
 
         // 백신 이미지 저장 및 저장 경로 업데이트
@@ -177,7 +177,7 @@ public class UserService {
     // 내가 쓴 카풀 게시물 목록 조회
     @Transactional
     public List<CarpoolResponseDto> getMyCarpools(User user) {
-        List<Carpool> carpoolList = carpoolRepository.findAllByUser(user);
+        List<Carpool> carpoolList = carpoolRepository.findAllByUserId(user.getId());
 
         List<CarpoolResponseDto> carpoolListDto = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
@@ -192,21 +192,32 @@ public class UserService {
     public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
 
-        User other;
-        if (chatUserInfoList.get(0).getUser().getId().equals(user.getId())) {
-            other = chatUserInfoList.get(1).getUser();
+        Long otherId;
+        if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
+            otherId = chatUserInfoList.get(1).getUserId();
         } else {
-            other = chatUserInfoList.get(0).getUser();
+            otherId = chatUserInfoList.get(0).getUserId();
         }
-
+        User other = userRepository.findById(otherId).orElseThrow(
+                () -> new IllegalArgumentException("유저가 없어용")
+        );
         return generateOtherResponseDto(other);
     }
 
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
+        String nickname;
+        try {
+            User user = userRepository.findById(carpool.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return CarpoolResponseDto.builder()
-                .userId(carpool.getUser().getId())
+                .userId(carpool.getUserId())
                 .postId(carpool.getId())
-                .nickname(carpool.getUser().getNickname())
+                .nickname(nickname)
                 .createdAt(carpool.getCreateAt().toString())
                 .carpoolType(carpool.getCarpoolType())
                 .startLocation(carpool.getStartLocation())

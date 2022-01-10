@@ -32,7 +32,7 @@ public class LikesService {
             System.out.println("좋아요가 삭제되었습니다");
             return "false";
         } else {
-            likesRepository.save(new Likes(user, freePost));
+            likesRepository.save(new Likes(userId, freePost));
             freePost.setLikeCnt(freePost.getLikeCnt() + 1);
             System.out.println("좋아요가 클릭되었습니다");
             return "true";
