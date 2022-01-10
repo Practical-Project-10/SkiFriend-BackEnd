@@ -79,7 +79,6 @@ public class StompHandler implements ChannelInterceptor {
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }
-
         return message;
     }
 }
