@@ -1,15 +1,18 @@
 package com.ppjt10.skifriend.service;
 
 
+import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
+import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
+import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ import java.util.List;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+//    private final MessageService messageService;
+//    private final ChatUserInfoRepository chatUserInfoRepository;
 //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
@@ -105,6 +110,18 @@ public class ChatMessageService {
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
 
+//        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+//        User opponent;
+//        if(chatUserInfoList.get(0).getUser().getId() != user.getId()) {
+//            opponent = userRepository.findById(chatUserInfoList.get(1).getUser().getId()).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+//            );
+//        } else {
+//            opponent = userRepository.findById(chatUserInfoList.get(0).getUser().getId()).orElseThrow(
+//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+//            );
+//        }
+
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
 
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
@@ -112,6 +129,9 @@ public class ChatMessageService {
             message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
 
             chatMessageRepository.save(message);
+
+//            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
+
 
             ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
 

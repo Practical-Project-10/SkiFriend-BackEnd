@@ -42,11 +42,11 @@ public class ChatRoomService {
             User other;
             if (chatRoom.getSenderId().equals(userId)) {
                 other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
-                        () -> new IllegalArgumentException("")
+                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
                 );
             } else {
                 other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
-                        () -> new IllegalArgumentException("")
+                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
                 );
             }
             chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
@@ -64,6 +64,11 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         // 채팅방에 있는 모든 유저 정보 가져오기
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+
+        if(!chatUserInfoList.get(0).getUser().getId().equals(userId) && !chatUserInfoList.get(1).getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("해당 채팅방에 참여중이 아닙니다");
+        }
+
         User opponent;
         if(chatUserInfoList.get(0).getUser().getId().equals(userId)) {
             opponent = chatUserInfoList.get(1).getUser();

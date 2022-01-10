@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,6 +187,7 @@ public class UserService {
         return carpoolListDto;
     }
 
+    // 해당 채팅방에서 상대유저의 프로필 조회
     @Transactional
     public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);

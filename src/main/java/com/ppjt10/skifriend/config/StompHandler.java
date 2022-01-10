@@ -25,7 +25,7 @@ import java.util.Optional;
 public class StompHandler implements ChannelInterceptor {
     private final JwtDecoder jwtDecoder;
     private final ChatMessageService chatMessageService;
-    private final UserRepository userRepository;
+//    private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final ChatMessageRepository chatMessageRepository;
 
@@ -52,17 +52,6 @@ public class StompHandler implements ChannelInterceptor {
             System.out.println("클라이언트 유저 이름: " + name);
             redisRepository.setUserNameInfo(sessionId, name);
 
-//            User user = userRepository.findByUsername(name).orElseThrow(
-//                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-//            );
-
-//            chatMessageService.phoneNumMessage(
-//                    ChatMessageRequestDto.builder()
-//                            .type(ChatMessage.MessageType.PHONE_NUM)
-//                            .roomId(roomId)
-//                            .sender(name)
-//                            .message(user.getPhoneNum())
-//                            .build());
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisRepository.getUserEnterRoomId(sessionId);
@@ -78,11 +67,6 @@ public class StompHandler implements ChannelInterceptor {
                 String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
-//                chatMessageService.connectMessage(ChatMessageRequestDto.builder()
-//                        .type(ChatMessage.MessageType.QUIT)
-//                        .roomId(roomId)
-//                        .sender(name)
-//                        .build());
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }

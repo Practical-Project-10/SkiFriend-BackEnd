@@ -73,6 +73,19 @@ public class MessageService {
         System.out.println(phoneNumber + "에게 채팅방 생성 알림 전송 : " + msg);
     }
 
+//    public void openPhoneNumAlert(String phoneNumber, String msg) {
+//        // 발신 정보 설정
+//        Twilio.init(apiKey, apiSecret);
+//        String toPhoneNum = "+" + 82 + phoneNumber;
+//
+//        Message message = Message.creator(
+//                new PhoneNumber(toPhoneNum),
+//                new PhoneNumber(fromPhoneNum),
+//                SKIFRIEND + msg).create();
+//
+//        System.out.println(phoneNumber + "에게 번호 공개 알림 전송 : " + msg);
+//    }
+
     private boolean isVerify(SignupSmsCertificationDto requestDto) {
         // 해당 휴대폰 번호로 전송된 인증번호가 존재하면
         if (smsRedisRepository.hasKey(requestDto.getPhoneNumber())) {
