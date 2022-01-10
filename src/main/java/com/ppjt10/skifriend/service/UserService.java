@@ -192,13 +192,15 @@ public class UserService {
     public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
 
-        User other;
-        if (chatUserInfoList.get(0).getUser().getId().equals(user.getId())) {
-            other = chatUserInfoList.get(1).getUser();
+        Long otherId;
+        if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
+            otherId = chatUserInfoList.get(1).getUserId();
         } else {
-            other = chatUserInfoList.get(0).getUser();
+            otherId = chatUserInfoList.get(0).getUserId();
         }
-
+        User other = userRepository.findById(otherId).orElseThrow(
+                () -> new IllegalArgumentException("유저가 없어용")
+        );
         return generateOtherResponseDto(other);
     }
 
