@@ -14,16 +14,15 @@ public class Likes extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private FreePost freePost;
 
-    public Likes(User user, FreePost freePost) {
-        this.user = user;
+    public Likes(Long userId, FreePost freePost) {
+        this.userId = userId;
         this.freePost = freePost;
     }
 }

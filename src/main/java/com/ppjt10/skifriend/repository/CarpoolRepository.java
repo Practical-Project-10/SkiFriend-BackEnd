@@ -31,7 +31,7 @@ public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
             boolean status
     );
 
-    List<Carpool> findAllByUser(User user);
+    List<Carpool> findAllByUserId(Long userId);
 
     List<Carpool> findAllBySkiResortOrderByCreateAtDesc(SkiResort skiResort);
 

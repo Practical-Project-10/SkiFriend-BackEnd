@@ -51,7 +51,6 @@ class FreePostControllerTest {
     }
 
 
-
     @Test
     @Order(1)
     @DisplayName("회원 가입")
@@ -62,8 +61,8 @@ class FreePostControllerTest {
         mockMvc.perform(post("/user/signup")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andDo(print());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
@@ -76,9 +75,9 @@ class FreePostControllerTest {
         MockHttpServletResponse response = mockMvc.perform(post("/user/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse();
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse();
 
         token = response.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -98,8 +97,8 @@ class FreePostControllerTest {
                         .contentType("multipart/mixed")
                         .characterEncoding("UTF-8")
                         .header(HttpHeaders.AUTHORIZATION, this.token))
-                        .andExpect(status().isOk())
-                        .andDo(print());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
@@ -135,8 +134,8 @@ class FreePostControllerTest {
         MockMultipartFile multipartFile1 = new MockMultipartFile("requestDto", "", "application/json", request.getBytes());
         mockMvc.perform(builder.file(multipartFile1)
                         .header("Authorization", this.token))
-                        .andExpect(status().isOk())
-                        .andDo(print());
+                .andExpect(status().isOk())
+                .andDo(print());
 
     }
 
@@ -151,11 +150,10 @@ class FreePostControllerTest {
         mockMvc.perform(get("/board/freeBoard/{skiResort}", skiResort)
                         .param("page", "1")
                         .param("size", "10")
-                .header("Authorization", this.token))
+                        .header("Authorization", this.token))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
 
 
     @Test
@@ -177,7 +175,7 @@ class FreePostControllerTest {
         Long postId = 1L;
 
         mockMvc.perform(post("/board/freeBoard/{postId}/likes", postId)
-                .header("Authorization", this.token))
+                        .header("Authorization", this.token))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

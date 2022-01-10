@@ -26,9 +26,8 @@ public class ChatMessage  extends Timestamped {
     @JoinColumn(nullable = false)
     private ChatRoom chatRoom; // 방번호
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user; // 메시지 보낸사람
+    @Column(nullable = false)
+    private Long userId; // 메시지 보낸사람
 
     private MessageType type; // 메시지 타입
 
@@ -38,10 +37,10 @@ public class ChatMessage  extends Timestamped {
     @Column
     private String img; // 이미지 첨부시
 
-    public ChatMessage(MessageType type, ChatRoom chatRoom, User user, String message) {
+    public ChatMessage(MessageType type, ChatRoom chatRoom, Long userId, String message) {
         this.type = type;
         this.chatRoom = chatRoom;
-        this.user = user;
+        this.userId = userId;
         this.message = message;
     }
 

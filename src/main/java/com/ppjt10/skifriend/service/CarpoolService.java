@@ -9,12 +9,12 @@ import com.ppjt10.skifriend.entity.SkiResort;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.repository.SkiResortRepository;
+import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,6 +27,7 @@ public class CarpoolService {
 
     private final CarpoolRepository carpoolRepository;
     private final SkiResortRepository skiResortRepository;
+    private final UserRepository userRepository;
 
     //카풀 전체 조회
     @Transactional
@@ -57,7 +58,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
-        Carpool carpool = new Carpool(user, requestDto, skiResort);
+        Carpool carpool = new Carpool(user.getId(), requestDto, skiResort);
         carpoolRepository.save(carpool);
 
         return generateCarpoolResponseDto(carpool);
@@ -74,7 +75,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (!carpool.getUser().getId().equals(user.getId())) {
+        if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
@@ -89,7 +90,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (!carpool.getUser().getId().equals(user.getId())) {
+        if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
@@ -126,7 +127,7 @@ public class CarpoolService {
         }
 
         List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
-        for(Carpool carpool : sortedCategories) {
+        for (Carpool carpool : sortedCategories) {
             carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
         }
         return carpoolResponseDtoList;
@@ -139,7 +140,7 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
 
-        if (!carpool.getUser().getId().equals(user.getId())) {
+        if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
         carpool.setStatus();
@@ -158,10 +159,19 @@ public class CarpoolService {
 
     //CarpoolResponseDto 생성
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
+        String nickname;
+        try {
+            User user = userRepository.findById(carpool.getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            );
+            nickname = user.getNickname();
+        } catch (Exception e) {
+            nickname = "알 수 없음";
+        }
         return CarpoolResponseDto.builder()
                 .postId(carpool.getId())
-                .userId(carpool.getUser().getId())
-                .nickname(carpool.getUser().getNickname())
+                .userId(carpool.getUserId())
+                .nickname(nickname)
                 .createdAt(TimeConversion.timePostConversion(carpool.getCreateAt()))
                 .carpoolType(carpool.getCarpoolType())
                 .title(carpool.getTitle())

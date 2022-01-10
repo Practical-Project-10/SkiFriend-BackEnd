@@ -15,9 +15,8 @@ public class FreePost extends Timestamped {
     @Id
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
@@ -44,8 +43,8 @@ public class FreePost extends Timestamped {
         this.image = image;
     }
 
-    public FreePost(User user, SkiResort skiResort, String title, String content, String image) {
-        this.user = user;
+    public FreePost(Long userId, SkiResort skiResort, String title, String content, String image) {
+        this.userId = userId;
         this.skiResort = skiResort;
         this.title = title;
         this.content = content;
