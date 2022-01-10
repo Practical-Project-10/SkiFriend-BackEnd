@@ -129,10 +129,7 @@ public class ChatMessageService {
             message.setMessage(phoneNum.substring(0, 3) + "-" + phoneNum.substring(3, 7) + "-" + phoneNum.substring(7));
 
             chatMessageRepository.save(message);
-
 //            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
-
-
             ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
 
             System.out.println("전화번호 전송");
@@ -148,8 +145,6 @@ public class ChatMessageService {
             redisPublisher.publish(messageDto);
             System.out.println("성공");
         }
-
-
     }
 
     // 상대방 전화번호 알림 메시지
@@ -193,7 +188,6 @@ public class ChatMessageService {
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
 
-
         return ChatMessageResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
@@ -218,6 +212,7 @@ public class ChatMessageService {
             nickname = "알 수 없음";
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
+
         return ChatMessageResponseDto.builder()
                 .roomId(chatMessage.getChatRoom().getRoomId())
                 .type(chatMessage.getType())
