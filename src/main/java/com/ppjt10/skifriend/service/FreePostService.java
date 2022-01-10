@@ -177,7 +177,7 @@ public class FreePostService {
         freePostRepository.deleteById(postId);
     }
 
-    // HOT게시물 가져오기
+    // Hot 게시물 조회
     @Transactional
     public List<FreePostHotResponseDto> getHotFreePosts() {
         List<SkiResort> skiResortList = skiResortRepository.findAll();
@@ -195,26 +195,26 @@ public class FreePostService {
         return freePostHotResponseDtoList;
     }
 
-    // Hot 리조트별 실시간 가장 핫 한 게시물 찾기
+    // 리조트별 실시간 가장 Hot 게시물 찾기
     private FreePost extractHotFreePost(String resortName) {
         try {
             SkiResort foundSkiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 skiResort가 없습니다")
             );
             Long skiResortId = foundSkiResort.getId();
-            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(12), skiResortId);
-            HashMap<Long, Integer> duplicatedCount = new HashMap<>();
+            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(3), skiResortId);
+            HashMap<Long, Integer> postLikeCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
                 Long postId = likes.getFreePost().getId();
-                duplicatedCount.put(postId, 0);
-                if (duplicatedCount.containsKey(postId)) {
-                    duplicatedCount.put(postId, duplicatedCount.get(postId) + 1);
+                postLikeCount.put(postId, 0);
+                if (postLikeCount.containsKey(postId)) {
+                    postLikeCount.put(postId, postLikeCount.get(postId) + 1);
                 } else {
-                    duplicatedCount.put(postId, 1);
+                    postLikeCount.put(postId, 1);
                 }
             }
-            Long findId = Collections.max(duplicatedCount.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
-            return freePostRepository.findById(findId).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 존재하지 않습니다"));
+            Long foundMaxLikeCntPostId = Collections.max(postLikeCount.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+            return freePostRepository.findById(foundMaxLikeCntPostId).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 존재하지 않습니다"));
         } catch (Exception e) {
             return null;
         }
