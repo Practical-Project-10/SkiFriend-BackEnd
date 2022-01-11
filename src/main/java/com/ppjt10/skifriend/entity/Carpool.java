@@ -79,7 +79,7 @@ public class Carpool extends Timestamped {
         this.notice = requestDto.getNotice();
     }
 
-    public void setStatus() {
-        this.status = false;
+    public void setStatus(boolean logic) {
+        this.status = logic;
     }
 }
