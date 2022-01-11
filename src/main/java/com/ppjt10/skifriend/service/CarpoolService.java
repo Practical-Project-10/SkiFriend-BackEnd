@@ -14,10 +14,14 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
+import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,10 +148,18 @@ public class CarpoolService {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
-        if(carpool.isStatus()) {
-            carpool.setStatus(false);
-        } else {
+        if(!carpool.isStatus()) {
+            LocalDateTime currentTime = LocalDateTime.now();
+            String carpoolTime = carpool.getDate()+ " "+ carpool.getTime();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime realCarpoolTime = LocalDateTime.parse(carpoolTime, formatter);
+            Long timeDiff = Duration.between(realCarpoolTime, currentTime).getSeconds();
+            if(timeDiff > 0) {
+                throw new IllegalArgumentException("카풀 모집 마감시간이 지났습니다");
+            }
             carpool.setStatus(true);
+        } else {
+            carpool.setStatus(false);
         }
 
         return generateCarpoolResponseDto(carpool);
