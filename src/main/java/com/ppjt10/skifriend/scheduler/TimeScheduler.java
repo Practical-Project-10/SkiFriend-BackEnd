@@ -3,9 +3,7 @@ package com.ppjt10.skifriend.scheduler;
 import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.repository.CarpoolRepository;
-import com.ppjt10.skifriend.repository.RedisRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +25,8 @@ public class TimeScheduler {
     private final RedisRepository redisRepository;
     private final MessageService messageService;
     private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     // 15분 마다 실행
     @Transactional
@@ -47,20 +48,30 @@ public class TimeScheduler {
     public void chatAlertScheduler() {
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        List<String> fromRedisLastMessageNameTimeList = redisRepository.getLastMessageReadTime();
-        for (String fromRedisLastMessageNameTime : fromRedisLastMessageNameTimeList){
-            List<String> lastMessageNameTime = Arrays.asList(fromRedisLastMessageNameTime.split("/"));
-            String lastMessageName = lastMessageNameTime.get(0);
-            LocalDateTime lastMessageTime = LocalDateTime.parse(lastMessageNameTime.get(1), formatter);
-
-            Long timeDiff = Duration.between(lastMessageTime, currentTime).getSeconds();
-            if ((timeDiff / 3600) > 0) { // 시간
-                User user = userRepository.findByUsername(lastMessageName).orElseThrow(
-                        () -> new IllegalArgumentException("해당하는 유저가 없습니다")
-                );
-                messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+        List<String> userNameList = new ArrayList<>();
+        List<String> fromRedisLastMsgNameTimeCntList = redisRepository.getLastMsgTimeCnt();
+        for(String fromRedisLastMsgNameTimeCnt : fromRedisLastMsgNameTimeCntList) {
+            List<String> lastMsgNameTimeCnt = Arrays.asList(fromRedisLastMsgNameTimeCnt.split("/"));
+            String roomId = lastMsgNameTimeCnt.get(0);
+            String lastMsgName = lastMsgNameTimeCnt.get(1);
+            LocalDateTime lastMessageTime = LocalDateTime.parse(lastMsgNameTimeCnt.get(2), formatter);
+            int lastMsgCnt = Integer.parseInt(lastMsgNameTimeCnt.get(3));
+            if(userNameList.contains(lastMsgName)) {
+                continue; // 아래 로직 실행하지 말고 다음 for 문을 돌아라
             }
+            Long timeDiff = Duration.between(lastMessageTime, currentTime).getSeconds();
+            int presentMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
+            int restMsgCnt = presentMsgCnt - lastMsgCnt;
+            if((timeDiff / 3600) > 0 && restMsgCnt >0) {
+                userNameList.add(lastMsgName);
+            }
+        }
+        for(String lastMessageName : userNameList) {
+            User user = userRepository.findByUsername(lastMessageName).orElseThrow(
+                    () -> new IllegalArgumentException("해당하는 유저가 없습니다")
+            );
+//            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+            System.out.println("알림왔대, 채팅방 확인좀해라");
         }
     }
 }

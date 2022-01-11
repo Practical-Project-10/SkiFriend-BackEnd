@@ -44,7 +44,7 @@ public class MessageService {
 
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
-
+//        return randomNum;
         return "문자 전송이 완료되었습니다.";
     }
 

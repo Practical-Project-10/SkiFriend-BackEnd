@@ -135,7 +135,7 @@ public class CarpoolService {
 
     //카풀 상태 변경
     @Transactional
-    public void changeStatus(Long carpoolId, User user) {
+    public CarpoolResponseDto changeStatus(Long carpoolId, User user) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
@@ -144,6 +144,7 @@ public class CarpoolService {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
         carpool.setStatus();
+        return generateCarpoolResponseDto(carpool);
     }
 
     //배너정보 내려주기
