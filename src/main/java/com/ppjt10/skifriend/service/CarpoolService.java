@@ -14,7 +14,6 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
-import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
