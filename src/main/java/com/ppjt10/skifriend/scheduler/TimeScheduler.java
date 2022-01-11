@@ -38,7 +38,7 @@ public class TimeScheduler {
         String[] dateTime = currentTime.split(" ");
         List<Carpool> carpoolList = carpoolRepository.findAllByDateAndTime(dateTime[0], dateTime[1]);
         for(Carpool carpool : carpoolList) {
-            carpool.setStatus();
+            carpool.setStatus(false);
         }
     }
 
@@ -71,7 +71,7 @@ public class TimeScheduler {
                     () -> new IllegalArgumentException("해당하는 유저가 없습니다")
             );
 //            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
-            System.out.println("알림왔대, 채팅방 확인좀해라");
+            System.out.println(user.getNickname() +"한테 알림왔대, 채팅방 확인좀해라");
         }
     }
 }

@@ -143,7 +143,13 @@ public class CarpoolService {
         if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
-        carpool.setStatus();
+
+        if(carpool.isStatus()) {
+            carpool.setStatus(false);
+        } else {
+            carpool.setStatus(true);
+        }
+
         return generateCarpoolResponseDto(carpool);
     }
 
