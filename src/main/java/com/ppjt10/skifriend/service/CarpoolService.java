@@ -14,7 +14,6 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
-import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -150,10 +149,10 @@ public class CarpoolService {
 
         if(!carpool.isStatus()) {
             LocalDateTime currentTime = LocalDateTime.now();
-            String carpoolTime = carpool.getDate()+ " "+ carpool.getTime();
+            String textCarpoolTime = carpool.getDate()+ " "+ carpool.getTime();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime realCarpoolTime = LocalDateTime.parse(carpoolTime, formatter);
-            Long timeDiff = Duration.between(realCarpoolTime, currentTime).getSeconds();
+            LocalDateTime carpoolTime = LocalDateTime.parse(textCarpoolTime, formatter);
+            Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
             if(timeDiff > 0) {
                 throw new IllegalArgumentException("카풀 모집 마감시간이 지났습니다");
             }
