@@ -15,6 +15,9 @@ import com.ppjt10.skifriend.validator.CarpoolType;
 import com.ppjt10.skifriend.validator.DateValidator;
 import com.ppjt10.skifriend.validator.TimeValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,13 +34,14 @@ public class CarpoolService {
 
     //카풀 전체 조회
     @Transactional
-    public List<CarpoolResponseDto> getCarpools(String skiResortName) {
+    public List<CarpoolResponseDto> getCarpools(String skiResortName, int page, int size) {
         List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+        Pageable pageable = PageRequest.of(page, size);
         //해당 스키장의 카풀 정보 리스트 가져오기
-        List<Carpool> carpoolList = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(skiResort);
+        Page<Carpool> carpoolList = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(skiResort, pageable);
 
         //Carpool 리스트
         for (Carpool carpool : carpoolList) {
