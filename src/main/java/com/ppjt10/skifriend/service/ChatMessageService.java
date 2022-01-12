@@ -1,18 +1,15 @@
 package com.ppjt10.skifriend.service;
 
 
-import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
-import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.redispubsub.RedisPublisher;
+import com.ppjt10.skifriend.config.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
-import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
