@@ -30,14 +30,9 @@ public class ChatRoomService {
         Long userId = user.getId();
 
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(userId);
-        List<ChatRoom> chatRoomList = new ArrayList<>();
-        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
-            chatRoomList.add(chatUserInfo.getChatRoom());
-        }
-
         List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
-
-        for (ChatRoom chatRoom : chatRoomList) {
+        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+            ChatRoom chatRoom = chatUserInfo.getChatRoom();
             ChatMessage chatMessage = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(chatRoom.getRoomId()).get(0);
             User other;
             if (chatRoom.getSenderId().equals(userId)) {
