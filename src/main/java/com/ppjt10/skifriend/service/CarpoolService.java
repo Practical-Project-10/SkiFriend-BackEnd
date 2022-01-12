@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,10 +147,18 @@ public class CarpoolService {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
-        if(carpool.isStatus()) {
-            carpool.setStatus(false);
-        } else {
+        if(!carpool.isStatus()) {
+            LocalDateTime currentTime = LocalDateTime.now();
+            String textCarpoolTime = carpool.getDate()+ " "+ carpool.getTime();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime carpoolTime = LocalDateTime.parse(textCarpoolTime, formatter);
+            Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
+            if(timeDiff > 0) {
+                throw new IllegalArgumentException("카풀 모집 마감시간이 지났습니다");
+            }
             carpool.setStatus(true);
+        } else {
+            carpool.setStatus(false);
         }
 
         return generateCarpoolResponseDto(carpool);
