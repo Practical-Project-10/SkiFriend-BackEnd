@@ -53,7 +53,6 @@ public class ChatRoomService {
         }
 
         chatRoomListResponseDtoList.sort(ChatRoomListResponseDto::compareTo);
-
         return chatRoomListResponseDtoList;
     }
 

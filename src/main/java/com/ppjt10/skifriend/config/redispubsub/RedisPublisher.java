@@ -1,4 +1,4 @@
-package com.ppjt10.skifriend.redispubsub;
+package com.ppjt10.skifriend.config.redispubsub;
 
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
