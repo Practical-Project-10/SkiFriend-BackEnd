@@ -21,6 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,7 +142,7 @@ public class CarpoolService {
 
     //카풀 상태 변경
     @Transactional
-    public void changeStatus(Long carpoolId, User user) {
+    public CarpoolResponseDto changeStatus(Long carpoolId, User user) {
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
@@ -147,7 +150,22 @@ public class CarpoolService {
         if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
-        carpool.setStatus();
+
+        if(!carpool.isStatus()) {
+            LocalDateTime currentTime = LocalDateTime.now();
+            String textCarpoolTime = carpool.getDate()+ " "+ carpool.getTime();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime carpoolTime = LocalDateTime.parse(textCarpoolTime, formatter);
+            Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
+            if(timeDiff > 0) {
+                throw new IllegalArgumentException("카풀 모집 마감시간이 지났습니다");
+            }
+            carpool.setStatus(true);
+        } else {
+            carpool.setStatus(false);
+        }
+
+        return generateCarpoolResponseDto(carpool);
     }
 
     //배너정보 내려주기
