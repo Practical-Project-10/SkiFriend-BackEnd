@@ -1,6 +1,6 @@
 package com.ppjt10.skifriend.config;
 
-import com.ppjt10.skifriend.redispubsub.RedisSubscriber;
+import com.ppjt10.skifriend.config.redispubsub.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
