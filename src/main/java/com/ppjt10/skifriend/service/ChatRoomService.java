@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.service;
 
-
 import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomCarpoolInfoDto;
 import com.ppjt10.skifriend.dto.chatroomdto.ChatRoomListResponseDto;
@@ -11,7 +10,6 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -33,7 +31,9 @@ public class ChatRoomService {
         List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
         for (ChatUserInfo chatUserInfo : chatUserInfoList) {
             ChatRoom chatRoom = chatUserInfo.getChatRoom();
-            ChatMessage chatMessage = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(chatRoom.getRoomId()).get(0);
+            List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomId(chatRoom.getRoomId());
+            int chatMessageSize = chatMessages.size();
+            ChatMessage chatMessage = chatMessages.get(chatMessageSize - 1);
             String otherNick;
             String otherProfileImg;
             if (chatRoom.getSenderId().equals(userId)) {
@@ -59,7 +59,7 @@ public class ChatRoomService {
                     otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
                 }
             }
-            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, otherNick, otherProfileImg, user));
+            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, chatMessageSize, otherNick, otherProfileImg, user));
         }
 
         chatRoomListResponseDtoList.sort(ChatRoomListResponseDto::compareTo);
@@ -171,14 +171,15 @@ public class ChatRoomService {
     private ChatRoomListResponseDto generateChatRoomListResponseDto(
             ChatRoom chatRoom,
             ChatMessage chatMessage,
+            int chatMessageSize,
             String otherNick,
             String otherProfileImg,
             User user
     ) {
         String roomId = chatRoom.getRoomId();
-        int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
+//        int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
         int pastMsgCnt = redisRepository.getLastReadMsgCnt(roomId, user.getUsername());
-        int notVerifiedMsgCnt = presentChatMsgCnt - pastMsgCnt;
+        int notVerifiedMsgCnt = chatMessageSize - pastMsgCnt;
 
         return ChatRoomListResponseDto.builder()
                 .roomId(roomId)
