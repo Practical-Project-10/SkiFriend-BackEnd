@@ -43,19 +43,19 @@ public class ChatRoomService {
                     );
                     otherNick = other.getNickname();
                     otherProfileImg = other.getProfileImg();
-                }catch (Exception err){
-                    otherNick = "(알 수 없음)";
+                } catch (Exception err) {
+                    otherNick = "알 수 없음";
                     otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
                 }
             } else {
                 try {
-                    User other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
+                    User other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
                             () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
                     );
                     otherNick = other.getNickname();
                     otherProfileImg = other.getProfileImg();
-                }catch (Exception err){
-                    otherNick = "(알 수 없음)";
+                } catch (Exception err) {
+                    otherNick = "알 수 없음";
                     otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
                 }
             }
