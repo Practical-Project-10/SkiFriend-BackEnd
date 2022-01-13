@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 @Component
 @RequiredArgsConstructor
 public class SkiResortInit implements ApplicationRunner {
-
+    // park
     private final SkiResortRepository skiResortRepository;
 
     @Override
