@@ -23,7 +23,8 @@ import java.util.List;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    //    private final MessageService messageService;
+
+//    private final MessageService messageService;
 //    private final ChatUserInfoRepository chatUserInfoRepository;
 //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
