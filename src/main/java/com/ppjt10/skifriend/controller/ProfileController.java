@@ -27,4 +27,8 @@ public class ProfileController {
                 .orElse(defaultProfile);
     }
 
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
 }
