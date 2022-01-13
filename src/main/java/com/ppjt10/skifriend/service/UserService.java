@@ -160,8 +160,12 @@ public class UserService {
     // 유저 탈퇴
     @Transactional
     public String deleteUser(User user) {
-        userRepository.deleteById(user.getId());
-
+        Long userId = user.getId();
+        userRepository.deleteById(userId);
+        List<Carpool> carpoolList = carpoolRepository.findAllByUserId(userId);
+        for (Carpool carpool : carpoolList) {
+            carpool.setStatus(false);
+        }
         return "회원탈퇴 되었습니다.";
     }
 
