@@ -69,8 +69,6 @@ public class Carpool extends Timestamped {
 
     public void update(CarpoolRequestDto requestDto) {
         this.carpoolType = requestDto.getCarpoolType();
-        this.startLocation = requestDto.getStartLocation();
-        this.endLocation = requestDto.getEndLocation();
         this.title = requestDto.getTitle();
         this.date = requestDto.getDate();
         this.time = requestDto.getTime();

@@ -62,6 +62,23 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
+//        List<String> imageUrlList = new ArrayList<>();
+//        for (MultipartFile image : images){
+//            String imageUrl;
+//            if (image != null) {
+//                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.get(0).getOriginalFilename());
+//                try {
+//                    imageUrl = s3Uploader.upload(image.get(0), imageDirName);
+//                } catch (Exception err) {
+//                    System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
+//                    imageUrl = "No Post Image";
+//                }
+//            } else {
+//                imageUrl = "No Post Image";
+//            }
+//            imageUrlList.add(imageUrl);
+//        }
+
         String imageUrl;
         if (image != null) {
             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.getOriginalFilename());
@@ -80,7 +97,6 @@ public class FreePostService {
         freePostRepository.save(freePost);
 
         return generateFreePostResponseDto(freePost);
-
     }
 
     // 자유 게시판 게시글 상세 조회

@@ -30,30 +30,39 @@ public class ChatRoomService {
         Long userId = user.getId();
 
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(userId);
-        List<ChatRoom> chatRoomList = new ArrayList<>();
-        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
-            chatRoomList.add(chatUserInfo.getChatRoom());
-        }
-
         List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
-
-        for (ChatRoom chatRoom : chatRoomList) {
+        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+            ChatRoom chatRoom = chatUserInfo.getChatRoom();
             ChatMessage chatMessage = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAtDesc(chatRoom.getRoomId()).get(0);
-            User other;
+            String otherNick;
+            String otherProfileImg;
             if (chatRoom.getSenderId().equals(userId)) {
-                other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
-                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-                );
+                try {
+                    User other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
+                            () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+                    );
+                    otherNick = other.getNickname();
+                    otherProfileImg = other.getProfileImg();
+                } catch (Exception err) {
+                    otherNick = "알 수 없음";
+                    otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+                }
             } else {
-                other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
-                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-                );
+                try {
+                    User other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
+                            () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+                    );
+                    otherNick = other.getNickname();
+                    otherProfileImg = other.getProfileImg();
+                } catch (Exception err) {
+                    otherNick = "알 수 없음";
+                    otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+                }
             }
-            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, other, user));
+            chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, otherNick, otherProfileImg, user));
         }
 
         chatRoomListResponseDtoList.sort(ChatRoomListResponseDto::compareTo);
-
         return chatRoomListResponseDtoList;
     }
 
@@ -162,7 +171,8 @@ public class ChatRoomService {
     private ChatRoomListResponseDto generateChatRoomListResponseDto(
             ChatRoom chatRoom,
             ChatMessage chatMessage,
-            User other,
+            String otherNick,
+            String otherProfileImg,
             User user
     ) {
         String roomId = chatRoom.getRoomId();
@@ -173,11 +183,11 @@ public class ChatRoomService {
         return ChatRoomListResponseDto.builder()
                 .roomId(roomId)
                 .longRoomId(chatRoom.getId())
-                .roomName(other.getNickname())
+                .roomName(otherNick)
                 .lastMsg(chatMessage.getMessage())
                 .lastMsgTime(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .notVerifiedMsgCnt(notVerifiedMsgCnt)
-                .userProfile(other.getProfileImg())
+                .userProfile(otherProfileImg)
                 .build();
     }
 
