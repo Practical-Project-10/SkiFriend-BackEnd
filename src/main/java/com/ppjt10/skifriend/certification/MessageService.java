@@ -37,10 +37,10 @@ public class MessageService {
         Twilio.init(apiKey, apiSecret);
         String toPhoneNum = "+" + 82 + requestDto.getPhoneNumber();
 
-//        Message message = Message.creator(
-//                new PhoneNumber(toPhoneNum),
-//                new PhoneNumber(fromPhoneNum),
-//                SKIFRIEND + randomNum).create();
+        Message message = Message.creator(
+                new PhoneNumber(toPhoneNum),
+                new PhoneNumber(fromPhoneNum),
+                SKIFRIEND + randomNum).create();
 
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
