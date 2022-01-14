@@ -32,7 +32,7 @@ public class ChatRoomService {
         List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
         for (ChatUserInfo chatUserInfo : chatUserInfoList) {
             ChatRoom chatRoom = chatUserInfo.getChatRoom();
-            List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomRoomId(chatRoom.getRoomId());
+            List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomId(chatRoom.getId());
             int chatMessageSize = chatMessages.size();
             ChatMessage chatMessage = chatMessages.get(chatMessageSize - 1);
             String otherNick;
@@ -57,9 +57,12 @@ public class ChatRoomService {
 
 
     // 유저가 참여한 특정 채팅방 조회 메소드
-    public ChatRoomResponseDto getRoom(String roomId, User user) {
+    public ChatRoomResponseDto getRoom(Long roomId, User user) {
         Long userId = user.getId();
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다")
+        );
+
         // 채팅방에 있는 모든 유저 정보 가져오기
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
 
@@ -117,16 +120,15 @@ public class ChatRoomService {
             String msg = carpool.getTitle() + "게시글에 대한 채팅이 왔습니다! 확인하세요 :)";
             messageService.createChatRoomAlert(writerPhone, msg);
 
-            ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), carpoolId);
+            ChatRoom chatRoom = new ChatRoom(carpoolId);
             chatRoomRepository.save(chatRoom);
 
             //방 생성시 첫 메시지 강제전송
             ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, sender.getId(), ":)");
-
             chatMessageRepository.save(initMsg);
 
             // 작성자가 안 읽은 메시지 수를 저장
-            redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 1);
+            redisRepository.setLastReadMsgCnt(chatRoom.getId(), writerUsername, 1);
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), writer.getId(), chatRoom);
@@ -141,8 +143,10 @@ public class ChatRoomService {
     }
 
     // 해당 채팅방에서 카풀 게시물 정보 조회 메소드
-    public ChatRoomCarpoolInfoDto getCarpoolInChatRoom(String roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+    public ChatRoomCarpoolInfoDto getCarpoolInChatRoom(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다")
+        );
         Carpool carpool = carpoolRepository.findById(chatRoom.getCarpoolId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다")
         );
@@ -152,7 +156,7 @@ public class ChatRoomService {
     // 채팅방 생성
     private ChatRoomResponseDto generateChatRoomResponseDto(ChatRoom chatRoom, String nickName) {
         return ChatRoomResponseDto.builder()
-                .roomId(chatRoom.getRoomId())
+                .roomId(chatRoom.getId())
                 .roomName(nickName)
                 .longRoomId(chatRoom.getId())
                 .build();
@@ -167,7 +171,7 @@ public class ChatRoomService {
             String otherProfileImg,
             User user
     ) {
-        String roomId = chatRoom.getRoomId();
+        Long roomId = chatRoom.getId();
 //        int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
         int pastMsgCnt = redisRepository.getLastReadMsgCnt(roomId, user.getUsername());
         int notVerifiedMsgCnt = chatMessageSize - pastMsgCnt;

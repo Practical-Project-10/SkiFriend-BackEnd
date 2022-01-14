@@ -285,6 +285,7 @@ public class FreePostService {
             nickname = "알 수 없음";
         }
         return CommentResponseDto.builder()
+                .userId(comment.getUserId())
                 .commentId(comment.getId())
                 .nickname(nickname)
                 .content(comment.getContent())
@@ -307,6 +308,7 @@ public class FreePostService {
             nickname = "알 수 없음";
         }
         return FreePostDetailResponseDto.builder()
+                .userId(freePost.getUserId())
                 .postId(freePost.getId())
                 .nickname(nickname)
                 .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))

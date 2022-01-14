@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ChatMessageResponseDto {
     private ChatMessage.MessageType type;
     private Long messageId;
-    private String roomId;
+    private Long roomId;
     private String sender;
     private String senderImg;
     private String img;

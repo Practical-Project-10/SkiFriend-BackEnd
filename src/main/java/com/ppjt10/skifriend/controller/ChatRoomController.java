@@ -35,7 +35,7 @@ public class ChatRoomController {
 
     // 특정 채팅방 조회
     @GetMapping("/chat/room/{roomId}")
-    public ResponseEntity<ChatRoomResponseDto> getRoom(@PathVariable String roomId,
+    public ResponseEntity<ChatRoomResponseDto> getRoom(@PathVariable Long roomId,
                                                        @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
@@ -44,7 +44,7 @@ public class ChatRoomController {
 
     // 특정 채팅방에서 게시물 정보 조회
     @GetMapping("/chat/room/{roomId}/carpool")
-    public ResponseEntity<ChatRoomCarpoolInfoDto> getCarpoolInChatRoom(@PathVariable String roomId) {
+    public ResponseEntity<ChatRoomCarpoolInfoDto> getCarpoolInChatRoom(@PathVariable Long roomId) {
         return ResponseEntity.ok().body(chatRoomService.getCarpoolInChatRoom(roomId));
     }
 

@@ -36,24 +36,33 @@ public class ChatMessageService {
 //    private final String imageDirName = "chatMessage";
 
     // 채팅방 String Id 값 가져오기, Url 생성에 이용
-    public String getRoomId(String destination) {
+//    public String getRoomId(String destination) {
+//        int lastIndex = destination.lastIndexOf('/');
+//        if (lastIndex != -1) {
+//            return destination.substring(lastIndex + 1);
+//        } else {
+//            return "";
+//        }
+//    }
+
+    public Long getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
         if (lastIndex != -1) {
-            return destination.substring(lastIndex + 1);
+            return Long.parseLong(destination.substring(lastIndex + 1));
         } else {
-            return "";
+            return null;
         }
     }
 
     // 해당 채팅방 모든 채팅 내용 불러오기
-    public List<ChatMessageResponseDto> getAllMessages(String roomId, User user) {
+    public List<ChatMessageResponseDto> getAllMessages(Long roomId, User user) {
         Long userId = user.getId();
-        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomRoomId(userId, roomId).orElseThrow(
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
                 () -> new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다")
         );
 
-        String verifiedRoomId = chatUserInfo.getChatRoom().getRoomId();
-        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(verifiedRoomId);
+        Long verifiedRoomId = chatUserInfo.getChatRoom().getId();
+        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomIdOrderByCreateAt(verifiedRoomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
         for (int i = 1; i < chatMessageList.size(); i++) {
             chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
@@ -105,7 +114,9 @@ public class ChatMessageService {
     @Transactional
     public void sendChatMessage(ChatMessageRequestDto requestDto) {
 
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(requestDto.getRoomId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다")
+        );
 
         User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
@@ -216,7 +227,7 @@ public class ChatMessageService {
         }
 
         return ChatMessageResponseDto.builder()
-                .roomId(chatMessage.getChatRoom().getRoomId())
+                .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
@@ -239,7 +250,7 @@ public class ChatMessageService {
             nickname = "알 수 없음";
         }
         return ChatMessagePhoneNumDto.builder()
-                .roomId(chatMessage.getChatRoom().getRoomId())
+                .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .message(chatMessage.getMessage())
                 .sender(nickname)

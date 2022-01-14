@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FreePostHotResponseDto{
+    private Long userId;
     private Long postId;
     private String title;
     private String skiResort;

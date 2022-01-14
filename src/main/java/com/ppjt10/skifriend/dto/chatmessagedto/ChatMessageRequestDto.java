@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ChatMessageRequestDto {
     private ChatMessage.MessageType type;
-    private String roomId;
+    private Long roomId;
     private String sender;
     private String message;
     private long userCount;

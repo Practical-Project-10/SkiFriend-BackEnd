@@ -26,11 +26,11 @@ public class UserInfoValidator {
     }
 
     public static void validatePassword(String password){
-        String patternPassword = "(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{7,}";
+        String patternPassword = "(?=.*[a-z])(?=.*\\d)[a-z\\d]{7,}";
 
         // 비밀번호 형식 확인
         if (password == null || !Pattern.matches(patternPassword, password)) {
-            throw new IllegalArgumentException("특수문자 영어 숫자 포함, 최소 8자 이상이어야 합니다.");
+            throw new IllegalArgumentException("영소문자와 숫자 반드시 포함, 최소 8자 이상이어야 합니다.");
         }
     }
 }

@@ -25,7 +25,7 @@ public class ChatController {
     // 해당 방에서 했던 모든 메시지 조회
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public ResponseEntity<List<ChatMessageResponseDto>> getAllMessages(@PathVariable String roomId,
+    public ResponseEntity<List<ChatMessageResponseDto>> getAllMessages(@PathVariable Long roomId,
                                                                        @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
