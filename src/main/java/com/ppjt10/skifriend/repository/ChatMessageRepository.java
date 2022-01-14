@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findAllByChatRoomRoomIdOrderByCreateAt(String roomId);
-    List<ChatMessage> findAllByChatRoomRoomIdOrderByCreateAtDesc(String roomId);
-    List<ChatMessage> findAllByChatRoomRoomId(String roomId);
+    List<ChatMessage> findAllByChatRoomIdOrderByCreateAt(Long roomId);
+
+    List<ChatMessage> findAllByChatRoomId(Long roomId);
 }

@@ -52,7 +52,7 @@ public class TimeScheduler {
         List<String> fromRedisLastMsgNameTimeCntList = redisRepository.getLastMsgTimeCnt();
         for(String fromRedisLastMsgNameTimeCnt : fromRedisLastMsgNameTimeCntList) {
             List<String> lastMsgNameTimeCnt = Arrays.asList(fromRedisLastMsgNameTimeCnt.split("/"));
-            String roomId = lastMsgNameTimeCnt.get(0);
+            Long roomId = Long.parseLong(lastMsgNameTimeCnt.get(0));
             String lastMsgName = lastMsgNameTimeCnt.get(1);
             LocalDateTime lastMessageTime = LocalDateTime.parse(lastMsgNameTimeCnt.get(2), formatter);
             int lastMsgCnt = Integer.parseInt(lastMsgNameTimeCnt.get(3));
@@ -60,7 +60,7 @@ public class TimeScheduler {
                 continue; // 아래 로직 실행하지 말고 다음 for 문을 돌아라
             }
             Long timeDiff = Duration.between(lastMessageTime, currentTime).getSeconds();
-            int presentMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
+            int presentMsgCnt = chatMessageRepository.findAllByChatRoomId(roomId).size();
             int restMsgCnt = presentMsgCnt - lastMsgCnt;
             if((timeDiff / 3600) > 0 && restMsgCnt >0) {
                 userNameList.add(lastMsgName);

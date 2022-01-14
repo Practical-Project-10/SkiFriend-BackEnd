@@ -40,7 +40,7 @@ public class StompHandler implements ChannelInterceptor {
         else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             System.out.println("SUBSCRIBE!!!!");
 
-            String roomId = chatMessageService.getRoomId(
+            Long roomId = chatMessageService.getRoomId(
                     Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
             );
             String sessionId = (String) message.getHeaders().get("simpSessionId");
@@ -54,12 +54,12 @@ public class StompHandler implements ChannelInterceptor {
 
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            String roomId = redisRepository.getUserEnterRoomId(sessionId);
+            Long roomId = redisRepository.getUserEnterRoomId(sessionId);
             String name = redisRepository.getUserNameId(sessionId);
 
             if (name != null) {
                 System.out.println("DISCONNECT 클라이언트 유저 이름: " + name);
-                int chatMessageCount = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
+                int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
                 System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
                 redisRepository.setLastReadMsgCnt(roomId, name, chatMessageCount);
 

@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FreePostDetailResponseDto{
+    private Long userId;
     private Long postId;
     private String nickname;
     private String title;

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatMessagePhoneNumDto {
     private ChatMessage.MessageType type;
-    private String roomId;
+    private Long roomId;
     private String message;
     private String sender;
 
