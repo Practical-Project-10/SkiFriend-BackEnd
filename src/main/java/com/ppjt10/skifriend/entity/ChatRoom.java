@@ -1,9 +1,11 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -22,20 +24,12 @@ public class ChatRoom {
     private String title;
 
     @Column
-    private Long writerId;
-
-    @Column
-    private Long senderId;
-
-    @Column
     private Long carpoolId;
 
-    public ChatRoom (String title, Long writerId, Long senderId, Long carpoolId) {
+    public ChatRoom (String title, Long carpoolId) {
         //this.carpool = carpool;
         this.title = title;
         this.roomId = UUID.randomUUID().toString();
-        this.writerId = writerId;
-        this.senderId = senderId;
         this.carpoolId = carpoolId;
     }
 }

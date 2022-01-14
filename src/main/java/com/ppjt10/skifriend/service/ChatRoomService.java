@@ -10,6 +10,7 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -36,29 +37,17 @@ public class ChatRoomService {
             ChatMessage chatMessage = chatMessages.get(chatMessageSize - 1);
             String otherNick;
             String otherProfileImg;
-            if (chatRoom.getSenderId().equals(userId)) {
-                try {
-                    User other = userRepository.findById(chatRoom.getWriterId()).orElseThrow(
-                            () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-                    );
-                    otherNick = other.getNickname();
-                    otherProfileImg = other.getProfileImg();
-                } catch (Exception err) {
-                    otherNick = "알 수 없음";
-                    otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-                }
-            } else {
-                try {
-                    User other = userRepository.findById(chatRoom.getSenderId()).orElseThrow(
-                            () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
-                    );
-                    otherNick = other.getNickname();
-                    otherProfileImg = other.getProfileImg();
-                } catch (Exception err) {
-                    otherNick = "알 수 없음";
-                    otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-                }
+            try {
+                User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
+                        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다")
+                );
+                otherNick = other.getNickname();
+                otherProfileImg = other.getProfileImg();
+            } catch (Exception err) {
+                otherNick = "알 수 없음";
+                otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
             }
+
             chatRoomListResponseDtoList.add(generateChatRoomListResponseDto(chatRoom, chatMessage, chatMessageSize, otherNick, otherProfileImg, user));
         }
 
@@ -117,16 +106,18 @@ public class ChatRoomService {
         String writerUsername = writer.getUsername();
         String writerPhone = writer.getPhoneNum();
 
-        ChatRoom existedChatRoom = chatRoomRepository.findByWriterIdAndSenderIdAndCarpoolId(writerId, senderId, carpoolId);
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndOtherIdAndChatRoomCarpoolId(writerId, senderId, carpoolId);
+
         //채팅방이 존재한다면
-        if (existedChatRoom != null) {
+        if (chatUserInfo != null) {
+            ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
             return generateChatRoomResponseDto(existedChatRoom, writerNickname);
         } else {    //존재하지 않는다면 방을 만들어준다.
             // 방 생성 알림 메세지 글 작성자한테 전송하기
             String msg = carpool.getTitle() + "게시글에 대한 채팅이 왔습니다! 확인하세요 :)";
             messageService.createChatRoomAlert(writerPhone, msg);
 
-            ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), writerId, senderId, carpoolId);
+            ChatRoom chatRoom = new ChatRoom(carpool.getTitle(), carpoolId);
             chatRoomRepository.save(chatRoom);
 
             //방 생성시 첫 메시지 강제전송
@@ -138,11 +129,11 @@ public class ChatRoomService {
             redisRepository.setLastReadMsgCnt(chatRoom.getRoomId(), writerUsername, 1);
 
             //sender 정보
-            ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), chatRoom);
+            ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), writer.getId(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoSender);
 
             //카풀 작성자 정보
-            ChatUserInfo chatUserInfoWriter = new ChatUserInfo(writer.getId(), chatRoom);
+            ChatUserInfo chatUserInfoWriter = new ChatUserInfo(writer.getId(), sender.getId(), chatRoom);
             chatUserInfoRepository.save(chatUserInfoWriter);
 
             return generateChatRoomResponseDto(chatRoom, writerNickname);

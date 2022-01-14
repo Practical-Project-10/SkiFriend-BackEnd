@@ -6,14 +6,17 @@ import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
 import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
+import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.config.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
 import com.ppjt10.skifriend.repository.ChatRoomRepository;
+import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +27,9 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-//    private final MessageService messageService;
-//    private final ChatUserInfoRepository chatUserInfoRepository;
-//    private final RedisRepository redisRepository;
+    //    private final MessageService messageService;
+    private final ChatUserInfoRepository chatUserInfoRepository;
+    //    private final RedisRepository redisRepository;
     private final RedisPublisher redisPublisher;
     private final UserRepository userRepository;
 //    private final S3Uploader s3Uploader;
@@ -45,12 +48,12 @@ public class ChatMessageService {
     // 해당 채팅방 모든 채팅 내용 불러오기
     public List<ChatMessageResponseDto> getAllMessages(String roomId, User user) {
         Long userId = user.getId();
-        ChatRoom foundChatRoom = chatRoomRepository.findByRoomId(roomId);
-        if (!foundChatRoom.getSenderId().equals(userId) && !foundChatRoom.getWriterId().equals(userId)) {
-            throw new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다");
-        }
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomRoomId(userId, roomId).orElseThrow(
+                () -> new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다")
+        );
 
-        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
+        String verifiedRoomId = chatUserInfo.getChatRoom().getRoomId();
+        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(verifiedRoomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
         for (int i = 1; i < chatMessageList.size(); i++) {
             chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
@@ -99,6 +102,7 @@ public class ChatMessageService {
 
 
     // 채팅방 메시지 보내기
+    @Transactional
     public void sendChatMessage(ChatMessageRequestDto requestDto) {
 
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
