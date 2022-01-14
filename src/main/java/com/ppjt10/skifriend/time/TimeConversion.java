@@ -34,7 +34,7 @@ public class TimeConversion {
             resultConversion = createdAt.format(DateTimeFormatter.ofPattern("MM월 dd일"));
         }
          else {
-            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("a hh시 mm분"));
+            resultConversion = createdAt.format(DateTimeFormatter.ofPattern("a hh시 mm분 ss초"));
         }
 
         return resultConversion;
