@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileRequestDto{
-    private String gender;
-    private String ageRange;
+//    private String gender;
+//    private String ageRange;
     private String career;
     private String selfIntro;
 }

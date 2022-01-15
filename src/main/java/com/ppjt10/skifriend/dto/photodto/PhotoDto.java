@@ -1,4 +1,5 @@
-package com.ppjt10.skifriend.dto.likeDto;
+package com.ppjt10.skifriend.dto.photodto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LikesResponseDto {
-    private Long userId;
+public class PhotoDto {
+    private Long photoId;
+    private String photoUrl;
+
 }
