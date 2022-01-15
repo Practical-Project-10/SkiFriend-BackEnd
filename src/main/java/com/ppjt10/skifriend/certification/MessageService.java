@@ -33,6 +33,11 @@ public class MessageService {
     // 인증번호 생성하기
     public String getSmsRedisRepository(SignupPhoneNumDto requestDto, User user) {
         if(user.getPhoneNum() != null){
+            throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
+        }
+
+        User existedUser = userRepository.findByPhoneNum(requestDto.getPhoneNumber());
+        if(existedUser != null){
             throw new IllegalArgumentException("이미 가입된 번호입니다.");
         }
 
@@ -62,13 +67,20 @@ public class MessageService {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
 
+        if(user.getPhoneNum() != null){
+            throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
+        }
+
         String phoneNum = requestDto.getPhoneNumber();
 
         // 인증 완료 시, Redis Repository에서 인증번호 삭제
         smsRedisRepository.deleteSmsCertification(phoneNum);
 
         // 유저 전화번호 업데이트
-        user.setPhoneNum(requestDto.getPhoneNumber());
+        User verifiedUser = userRepository.findById(user.getId()).orElseThrow(
+                () -> new IllegalArgumentException("유저가 없어용")
+        );
+        verifiedUser.setPhoneNum(requestDto.getPhoneNumber());
 
         return "인증 완료되었습니다.";
     }

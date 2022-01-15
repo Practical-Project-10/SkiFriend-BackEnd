@@ -60,6 +60,12 @@ public class User {
         this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
     }
 
+    public void updateKakaoProfile(String ageRange, String gender) {
+        this.ageRange = ageRange;
+        this.gender = gender;
+    }
+
+    // 네이버 유저
     public User(String username, String nickname, String enPassword, String gender, String ageRange){
         this.username = username;
         this.nickname = nickname;
@@ -85,11 +91,6 @@ public class User {
 //        this.career = requestDto.getCareer();
 //        this.selfIntro = requestDto.getSelfIntro();
 //    }
-
-    public void updateKakaoProfile(String ageRange, String gender) {
-        this.ageRange = ageRange;
-        this.gender = gender;
-    }
 
     public void update(UserProfileUpdateDto requestDto) {
         this.nickname = requestDto.getNickname();
