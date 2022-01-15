@@ -89,7 +89,7 @@ public class FreePostService {
             for (Photo photo : photoList) {
                 System.out.println("포토: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + photo);
                 photoRepository.save(photo);
-                freePost.addImg(photo);
+//                freePost.addImg(photo);
             }
         }
 
@@ -143,7 +143,7 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다")
         );
 
-        List<Photo> photoList = freePost.getImages();
+        List<Photo> photoList = photoRepository.findAllByFreePost(freePost);
         System.out.println("게시물이 가지는 사진 객체 리스트" + photoList);
         if (!user.getId().equals(freePost.getUserId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
@@ -185,7 +185,6 @@ public class FreePostService {
                 for (Photo photo : newPhotoList) {
                     System.out.println("저장되는 포토: " + photo);
                     photoRepository.save(photo);
-                    freePost.addImg(photo);
                 }
             }
         }
@@ -208,7 +207,7 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
 
-        List<Photo> photoList = freePost.getImages();
+        List<Photo> photoList = photoRepository.findAllByFreePost(freePost);
 
         for (Photo photo : photoList) {
             try {

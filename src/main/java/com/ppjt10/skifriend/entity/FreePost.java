@@ -31,9 +31,9 @@ public class FreePost extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "freePost")
-    @JsonIgnoreProperties({"freePost"})
-    private List<Photo> images = new ArrayList<>();
+//    @OneToMany(mappedBy = "freePost")
+//    @JsonIgnoreProperties({"freePost"})
+//    private List<Photo> images = new ArrayList<>();
 
     @Column
     private int likeCnt;
@@ -53,9 +53,9 @@ public class FreePost extends Timestamped {
         this.content = content;
     }
 
-    public void addImg(Photo image) {
-        this.images.add(image);
-    }
+//    public void addImg(Photo image) {
+//        this.images.add(image);
+//    }
 
     public void setLikeCnt(int likeCnt){
         this.likeCnt = likeCnt;
