@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false) // 닉네임 중복 허용
     private String nickname;
 
     @Column(nullable = false)
@@ -32,9 +32,6 @@ public class User {
 
     @Column
     private String profileImg;
-
-    @Column
-    private String vacImg;
 
     @Column
     private String gender;
@@ -68,10 +65,6 @@ public class User {
         this.profileImg = imgPath;
     }
 
-    public void setVacImg(String imgPath) {
-        this.vacImg = imgPath;
-    }
-
     public void updatePassword(String enPassword) {
         this.password = enPassword;
     }
@@ -87,5 +80,10 @@ public class User {
         this.ageRange = requestDto.getAgeRange();
         this.career = requestDto.getCareer();
         this.selfIntro = requestDto.getSelfIntro();
+    }
+
+    public void updateKakaoProfile(String ageRange, String gender) {
+        this.ageRange = ageRange;
+        this.gender = gender;
     }
 }

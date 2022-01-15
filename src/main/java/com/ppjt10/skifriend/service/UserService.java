@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +34,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
-    private final String vacImgDirName = "Vaccine";
     private final String defaultImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
 
     // 유저 프로필 작성
     @Transactional
-    public UserResponseDto createUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileRequestDto requestDto, User user) {
+    public UserResponseDto createUserProfile(MultipartFile profileImg, UserProfileRequestDto requestDto, User user) {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
@@ -62,18 +62,6 @@ public class UserService {
             dbUser.setProfileImg(defaultImg);
         }
 
-        // 백신 이미지 저장 및 저장 경로 업데이트
-        if (vacImg != null) {
-            try {
-                String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                dbUser.setVacImg(vacImgUrl);
-            } catch (Exception e) {
-                dbUser.setVacImg("No Post Image");
-            }
-        } else {
-            dbUser.setVacImg("No Post Image");
-        }
-
         return generateUserResponseDto(dbUser);
     }
 
@@ -85,7 +73,7 @@ public class UserService {
 
     // 유저 프로필 수정
     @Transactional
-    public UserResponseDto updateUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileUpdateDto requestDto, User user) {
+    public UserResponseDto updateUserProfile(MultipartFile profileImg, UserProfileUpdateDto requestDto, User user) {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
@@ -112,25 +100,6 @@ public class UserService {
                 }
             } else {
                 dbUser.setProfileImg(defaultImg);
-            }
-        }
-
-        // 백신 이미지 저장 및 저장 경로 업데이트
-        if (vacImg != null) {
-            // 빈 이미지가 아닐때만 기존 이미지 삭제
-            if (!dbUser.getVacImg().equals("No Post Image")) {
-                try {
-                    String source = URLDecoder.decode(dbUser.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-                    s3Uploader.deleteFromS3(source);
-                } catch (Exception e) {
-                }
-            }
-
-            try {
-                String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                dbUser.setVacImg(vacImgUrl);
-            } catch (Exception e) {
-                dbUser.setVacImg("No Post Image");
             }
         }
 
@@ -243,7 +212,6 @@ public class UserService {
                 .phoneNum(user.getPhoneNum())
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
@@ -255,7 +223,6 @@ public class UserService {
         return UserProfileOtherDto.builder()
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())

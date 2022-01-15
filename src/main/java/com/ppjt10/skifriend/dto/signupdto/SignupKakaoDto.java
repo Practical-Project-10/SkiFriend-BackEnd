@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupKakaoUserDto {
-    private Long id;
-    private String nickname;
-    private String profileImg;
+public class SignupKakaoDto {
+    String token;
+    Long userId;
 }

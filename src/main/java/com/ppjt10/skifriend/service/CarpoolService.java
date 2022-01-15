@@ -38,15 +38,16 @@ public class CarpoolService {
     //카풀 전체 조회
     @Transactional
     public List<CarpoolResponseDto> getCarpools(String skiResortName, int page, int size) {
-        List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
         SkiResort skiResort = skiResortRepository.findByResortName(skiResortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
-        Pageable pageable = PageRequest.of(page, size);
+
         //해당 스키장의 카풀 정보 리스트 가져오기
+        Pageable pageable = PageRequest.of(page, size);
         Page<Carpool> carpoolList = carpoolRepository.findAllBySkiResortOrderByCreateAtDesc(skiResort, pageable);
 
         //Carpool 리스트
+        List<CarpoolResponseDto> carpoolResponseDtoList = new ArrayList<>();
         for (Carpool carpool : carpoolList) {
             carpoolResponseDtoList.add(generateCarpoolResponseDto(carpool));
         }
@@ -57,13 +58,19 @@ public class CarpoolService {
     //카풀 게시글 작성
     @Transactional
     public CarpoolResponseDto createCarpool(String resortName, CarpoolRequestDto requestDto, User user) {
-        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
-        DateValidator.validateDateForm(requestDto.getDate());
-        TimeValidator.validateTimeForm(requestDto.getTime());
+        if (user.getAgeRange() == null || user.getGender() == null) {
+            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
+        } else if(user.getPhoneNum() == null) {
+            throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
+        }
 
         SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+
+        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
+        DateValidator.validateDateForm(requestDto.getDate());
+        TimeValidator.validateTimeForm(requestDto.getTime());
 
         Carpool carpool = new Carpool(user.getId(), requestDto, skiResort);
         carpoolRepository.save(carpool);
@@ -74,10 +81,6 @@ public class CarpoolService {
     //카풀 게시글 수정
     @Transactional
     public CarpoolResponseDto updateCarpool(Long carpoolId, CarpoolRequestDto requestDto, User user) {
-        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
-        DateValidator.validateDateForm(requestDto.getDate());
-        TimeValidator.validateTimeForm(requestDto.getTime());
-
         Carpool carpool = carpoolRepository.findById(carpoolId).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 카풀이 존재하지 않습니다.")
         );
@@ -85,6 +88,10 @@ public class CarpoolService {
         if (!carpool.getUserId().equals(user.getId())) {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
+
+        CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
+        DateValidator.validateDateForm(requestDto.getDate());
+        TimeValidator.validateTimeForm(requestDto.getTime());
 
         carpool.update(requestDto);
         return generateCarpoolResponseDto(carpool);

@@ -29,12 +29,11 @@ public class UserController {
     // 유저 프로필 작성
     @PostMapping("/user/profile")
     public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
                                                              @RequestPart(value = "requestDto") UserProfileRequestDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.createUserProfile(profileImg, vacImg, requestDto, user));
+        return ResponseEntity.ok().body(userService.createUserProfile(profileImg, requestDto, user));
     }
 
     // 유저 정보 조회하기
@@ -47,12 +46,11 @@ public class UserController {
     // 유저 정보 수정하기
     @PutMapping("/user/info")
     public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
                                                              @RequestPart(value = "requestDto") UserProfileUpdateDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, vacImg, requestDto, user);
+        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, requestDto, user);
         return ResponseEntity.ok().body(userResponseDto);
     }
 
