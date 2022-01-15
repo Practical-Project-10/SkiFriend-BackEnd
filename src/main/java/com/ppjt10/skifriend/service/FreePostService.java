@@ -89,7 +89,6 @@ public class FreePostService {
             for (Photo photo : photoList) {
                 System.out.println("포토: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + photo);
                 photoRepository.save(photo);
-//                freePost.addImg(photo);
             }
         }
 
@@ -160,7 +159,6 @@ public class FreePostService {
                     System.out.println("게시물에 저장돼 있던 포토 삭제 완료");
                 } catch (Exception ignored) {
                 }
-                System.out.println("------------------------------------" + photoList);
             }
         }
         List<Photo> newPhotoList = new ArrayList<>();
