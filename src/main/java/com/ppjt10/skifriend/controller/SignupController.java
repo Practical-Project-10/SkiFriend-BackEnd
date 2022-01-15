@@ -2,13 +2,14 @@ package com.ppjt10.skifriend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.certification.MessageService;
-import com.ppjt10.skifriend.dto.signupdto.SignupKakaoDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupSmsCertificationDto;
+import com.ppjt10.skifriend.dto.signupdto.SignupSocialDto;
 import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.KakaoUserService;
+import com.ppjt10.skifriend.service.NaverUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,7 @@ public class SignupController {
 //    private final SignupService SignupService;
     private final MessageService messageService;
     private final KakaoUserService kakaoUserService;
+    private final NaverUserService naverUserService;
     private final String AUTH_HEADER = "Authorization";
 
     // 문자 SMS 인증
@@ -64,7 +66,7 @@ public class SignupController {
     @GetMapping("/user/kakao/callback")
     public Long kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         // authorizedCode: 카카오 서버로부터 받은 인가 코드
-        SignupKakaoDto signupKakaoDto = kakaoUserService.kakaoLogin(code);
+        SignupSocialDto signupKakaoDto = kakaoUserService.kakaoLogin(code);
         response.addHeader(AUTH_HEADER, signupKakaoDto.getToken());
 
         return signupKakaoDto.getUserId();
@@ -77,4 +79,22 @@ public class SignupController {
 
         return kakaoUserService.kakaoAddUserProfile(code, userId);
     }
+
+    // 네이버 회원가입
+    @GetMapping("/user/naver/callback")
+    public UserLoginResponseDto naverLoogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        // authorizedCode: 카카오 서버로부터 받은 인가 코드
+        SignupSocialDto signupNaverDto = naverUserService.naverLogin(code);
+        response.addHeader(AUTH_HEADER, signupNaverDto.getToken());
+
+        return signupNaverDto.getUserLoginResponseDto();
+    }
+
+//    @GetMapping("/user/naver/callback/{userId}")
+//    public UserLoginResponseDto NaverAddUserProfile(@RequestParam String code,
+//                                                    @PathVariable Long userId
+//    ) throws JsonProcessingException {
+//
+//        return kakaoUserService.kakaoAddUserProfile(code, userId);
+//    }
 }
