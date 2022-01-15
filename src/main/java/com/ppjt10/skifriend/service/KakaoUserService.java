@@ -10,6 +10,7 @@ import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,9 @@ import java.util.UUID;
 public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
+    @Value("${kakao.clientid}")
+    private String clientId;
 
     @Transactional
     public SignupKakaoDto kakaoLogin(String code) throws JsonProcessingException {
@@ -83,7 +87,7 @@ public class KakaoUserService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "af4c2105b17debc9c5ba96f70c6ee0b9");
+        body.add("client_id", clientId);
         body.add("redirect_uri", redirect_uri);
         body.add("code", code);
 
