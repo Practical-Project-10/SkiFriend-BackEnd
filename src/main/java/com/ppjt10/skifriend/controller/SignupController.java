@@ -1,19 +1,23 @@
 package com.ppjt10.skifriend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.dto.signupdto.*;
+import com.ppjt10.skifriend.service.KakaoUserService;
 import com.ppjt10.skifriend.service.SignupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
 public class SignupController {
     private final SignupService SignupService;
     private final MessageService messageService;
+    private final KakaoUserService kakaoUserService;
+    private final String AUTH_HEADER = "Authorization";
 
     // 문자 SMS 인증
     @PostMapping("/user/sms")
@@ -43,5 +47,13 @@ public class SignupController {
     @PostMapping("/user/signup")
     public void signup(@RequestBody SignupRequestDto requestDto){
         SignupService.signup(requestDto);
+    }
+
+    // 카카오 회원가입
+    @GetMapping("/user/kakao/callback")
+    public void kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        // authorizedCode: 카카오 서버로부터 받은 인가 코드
+        String token = kakaoUserService.kakaoLogin(code);
+        response.addHeader(AUTH_HEADER, token);
     }
 }

@@ -27,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column
     private String phoneNum;
 
     @Column
@@ -55,6 +55,13 @@ public class User {
         this.phoneNum = requestDto.getPhoneNum();
         this.password = enPassword;
         this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+    }
+
+    public User(String username, String nickname, String enPassword, String prorileImg){
+        this.username = username;
+        this.nickname = nickname;
+        this.password = enPassword;
+        this.profileImg = prorileImg;
     }
 
     public void setProfileImg(String imgPath) {
