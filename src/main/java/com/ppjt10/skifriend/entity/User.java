@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.dto.signupdto.SignupRequestDto;
-import com.ppjt10.skifriend.dto.userdto.UserProfileRequestDto;
 import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,45 +43,48 @@ public class User {
     @Column
     private String selfIntro;
 
-    // 태스트용 생성자
-    public User(SignupRequestDto requestDto, String enPassword) {
-        this.username = requestDto.getUsername();
-        this.nickname = requestDto.getNickname();
-        this.phoneNum = requestDto.getPhoneNum();
-        this.password = enPassword;
-        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-    }
+    // 일반 유저
+//    public User(SignupRequestDto requestDto, String enPassword) {
+//        this.username = requestDto.getUsername();
+//        this.nickname = requestDto.getNickname();
+//        this.phoneNum = requestDto.getPhoneNum();
+//        this.password = enPassword;
+//        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+//    }
 
-    public User(String username, String nickname, String enPassword, String prorileImg){
+    // 카카오 유저
+    public User(String username, String nickname, String enPassword){
         this.username = username;
         this.nickname = nickname;
         this.password = enPassword;
-        this.profileImg = prorileImg;
+        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
     }
 
     public void setProfileImg(String imgPath) {
         this.profileImg = imgPath;
     }
 
-    public void updatePassword(String enPassword) {
-        this.password = enPassword;
+    public void setPhoneNum(String phoneNum) { this.phoneNum = phoneNum; }
+
+//    public void updatePassword(String enPassword) {
+//        this.password = enPassword;
+//    }
+
+//    public void createUserProfile(UserProfileRequestDto requestDto) {
+//        this.gender = requestDto.getGender();
+//        this.ageRange = requestDto.getAgeRange();
+//        this.career = requestDto.getCareer();
+//        this.selfIntro = requestDto.getSelfIntro();
+//    }
+
+    public void updateKakaoProfile(String ageRange, String gender) {
+        this.ageRange = ageRange;
+        this.gender = gender;
     }
 
     public void update(UserProfileUpdateDto requestDto) {
         this.nickname = requestDto.getNickname();
         this.career = requestDto.getCareer();
         this.selfIntro = requestDto.getSelfIntro();
-    }
-
-    public void createUserProfile(UserProfileRequestDto requestDto) {
-        this.gender = requestDto.getGender();
-        this.ageRange = requestDto.getAgeRange();
-        this.career = requestDto.getCareer();
-        this.selfIntro = requestDto.getSelfIntro();
-    }
-
-    public void updateKakaoProfile(String ageRange, String gender) {
-        this.ageRange = ageRange;
-        this.gender = gender;
     }
 }

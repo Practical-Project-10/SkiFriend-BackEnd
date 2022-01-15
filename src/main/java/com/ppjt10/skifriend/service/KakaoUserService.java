@@ -25,8 +25,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -118,14 +116,6 @@ public class KakaoUserService {
 
         String kakaoNick = jsonNode.get("properties").get("nickname").asText();
 
-        String kakaoProfileImg;
-        try {
-            kakaoProfileImg = jsonNode.get("properties")
-                    .get("profile_image").asText();
-        } catch (Exception err) {
-            kakaoProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-        }
-
         // 회원가입
         if (kakaoUser == null) {
             String nickname = kakaoNick;
@@ -134,10 +124,7 @@ public class KakaoUserService {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
-            // profileImg default 기본 이미지 or 유저에게서 가져온 이미지
-            String profileImg = kakaoProfileImg;
-
-            kakaoUser = new User(kakaoId, nickname, encodedPassword, profileImg);
+            kakaoUser = new User(kakaoId, nickname, encodedPassword);
             userRepository.save(kakaoUser);
         }
 
