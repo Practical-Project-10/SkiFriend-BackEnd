@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class UserProfileOtherDto {
     private String nickname;
     private String profileImg;
-    private String vacImg;
     private String gender;
     private String ageRange;
     private String career;

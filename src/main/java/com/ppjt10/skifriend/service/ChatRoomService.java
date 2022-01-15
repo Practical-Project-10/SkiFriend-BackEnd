@@ -91,19 +91,21 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
-        if (sender.getCareer() == null) {
-            throw new IllegalArgumentException("프로필 작성을 진행하셔야 채팅방에 입장하실 수 있습니다");
+        if (sender.getAgeRange() == null || sender.getGender() == null) {
+            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
+        } else if(sender.getPhoneNum() == null) {
+            throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
         }
 
         Long writerId = carpool.getUserId();
+        User writer = userRepository.findById(writerId).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 유저가 없습니다")
+        );
+
         Long senderId = sender.getId();
         if (writerId.equals(senderId)) {
             throw new IllegalArgumentException("채팅은 다른 유저와만 가능합니다");
         }
-
-        User writer = userRepository.findById(writerId).orElseThrow(
-                () -> new IllegalArgumentException("해당하는 유저가 없습니다")
-        );
 
         String writerNickname = writer.getNickname();
         String writerUsername = writer.getUsername();

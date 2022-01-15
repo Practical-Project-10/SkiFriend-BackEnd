@@ -15,7 +15,6 @@ public class UserResponseDto{
     private String phoneNum;
     private String nickname;
     private String profileImg;
-    private String vacImg;
     private String gender;
     private String ageRange;
     private String career;
