@@ -1,11 +1,14 @@
 package com.ppjt10.skifriend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,8 +31,9 @@ public class FreePost extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @Column
-    private String image;
+    @OneToMany(mappedBy = "freePost")
+    @JsonIgnoreProperties({"freePost"})
+    private List<Photo> images = new ArrayList<>();
 
     @Column
     private int likeCnt;
@@ -37,18 +41,20 @@ public class FreePost extends Timestamped {
     @Column
     private int commentCnt;
 
-    public void update(FreePostRequestDto requestDto, String image) {
+    public void update(FreePostRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
-        this.image = image;
     }
 
-    public FreePost(Long userId, SkiResort skiResort, String title, String content, String image) {
+    public FreePost(Long userId, SkiResort skiResort, String title, String content) {
         this.userId = userId;
         this.skiResort = skiResort;
         this.title = title;
         this.content = content;
-        this.image = image;
+    }
+
+    public void addImg(Photo image) {
+        this.images.add(image);
     }
 
     public void setLikeCnt(int likeCnt){
