@@ -118,17 +118,15 @@ public class KakaoUserService {
         User kakaoUser = userRepository.findByUsername(kakaoId)
                 .orElse(null);
 
-        String kakaoNick = jsonNode.get("properties").get("nickname").asText();
-
         // 회원가입
         if (kakaoUser == null) {
-            String nickname = kakaoNick;
+            String kakaoNick = jsonNode.get("properties").get("nickname").asText();
 
             // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId, nickname, encodedPassword);
+            kakaoUser = new User(kakaoId, kakaoNick, encodedPassword);
             userRepository.save(kakaoUser);
         }
 

@@ -60,6 +60,15 @@ public class User {
         this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
     }
 
+    public User(String username, String nickname, String enPassword, String gender, String ageRange){
+        this.username = username;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.ageRange = ageRange;
+        this.password = enPassword;
+        this.profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+    }
+
     public void setProfileImg(String imgPath) {
         this.profileImg = imgPath;
     }

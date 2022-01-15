@@ -130,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        skipPathList.add("POST,/user/signup");
         skipPathList.add("GET,/user/kakao/callback");
         skipPathList.add("GET,/user/kakao/callback/{userId}");
+        skipPathList.add("GET,/user/naver/callback");
 //        skipPathList.add("POST,/user/signup/idcheck");
 //        skipPathList.add("POST,/user/signup/nicknamecheck");
 

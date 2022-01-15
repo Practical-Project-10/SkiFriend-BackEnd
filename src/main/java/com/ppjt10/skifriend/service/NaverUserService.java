@@ -125,22 +125,24 @@ public class NaverUserService {
         JsonNode jsonNode = getNaverUserInfo(accessToken);
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
-        String naverId = String.valueOf(jsonNode.get("id").asLong());
+        String naverId = String.valueOf(jsonNode.get("response").get("id").asLong());
         User naverUser = userRepository.findByUsername(naverId)
                 .orElse(null);
 
-        String naverNick = jsonNode.get("properties").get("nickname").asText();
-
         // 회원가입
         if (naverUser == null) {
-            String nickname = naverNick;
+            String naverNick = jsonNode.get("response").get("nickname").asText();
+            String gender = jsonNode.get("response").get("gender").asText();
+            String ageRange = jsonNode.get("response").get("age").asText();
+
             // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
-            naverUser = new User(naverId, nickname, encodedPassword);
+            naverUser = new User(naverId, naverNick, encodedPassword, gender, ageRange);
             userRepository.save(naverUser);
         }
+
         return naverUser;
     }
 
