@@ -162,6 +162,7 @@ public class FreePostService {
                 }
             }
         }
+
         List<Photo> newPhotoList = new ArrayList<>();
         if (images != null) {
             System.out.println("삭제되고 남은 사진 객체리스트: " + photoList);

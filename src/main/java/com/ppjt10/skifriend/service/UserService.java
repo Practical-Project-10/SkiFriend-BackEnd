@@ -205,6 +205,7 @@ public class UserService {
 
     private UserResponseDto generateUserResponseDto(User user) {
         return UserResponseDto.builder()
+                .userId(user.getId())
                 .username(user.getUsername())
                 .phoneNum(user.getPhoneNum())
                 .nickname(user.getNickname())
@@ -213,6 +214,7 @@ public class UserService {
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
                 .selfIntro(user.getSelfIntro())
+                .isProfile(user.getPhoneNum() != null)
                 .build();
     }
 

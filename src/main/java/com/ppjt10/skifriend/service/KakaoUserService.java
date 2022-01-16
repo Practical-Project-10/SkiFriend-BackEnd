@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.signupdto.SignupSocialDto;
 import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
+import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
@@ -54,14 +55,39 @@ public class KakaoUserService {
                 .build();
     }
 
+//    @Transactional
+//    public UserLoginResponseDto kakaoAddUserProfile(String code, Long userId) throws JsonProcessingException {
+//        // 업데이트 필요성 체크
+//        User user = userRepository.findById(userId).orElseThrow(
+//                () -> new IllegalArgumentException("유저가 없어용")
+//        );
+//
+//        UserLoginResponseDto userLoginResponseDto;
+//        if (user.getAgeRange() == null) {
+//            // 1. "인가 코드"로 "액세스 토큰" 요청
+//            String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback/properties");
+//
+//            // 2. 유저 정보 업데이트
+//            userLoginResponseDto = updateUserProfile(accessToken, user);
+//        } else {
+//            userLoginResponseDto = UserLoginResponseDto.builder()
+//                    .userId(user.getId())
+//                    .nickname(user.getNickname())
+//                    .isProfile(true)
+//                    .build();
+//        }
+//
+//        return userLoginResponseDto;
+//    }
+
     @Transactional
-    public UserLoginResponseDto kakaoAddUserProfile(String code, Long userId) throws JsonProcessingException {
+    public UserResponseDto kakaoAddUserProfile(String code, Long userId) throws JsonProcessingException {
         // 업데이트 필요성 체크
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("유저가 없어용")
         );
 
-        UserLoginResponseDto userLoginResponseDto;
+        UserResponseDto userLoginResponseDto;
         if (user.getAgeRange() == null) {
             // 1. "인가 코드"로 "액세스 토큰" 요청
             String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback/properties");
@@ -69,10 +95,14 @@ public class KakaoUserService {
             // 2. 유저 정보 업데이트
             userLoginResponseDto = updateUserProfile(accessToken, user);
         } else {
-            userLoginResponseDto = UserLoginResponseDto.builder()
+            userLoginResponseDto = UserResponseDto.builder()
                     .userId(user.getId())
+                    .username(user.getUsername())
                     .nickname(user.getNickname())
-                    .isProfile(true)
+                    .profileImg(user.getProfileImg())
+                    .gender(user.getGender())
+                    .ageRange(user.getAgeRange())
+                    .isProfile(user.getPhoneNum() != null)
                     .build();
         }
 
@@ -132,7 +162,7 @@ public class KakaoUserService {
     }
 
     // 유저 프로필 등록 (나이대, 성별)
-    private UserLoginResponseDto updateUserProfile(String accessToken, User user) throws JsonProcessingException {
+    private UserResponseDto updateUserProfile(String accessToken, User user) throws JsonProcessingException {
         JsonNode jsonNode = getKakaoUserInfo(accessToken);
 
         String ageRange = jsonNode.get("kakao_account").get("age_range").asText();
@@ -157,10 +187,14 @@ public class KakaoUserService {
             isProfile = true;
         }
 
-        return UserLoginResponseDto.builder()
+        return UserResponseDto.builder()
                 .userId(user.getId())
+                .username(user.getUsername())
                 .nickname(user.getNickname())
-                .isProfile(isProfile)
+                .profileImg(user.getProfileImg())
+                .gender(user.getGender())
+                .ageRange(user.getAgeRange())
+                .isProfile(user.getPhoneNum() != null)
                 .build();
     }
 

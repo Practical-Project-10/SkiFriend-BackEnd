@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.signupdto.SignupSocialDto;
 import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
+import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
@@ -53,15 +54,26 @@ public class NaverUserService {
         // 4. 로그인 JWT 토큰 발행
         String token = jwtTokenCreate(naverUser);
 
-        UserLoginResponseDto userLoginResponseDto = UserLoginResponseDto.builder()
+//        UserLoginResponseDto userLoginResponseDto = UserLoginResponseDto.builder()
+//                .userId(naverUser.getId())
+//                .nickname(naverUser.getNickname())
+//                .isProfile(true)
+//                .build();
+
+        UserResponseDto userResponseDto = UserResponseDto.builder()
                 .userId(naverUser.getId())
+                .username(naverUser.getUsername())
                 .nickname(naverUser.getNickname())
-                .isProfile(true)
+                .profileImg(naverUser.getProfileImg())
+                .ageRange(naverUser.getAgeRange())
+                .gender(naverUser.getGender())
+                .isProfile(naverUser.getPhoneNum() != null)
                 .build();
 
         return SignupSocialDto.builder()
                 .token(token)
-                .userLoginResponseDto(userLoginResponseDto)
+                .userResponseDto(userResponseDto)
+//                .userLoginResponseDto(userLoginResponseDto)
                 .build();
     }
 
