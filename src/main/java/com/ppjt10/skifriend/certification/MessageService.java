@@ -62,7 +62,7 @@ public class MessageService {
 
     // 인증 번호 검증
     @Transactional
-    public String checkCertificationNum(SignupSmsCertificationDto requestDto, User user) {
+    public Boolean checkCertificationNum(SignupSmsCertificationDto requestDto, User user) {
         if (!isVerify(requestDto)) {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
@@ -82,7 +82,7 @@ public class MessageService {
         );
         verifiedUser.setPhoneNum(requestDto.getPhoneNumber());
 
-        return "인증 완료되었습니다.";
+        return true;
     }
 
     public void createChatRoomAlert(String phoneNumber, String msg) {
