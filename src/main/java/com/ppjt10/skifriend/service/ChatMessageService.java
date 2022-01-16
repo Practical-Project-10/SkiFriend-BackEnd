@@ -231,6 +231,7 @@ public class ChatMessageService {
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
+                .senderId(chatMessage.getUserId()) // 나중에 리시버로 바꿔야 함
                 .sender(nickname)
                 .senderImg(profileImg)
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))

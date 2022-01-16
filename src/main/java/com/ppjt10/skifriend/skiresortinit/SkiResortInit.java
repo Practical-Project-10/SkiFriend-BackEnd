@@ -47,7 +47,7 @@ public class SkiResortInit implements ApplicationRunner {
         }
 
         String enps = passwordEncoder.encode("asdf12");
-        User user1 = new User("skifriend1", "skijoa", enps);
+        User user1 = new User("skifriend1", "skijoa", enps, "여", "20대");
         userRepository.save(user1);
         UserProfileUpdateDto dto = UserProfileUpdateDto.builder()
                 .nickname("skijoa")
@@ -55,9 +55,10 @@ public class SkiResortInit implements ApplicationRunner {
                 .selfIntro("")
                 .build();
         user1.update(dto);
+        user1.setPhoneNum("01012341234");
 
         String enps2 = passwordEncoder.encode("asdf12");
-        User user2 = new User("skifriend2", "skijoa2", enps2);
+        User user2 = new User("skifriend2", "skijoa2", enps2, "남", "10대");
         userRepository.save(user2);
         UserProfileUpdateDto dto2 = UserProfileUpdateDto.builder()
                 .nickname("skijoa2")
@@ -65,5 +66,6 @@ public class SkiResortInit implements ApplicationRunner {
                 .selfIntro("")
                 .build();
         user2.update(dto2);
+        user2.setPhoneNum("01011112222");
     }
 }
