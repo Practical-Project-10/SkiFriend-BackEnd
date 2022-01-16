@@ -1,10 +1,14 @@
 package com.ppjt10.skifriend.skiresortinit;
 
+import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
 import com.ppjt10.skifriend.entity.SkiResort;
+import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.SkiResortRepository;
+import com.ppjt10.skifriend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -14,6 +18,8 @@ import javax.transaction.Transactional;
 public class SkiResortInit implements ApplicationRunner {
     // park
     private final SkiResortRepository skiResortRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -39,5 +45,25 @@ public class SkiResortInit implements ApplicationRunner {
             SkiResort skiResort6 = new SkiResort("Phoenix", "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/65753316-159b-4a64-a6f1-15c6193c2b19%E1%84%92%E1%85%B1%E1%84%82%E1%85%B5%E1%86%A8%E1%84%89%E1%85%B32.png");
             skiResortRepository.save(skiResort6);
         }
+
+        String enps = passwordEncoder.encode("asdf12");
+        User user1 = new User("skifriend1", "skijoa", enps);
+        userRepository.save(user1);
+        UserProfileUpdateDto dto = UserProfileUpdateDto.builder()
+                .nickname("skijoa")
+                .career("초보")
+                .selfIntro("")
+                .build();
+        user1.update(dto);
+
+        String enps2 = passwordEncoder.encode("asdf12");
+        User user2 = new User("skifriend2", "skijoa2", enps2);
+        userRepository.save(user2);
+        UserProfileUpdateDto dto2 = UserProfileUpdateDto.builder()
+                .nickname("skijoa2")
+                .career("초보")
+                .selfIntro("")
+                .build();
+        user2.update(dto2);
     }
 }
