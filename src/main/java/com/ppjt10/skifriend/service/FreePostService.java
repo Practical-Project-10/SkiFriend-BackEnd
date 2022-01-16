@@ -68,30 +68,31 @@ public class FreePostService {
         freePostRepository.save(freePost);
 
         List<Photo> photoList = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String imageUrl;
-            if (image != null) {
-                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.getOriginalFilename());
-                try {
-                    imageUrl = s3Uploader.upload(image, imageDirName);
-                } catch (Exception err) {
-                    System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
+        if (images != null) {
+            for (MultipartFile image : images) {
+                String imageUrl;
+                if (image != null) {
+                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.getOriginalFilename());
+                    try {
+                        imageUrl = s3Uploader.upload(image, imageDirName);
+                    } catch (Exception err) {
+                        System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
+                        imageUrl = "No Post Image";
+                    }
+                } else {
                     imageUrl = "No Post Image";
                 }
-            } else {
-                imageUrl = "No Post Image";
+                Photo photo = new Photo(image.getOriginalFilename(), imageUrl, freePost);
+                photoList.add(photo);
             }
-            Photo photo = new Photo(image.getOriginalFilename(), imageUrl, freePost);
-            photoList.add(photo);
-        }
-        System.out.println("포토리스트~~~~~~~~~~~~~~~~~" + photoList);
-        if (!photoList.isEmpty()) {
-            for (Photo photo : photoList) {
-                System.out.println("포토: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + photo);
-                photoRepository.save(photo);
+            System.out.println("포토리스트~~~~~~~~~~~~~~~~~" + photoList);
+            if (!photoList.isEmpty()) {
+                for (Photo photo : photoList) {
+                    System.out.println("포토: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + photo);
+                    photoRepository.save(photo);
+                }
             }
         }
-
 
         return generateFreePostResponseDto(freePost);
     }
@@ -162,7 +163,7 @@ public class FreePostService {
             }
         }
         List<Photo> newPhotoList = new ArrayList<>();
-        if(images!=null) {
+        if (images != null) {
             System.out.println("삭제되고 남은 사진 객체리스트: " + photoList);
             for (MultipartFile image : images) {
                 String imageUrl;

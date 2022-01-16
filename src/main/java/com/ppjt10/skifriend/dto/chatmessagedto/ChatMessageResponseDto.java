@@ -14,6 +14,7 @@ public class ChatMessageResponseDto {
     private ChatMessage.MessageType type;
     private Long messageId;
     private Long roomId;
+    private Long senderId;
     private String sender;
     private String senderImg;
     private String img;

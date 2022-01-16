@@ -133,13 +133,25 @@ public class NaverUserService {
         if (naverUser == null) {
             String naverNick = jsonNode.get("response").get("nickname").asText();
             String gender = jsonNode.get("response").get("gender").asText();
+            if(gender.equals("F")){
+                gender = "여";
+            } else {
+                gender = "남";
+            }
+
             String ageRange = jsonNode.get("response").get("age").asText();
+            String userAge = ageRange.split("-")[0];
+            if (Integer.parseInt(userAge) >= 20){
+                userAge += "대";
+            } else {
+                userAge = "청소년";
+            }
 
             // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
-            naverUser = new User(naverId, naverNick, encodedPassword, gender, ageRange);
+            naverUser = new User(naverId, naverNick, encodedPassword, gender, userAge);
             userRepository.save(naverUser);
         }
 

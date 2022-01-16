@@ -92,8 +92,7 @@ public class KakaoUserService {
         body.add("code", code);
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
-                new HttpEntity<>(body, headers);
+        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://kauth.kakao.com/oauth/token",
@@ -115,8 +114,7 @@ public class KakaoUserService {
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String kakaoId = String.valueOf(jsonNode.get("id").asLong());
-        User kakaoUser = userRepository.findByUsername(kakaoId)
-                .orElse(null);
+        User kakaoUser = userRepository.findByUsername(kakaoId).orElse(null);
 
         // 회원가입
         if (kakaoUser == null) {
@@ -138,9 +136,21 @@ public class KakaoUserService {
         JsonNode jsonNode = getKakaoUserInfo(accessToken);
 
         String ageRange = jsonNode.get("kakao_account").get("age_range").asText();
-        String gender = jsonNode.get("kakao_account").get("gender").asText();
+        String userAge = ageRange.split("~")[0];
+        if (Integer.parseInt(userAge) >= 20){
+            userAge += "대";
+        } else {
+            userAge = "청소년";
+        }
 
-        user.updateKakaoProfile(ageRange, gender);
+        String gender = jsonNode.get("kakao_account").get("gender").asText();
+        if(gender.equals("female")){
+            gender = "여";
+        } else {
+            gender = "남";
+        }
+
+        user.updateKakaoProfile(userAge, gender);
 
         boolean isProfile = false;
         if (user.getPhoneNum() != null) {
