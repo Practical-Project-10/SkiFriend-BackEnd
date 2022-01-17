@@ -19,7 +19,7 @@ public class Shorts {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(nullable = false)
     private String videoPath;
 
     @Column
