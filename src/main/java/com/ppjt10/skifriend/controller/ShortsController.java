@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 public class ShortsController {
@@ -23,10 +25,10 @@ public class ShortsController {
 
     //Shorts 작성
     @PostMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "image", required = false) MultipartFile image,
+    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile image,
                                                           @RequestPart(value = "title", required = false) String title,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
+    ) throws IOException {
         User user = userDetails.getUser();
         return ResponseEntity.ok().body(shortsService.createShorts(image, title, user));
     }
