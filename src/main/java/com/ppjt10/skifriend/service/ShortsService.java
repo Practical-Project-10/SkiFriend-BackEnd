@@ -36,7 +36,7 @@ public class ShortsService {
         Optional<Shorts> shorts;
         do {
             long randomNum = (long)(Math.random() * totalNum + 1);
-            if(randomNum == pastRanNum) {
+            if((int)randomNum == (int)pastRanNum) {
                 randomNum = (long)(Math.random() * totalNum + 1);
             }
             redisRepository.setRandomNumSessionId(session.getId(), randomNum);
