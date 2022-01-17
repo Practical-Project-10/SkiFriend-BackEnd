@@ -214,7 +214,7 @@ public class UserService {
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
                 .selfIntro(user.getSelfIntro())
-                .isProfile(user.getPhoneNum() != null)
+                .certification(user.getPhoneNum() != null)
                 .build();
     }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.signupdto.SignupSocialDto;
-import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
 import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
@@ -67,7 +66,7 @@ public class NaverUserService {
                 .profileImg(naverUser.getProfileImg())
                 .ageRange(naverUser.getAgeRange())
                 .gender(naverUser.getGender())
-                .isProfile(naverUser.getPhoneNum() != null)
+                .certification(naverUser.getPhoneNum() != null)
                 .build();
 
         return SignupSocialDto.builder()

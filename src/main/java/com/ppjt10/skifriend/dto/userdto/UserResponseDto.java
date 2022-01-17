@@ -20,5 +20,5 @@ public class UserResponseDto{
     private String ageRange;
     private String career;
     private String selfIntro;
-    private boolean isProfile;
+    private boolean certification;
 }
