@@ -32,12 +32,12 @@ public class MessageService {
 
     // 인증번호 생성하기
     public String getSmsRedisRepository(SignupPhoneNumDto requestDto, User user) {
-        if(user.getPhoneNum() != null){
+        if (user.getPhoneNum() != null) {
             throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
         }
 
         User existedUser = userRepository.findByPhoneNum(requestDto.getPhoneNumber());
-        if(existedUser != null){
+        if (existedUser != null) {
             throw new IllegalArgumentException("이미 가입된 번호입니다.");
         }
 
@@ -52,7 +52,7 @@ public class MessageService {
         Message message = Message.creator(
                 new PhoneNumber(toPhoneNum),
                 new PhoneNumber(fromPhoneNum),
-                SKIFRIEND + randomNum).create();
+                "인증번호 [" + randomNum + "]를 입력해 주세요").create();
 
         // DB에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
@@ -67,7 +67,7 @@ public class MessageService {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
 
-        if(user.getPhoneNum() != null){
+        if (user.getPhoneNum() != null) {
             throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
         }
 
