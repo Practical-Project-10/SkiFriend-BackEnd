@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -23,11 +24,10 @@ public class ShortsLikeService {
         );
 
         Long userId = user.getId();
-        ShortsLike foundShortsLike = shortsLikeRepository.findByUserIdAndAndShortsId(userId, shortsId);
-
+        Optional<ShortsLike> foundShortsLike = shortsLikeRepository.findByUserIdAndAndShortsId(userId, shortsId);
         // 기존에 이미 좋아요를 누른 상태라면
-        if(foundShortsLike != null){
-            shortsLikeRepository.deleteById(foundShortsLike.getId());
+        if(foundShortsLike.isPresent()){
+            shortsLikeRepository.deleteById(foundShortsLike.get().getId());
             shorts.setShortsLikeCnt(shorts.getShortsLikeCnt() - 1);
             return "false";
         } else{ // 기존에 좋아요를 하지 않은 상태

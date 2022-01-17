@@ -148,6 +148,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 쇼츠
         skipPathList.add("GET,/shorts");
+        skipPathList.add("GET,/shorts/{shortsId}");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,

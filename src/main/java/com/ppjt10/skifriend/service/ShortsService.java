@@ -5,6 +5,7 @@ import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.Shorts;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.ShortsCommentRepository;
+import com.ppjt10.skifriend.repository.ShortsLikeRepository;
 import com.ppjt10.skifriend.repository.ShortsRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ShortsService {
     private final ShortsRepository shortsRepository;
     private final UserRepository userRepository;
     private final ShortsCommentRepository shortsCommentRepository;
-    //    private final ShortsLikeRepository shortsLikeRepository;
+    private final ShortsLikeRepository shortsLikeRepository;
     private final S3Uploader s3Uploader;
     private final String videoDirName = "shorts";
 
@@ -48,6 +49,7 @@ public class ShortsService {
     }
 
     //Shorts 수정
+    @Transactional
     public ShortsResponseDto updateShorts(String title, Long shortsId, User user) {
 
         Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(
@@ -67,6 +69,7 @@ public class ShortsService {
     }
 
     //Shorts 삭제
+    @Transactional
     public void deleteShorts(Long shortsId, User user) {
         Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(
                 () -> new IllegalArgumentException("해당 동영상이 존재하지 않습니다.")
@@ -81,8 +84,8 @@ public class ShortsService {
         } catch (Exception ignored) {
         }
 
-//        shortsCommentRepository.deleteAllByShortsId(shortsId);
-//        shortsLikesRepository.deleteAllByShortsId(shortsId);
+        shortsCommentRepository.deleteAllByShortsId(shortsId);
+        shortsLikeRepository.deleteAllByShortsId(shortsId);
         shortsRepository.deleteById(shortsId);
     }
 

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ShortsCommentRepository extends JpaRepository<ShortsComment, Long> {
     List<ShortsComment> findAllByShorts(Shorts shorts);
+    void deleteAllByShortsId(Long shortsId);
 }
