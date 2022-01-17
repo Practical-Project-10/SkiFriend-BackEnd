@@ -11,13 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto{
+    private Long userId;
     private String username;
     private String phoneNum;
     private String nickname;
     private String profileImg;
-    private String vacImg;
     private String gender;
     private String ageRange;
     private String career;
     private String selfIntro;
+    private boolean certification;
 }

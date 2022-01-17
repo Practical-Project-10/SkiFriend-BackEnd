@@ -7,7 +7,8 @@ import com.ppjt10.skifriend.dto.freepostdto.FreePostDetailResponseDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostHotResponseDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostRequestDto;
 import com.ppjt10.skifriend.dto.freepostdto.FreePostResponseDto;
-import com.ppjt10.skifriend.dto.likeDto.LikesResponseDto;
+import com.ppjt10.skifriend.dto.likedto.LikesResponseDto;
+import com.ppjt10.skifriend.dto.photodto.PhotoDto;
 import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.time.TimeConversion;
@@ -30,6 +31,7 @@ public class FreePostService {
     private final SkiResortRepository skiResortRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PhotoRepository photoRepository;
 
     // 자유게시글 전체 조회
     @Transactional
@@ -53,7 +55,7 @@ public class FreePostService {
 
     // 자유 게시판 게시글 작성
     @Transactional
-    public FreePostResponseDto createFreePosts(MultipartFile image,
+    public FreePostResponseDto createFreePosts(List<MultipartFile> images,
                                                FreePostRequestDto requestDto,
                                                String resortName,
                                                User user
@@ -62,42 +64,15 @@ public class FreePostService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
-//        List<String> imageUrlList = new ArrayList<>();
-//        for (MultipartFile image : images){
-//            String imageUrl;
-//            if (image != null) {
-//                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.get(0).getOriginalFilename());
-//                try {
-//                    imageUrl = s3Uploader.upload(image.get(0), imageDirName);
-//                } catch (Exception err) {
-//                    System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
-//                    imageUrl = "No Post Image";
-//                }
-//            } else {
-//                imageUrl = "No Post Image";
-//            }
-//            imageUrlList.add(imageUrl);
-//        }
-
-        String imageUrl;
-        if (image != null) {
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + image.getOriginalFilename());
-            try {
-                imageUrl = s3Uploader.upload(image, imageDirName);
-            } catch (Exception err) {
-                System.out.println("이미지 업로드 에러@@@@@@@@@@@@@@@@@@@@@@@@" + err);
-                imageUrl = "No Post Image";
-            }
-        } else {
-            imageUrl = "No Post Image";
-        }
-
-        FreePost freePost = new FreePost(user.getId(), skiResort, requestDto.getTitle(), requestDto.getContent(), imageUrl);
-
+        FreePost freePost = new FreePost(user.getId(), skiResort, requestDto.getTitle(), requestDto.getContent());
         freePostRepository.save(freePost);
+
+        savePhotoList(images, freePost);
 
         return generateFreePostResponseDto(freePost);
     }
+
+
 
     // 자유 게시판 게시글 상세 조회
     @Transactional
@@ -119,12 +94,18 @@ public class FreePostService {
             commentResponseDtoList.add(generateCommentResponseDto(comment));
         }
 
-        return generateFreePostDetailResponseDto(freePost, likesResponseDtoList, commentResponseDtoList);
+        List<Photo> photoIdList = photoRepository.findAllByFreePost(freePost);
+        List<PhotoDto> photoDtoList = new ArrayList<>();
+        for (Photo photo : photoIdList) {
+            photoDtoList.add(generatePhotoDto(photo));
+        }
+
+        return generateFreePostDetailResponseDto(freePost, likesResponseDtoList, commentResponseDtoList, photoDtoList);
     }
 
     // 자유 게시판 게시글 수정
     @Transactional
-    public FreePostResponseDto updateFreePost(MultipartFile image,
+    public FreePostResponseDto updateFreePost(List<MultipartFile> images,
                                               FreePostRequestDto requestDto,
                                               Long postId,
                                               User user
@@ -137,31 +118,25 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
-        String imageUrl = freePost.getImage();
-        // 수정하려는 이미지가 빈 값이 아닐 때
-        if (image != null) {
-            // 이전에 업로드된 이미지가 존재할 경우 삭제
-            if (!imageUrl.equals("No Post Image")) {
+        // 삭제할 사진 아이디 리스트
+        List<Long> photoIdList = requestDto.getPhotoIdList();
+        // 게시물에 저장돼있던 사진 객체 리스트
+        List<Photo> photoList = photoRepository.findAllByFreePost(freePost);
+
+        for (Photo photo : photoList) {
+            if (photoIdList.contains(photo.getId())) {
                 try {
-                    String oldImageUrl = URLDecoder.decode(imageUrl.replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                    String oldImageUrl = URLDecoder.decode(photo.getFilePath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(oldImageUrl);
+                    photoRepository.deleteById(photo.getId());
                 } catch (Exception ignored) {
                 }
             }
-
-            // 수정하려는 이미지가 delete가 아닐 때
-            if (!image.getOriginalFilename().equals("delete")) {
-                try {
-                    imageUrl = s3Uploader.upload(image, imageDirName);
-                } catch (Exception err) {
-                    imageUrl = "No Post Image";
-                }
-            } else {
-                imageUrl = "No Post Image";
-            }
         }
 
-        freePost.update(requestDto, imageUrl);
+        savePhotoList(images, freePost);
+
+        freePost.update(requestDto);
 
         return generateFreePostResponseDto(freePost);
     }
@@ -178,10 +153,15 @@ public class FreePostService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
 
-        try {
-            String oldImageUrl = URLDecoder.decode(freePost.getImage().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(oldImageUrl);
-        } catch (Exception exception) {
+        List<Photo> photoList = photoRepository.findAllByFreePost(freePost);
+
+        for (Photo photo : photoList) {
+            try {
+                String oldImageUrl = URLDecoder.decode(photo.getFilePath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                s3Uploader.deleteFromS3(oldImageUrl);
+                photoRepository.deleteById(photo.getId());
+            } catch (Exception ignored) {
+            }
         }
 
         commentRepository.deleteAllByFreePostId(postId);
@@ -229,6 +209,22 @@ public class FreePostService {
             return freePostRepository.findById(foundMaxLikeCntPostId).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물이 존재하지 않습니다"));
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    // 이미지 리스트 저장하기
+    private void savePhotoList(List<MultipartFile> images, FreePost freePost) {
+        if (images != null) {
+            for (MultipartFile image : images) {
+                String imageUrl;
+                try {
+                    imageUrl = s3Uploader.upload(image, imageDirName);
+                } catch (Exception err) {
+                    imageUrl = "No Post Image";
+                }
+                Photo photo = new Photo(image.getOriginalFilename(), imageUrl, freePost);
+                photoRepository.save(photo);
+            }
         }
     }
 
@@ -293,10 +289,20 @@ public class FreePostService {
                 .build();
     }
 
+    // PhotoDto 생성
+    private PhotoDto generatePhotoDto(Photo photo) {
+        return PhotoDto.builder()
+                .photoId(photo.getId())
+                .photoUrl(photo.getFilePath())
+                .build();
+    }
+
+
     // FreePostDetailResponseDto 생성
     private FreePostDetailResponseDto generateFreePostDetailResponseDto(FreePost freePost,
                                                                         List<LikesResponseDto> likesResponseDtoList,
-                                                                        List<CommentResponseDto> commentResponseDtoList
+                                                                        List<CommentResponseDto> commentResponseDtoList,
+                                                                        List<PhotoDto> photoDtoList
     ) {
         String nickname;
         try {
@@ -310,11 +316,11 @@ public class FreePostService {
         return FreePostDetailResponseDto.builder()
                 .userId(freePost.getUserId())
                 .postId(freePost.getId())
+                .photoList(photoDtoList)
                 .nickname(nickname)
                 .createdAt(TimeConversion.timePostConversion(freePost.getCreateAt()))
                 .title(freePost.getTitle())
                 .content(freePost.getContent())
-                .image(freePost.getImage())
                 .likeCnt(freePost.getLikeCnt())
                 .commentCnt(freePost.getCommentCnt())
                 .likesDtoList(likesResponseDtoList)

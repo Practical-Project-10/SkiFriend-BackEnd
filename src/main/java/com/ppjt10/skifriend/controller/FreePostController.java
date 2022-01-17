@@ -29,7 +29,7 @@ public class FreePostController {
 
     //자유 게시판 게시글 작성
     @PostMapping("/board/{skiResort}/freeBoard")
-    public ResponseEntity<FreePostResponseDto> createFreePosts(@RequestPart(value = "image", required = false) MultipartFile image,
+    public ResponseEntity<FreePostResponseDto> createFreePosts(@RequestPart(value = "image", required = false) List<MultipartFile> image,
                                                                @RequestPart(value = "requestDto", required = false) FreePostRequestDto requestDto,
                                                                @PathVariable String skiResort,
                                                                @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -48,7 +48,7 @@ public class FreePostController {
 
     //자유 게시판 게시글 수정
     @PutMapping("/board/freeBoard/{postId}")
-    public ResponseEntity<FreePostResponseDto> updateFreePost(@RequestPart(value = "image", required = false) MultipartFile image,
+    public ResponseEntity<FreePostResponseDto> updateFreePost(@RequestPart(value = "image", required = false) List<MultipartFile> image,
                                                               @RequestPart(value = "requestDto", required = false) FreePostRequestDto requestDto,
                                                               @PathVariable Long postId,
                                                               @AuthenticationPrincipal UserDetailsImpl userDetails

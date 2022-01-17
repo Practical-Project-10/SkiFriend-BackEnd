@@ -26,17 +26,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getPhoneNum(user));
     }
 
-    // 유저 프로필 작성
-    @PostMapping("/user/profile")
-    public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
-                                                             @RequestPart(value = "requestDto") UserProfileRequestDto requestDto,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.createUserProfile(profileImg, vacImg, requestDto, user));
-    }
-
     // 유저 정보 조회하기
     @GetMapping("/user/info")
     public ResponseEntity<UserResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -47,12 +36,11 @@ public class UserController {
     // 유저 정보 수정하기
     @PutMapping("/user/info")
     public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
                                                              @RequestPart(value = "requestDto") UserProfileUpdateDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, vacImg, requestDto, user);
+        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, requestDto, user);
         return ResponseEntity.ok().body(userResponseDto);
     }
 
@@ -62,15 +50,6 @@ public class UserController {
     ) {
         User user = userDetails.getUser();
         return ResponseEntity.ok().body(userService.deleteUser(user));
-    }
-
-    // 비밀번호 수정하기
-    @PutMapping("/user/info/password")
-    public void updatePassword(@RequestBody UserPasswordUpdateDto passwordDto,
-                               @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        User user = userDetails.getUser();
-        userService.updatePassword(passwordDto, user);
     }
 
     // 내가 쓴 카풀 게시물 불러오기

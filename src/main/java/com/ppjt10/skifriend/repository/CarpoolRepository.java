@@ -34,5 +34,5 @@ public interface CarpoolRepository extends JpaRepository<Carpool, Long> {
 
     Page<Carpool> findAllBySkiResortOrderByCreateAtDesc(SkiResort skiResort, Pageable pageable);
 
-    List<Carpool> findAllByDateAndTime(String date, String time);
+    List<Carpool> findAllByDate(String date);
 }

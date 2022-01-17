@@ -4,22 +4,20 @@ package com.ppjt10.skifriend.service;
 import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
-import com.ppjt10.skifriend.dto.userdto.*;
+import com.ppjt10.skifriend.dto.userdto.UserProfileOtherDto;
+import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
+import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
-import com.ppjt10.skifriend.validator.AgeRangeType;
-import com.ppjt10.skifriend.validator.CareerType;
-import com.ppjt10.skifriend.validator.GenderType;
-import com.ppjt10.skifriend.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,52 +28,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
     private final CarpoolRepository carpoolRepository;
-    private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
-    private final String vacImgDirName = "Vaccine";
     private final String defaultImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-
-    // 유저 프로필 작성
-    @Transactional
-    public UserResponseDto createUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileRequestDto requestDto, User user) {
-
-        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-
-        // 유효성 검사
-        GenderType.findByGenderType(requestDto.getGender());
-        AgeRangeType.findByAgeRangeType(requestDto.getAgeRange());
-        CareerType.findByCareerType(requestDto.getCareer());
-
-        // 유저 프로필 작성
-        dbUser.createUserProfile(requestDto);
-
-        // 프로필 이미지 저장 및 저장 경로 업데이트
-        if (profileImg != null) {
-            try {
-                String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-                dbUser.setProfileImg(profileImgUrl);
-            } catch (Exception e) {
-                dbUser.setProfileImg(defaultImg);
-            }
-        } else {
-            dbUser.setProfileImg(defaultImg);
-        }
-
-        // 백신 이미지 저장 및 저장 경로 업데이트
-        if (vacImg != null) {
-            try {
-                String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                dbUser.setVacImg(vacImgUrl);
-            } catch (Exception e) {
-                dbUser.setVacImg("No Post Image");
-            }
-        } else {
-            dbUser.setVacImg("No Post Image");
-        }
-
-        return generateUserResponseDto(dbUser);
-    }
 
     // 유저 프로필 조회
     @Transactional
@@ -85,7 +40,7 @@ public class UserService {
 
     // 유저 프로필 수정
     @Transactional
-    public UserResponseDto updateUserProfile(MultipartFile profileImg, MultipartFile vacImg, UserProfileUpdateDto requestDto, User user) {
+    public UserResponseDto updateUserProfile(MultipartFile profileImg, UserProfileUpdateDto requestDto, User user) {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
@@ -115,46 +70,7 @@ public class UserService {
             }
         }
 
-        // 백신 이미지 저장 및 저장 경로 업데이트
-        if (vacImg != null) {
-            // 빈 이미지가 아닐때만 기존 이미지 삭제
-            if (!dbUser.getVacImg().equals("No Post Image")) {
-                try {
-                    String source = URLDecoder.decode(dbUser.getVacImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-                    s3Uploader.deleteFromS3(source);
-                } catch (Exception e) {
-                }
-            }
-
-            try {
-                String vacImgUrl = s3Uploader.upload(vacImg, vacImgDirName);
-                dbUser.setVacImg(vacImgUrl);
-            } catch (Exception e) {
-                dbUser.setVacImg("No Post Image");
-            }
-        }
-
         return generateUserResponseDto(dbUser);
-    }
-
-    // 유저 비밀번호 수정
-    @Transactional
-    public void updatePassword(UserPasswordUpdateDto passwordDto, User user) {
-
-        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-
-        // 기존 비밀번호랑 일치하면 비밀번호 업데이트
-        if (passwordEncoder.matches(passwordDto.getPassword(), dbUser.getPassword())) {
-            // 새 비밀번호 유효성 검사
-            UserInfoValidator.validatePassword(passwordDto.getNewPassword());
-
-            // 새 비밀번호 암호화
-            String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
-
-            dbUser.updatePassword(enPassword);
-        } else {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
     }
 
     // 유저 탈퇴
@@ -239,15 +155,16 @@ public class UserService {
 
     private UserResponseDto generateUserResponseDto(User user) {
         return UserResponseDto.builder()
+                .userId(user.getId())
                 .username(user.getUsername())
                 .phoneNum(user.getPhoneNum())
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
                 .selfIntro(user.getSelfIntro())
+                .certification(user.getPhoneNum() != null)
                 .build();
     }
 
@@ -255,7 +172,6 @@ public class UserService {
         return UserProfileOtherDto.builder()
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
-                .vacImg(user.getVacImg())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
