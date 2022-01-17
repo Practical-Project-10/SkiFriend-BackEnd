@@ -1,13 +1,11 @@
 package com.ppjt10.skifriend.dto.carpooldto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 //카풀 게시물 작성,수정
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarpoolRequestDto {

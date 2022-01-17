@@ -20,4 +20,9 @@ public class ShortsLike extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Shorts shorts;
+
+    public ShortsLike(Long userId, Shorts shorts) {
+        this.userId = userId;
+        this.shorts = shorts;
+    }
 }

@@ -19,7 +19,7 @@ public class Shorts {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(nullable = false)
     private String videoPath;
 
     @Column
@@ -28,4 +28,21 @@ public class Shorts {
     @Column
     private int shortsCommentCnt;
 
+    public Shorts(Long userId, String title, String videoPath){
+        this.userId = userId;
+        this.title = title;
+        this.videoPath = videoPath;
+    }
+
+    public void update(String title){
+        this.title = title;
+    }
+
+    public void setShortsCommentCnt(int shortsCommentCnt) {
+        this.shortsCommentCnt = shortsCommentCnt;
+    }
+
+    public void setShortsLikeCnt(int shortsLikeCnt) {
+        this.shortsLikeCnt = shortsLikeCnt;
+    }
 }

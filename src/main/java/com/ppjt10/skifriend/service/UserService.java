@@ -28,39 +28,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
     private final CarpoolRepository carpoolRepository;
-//    private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
     private final String defaultImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-
-    // 유저 프로필 작성
-//    @Transactional
-//    public UserResponseDto createUserProfile(MultipartFile profileImg, UserProfileRequestDto requestDto, User user) {
-//
-//        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-//
-//        // 유효성 검사
-//        GenderType.findByGenderType(requestDto.getGender());
-//        AgeRangeType.findByAgeRangeType(requestDto.getAgeRange());
-//        CareerType.findByCareerType(requestDto.getCareer());
-//
-//        // 유저 프로필 작성
-//        dbUser.createUserProfile(requestDto);
-//
-//        // 프로필 이미지 저장 및 저장 경로 업데이트
-//        if (profileImg != null) {
-//            try {
-//                String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
-//                dbUser.setProfileImg(profileImgUrl);
-//            } catch (Exception e) {
-//                dbUser.setProfileImg(defaultImg);
-//            }
-//        } else {
-//            dbUser.setProfileImg(defaultImg);
-//        }
-//
-//        return generateUserResponseDto(dbUser);
-//    }
 
     // 유저 프로필 조회
     @Transactional
@@ -102,26 +72,6 @@ public class UserService {
 
         return generateUserResponseDto(dbUser);
     }
-
-    // 유저 비밀번호 수정
-//    @Transactional
-//    public void updatePassword(UserPasswordUpdateDto passwordDto, User user) {
-//
-//        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-//
-//        // 기존 비밀번호랑 일치하면 비밀번호 업데이트
-//        if (passwordEncoder.matches(passwordDto.getPassword(), dbUser.getPassword())) {
-//            // 새 비밀번호 유효성 검사
-//            UserInfoValidator.validatePassword(passwordDto.getNewPassword());
-//
-//            // 새 비밀번호 암호화
-//            String enPassword = passwordEncoder.encode(passwordDto.getNewPassword());
-//
-//            dbUser.updatePassword(enPassword);
-//        } else {
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-//        }
-//    }
 
     // 유저 탈퇴
     @Transactional
