@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ppjt10.skifriend.dto.signupdto.SignupSocialDto;
-import com.ppjt10.skifriend.dto.userdto.UserLoginResponseDto;
 import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.UserRepository;
@@ -102,7 +101,7 @@ public class KakaoUserService {
                     .profileImg(user.getProfileImg())
                     .gender(user.getGender())
                     .ageRange(user.getAgeRange())
-                    .isProfile(user.getPhoneNum() != null)
+                    .certification(user.getPhoneNum() != null)
                     .build();
         }
 
@@ -182,11 +181,6 @@ public class KakaoUserService {
 
         user.updateKakaoProfile(userAge, gender);
 
-        boolean isProfile = false;
-        if (user.getPhoneNum() != null) {
-            isProfile = true;
-        }
-
         return UserResponseDto.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -194,7 +188,7 @@ public class KakaoUserService {
                 .profileImg(user.getProfileImg())
                 .gender(user.getGender())
                 .ageRange(user.getAgeRange())
-                .isProfile(user.getPhoneNum() != null)
+                .certification(user.getPhoneNum() != null)
                 .build();
     }
 
