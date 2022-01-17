@@ -32,5 +32,5 @@ hooks:
 
   ValidateService:
     - location: health.sh
-      timeout: 90
+      timeout: 60
       runas: ubuntu
