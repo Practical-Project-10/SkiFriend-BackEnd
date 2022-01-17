@@ -3,15 +3,18 @@ package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsMyResponseDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
 import com.ppjt10.skifriend.dto.userdto.UserProfileOtherDto;
 import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
 import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
 import com.ppjt10.skifriend.entity.Carpool;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
+import com.ppjt10.skifriend.entity.Shorts;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.CarpoolRepository;
 import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
+import com.ppjt10.skifriend.repository.ShortsRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
     private final CarpoolRepository carpoolRepository;
+    private final ShortsRepository shortsRepository;
     private final S3Uploader s3Uploader;
     private final String profileImgDirName = "Profile";
     private final String defaultImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
@@ -124,6 +128,18 @@ public class UserService {
         return generateOtherResponseDto(other);
     }
 
+    // 내가 쓴 Shorts 목록 페이지 조회
+    @Transactional
+    public List<ShortsMyResponseDto> getMyShorts(User user) {
+        List<Shorts> shortsList = shortsRepository.findAllByUserId(user.getId());
+
+        List<ShortsMyResponseDto> shortsMyResponseDtoList = new ArrayList<>();
+        for(Shorts shorts : shortsList) {
+            shortsMyResponseDtoList.add(generateShortsMyResponseDto(shorts));
+        }
+        return shortsMyResponseDtoList;
+    }
+
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
         String nickname;
         try {
@@ -176,6 +192,13 @@ public class UserService {
                 .ageRange(user.getAgeRange())
                 .career(user.getCareer())
                 .selfIntro(user.getSelfIntro())
+                .build();
+    }
+
+    private ShortsMyResponseDto generateShortsMyResponseDto(Shorts shorts) {
+        return ShortsMyResponseDto.builder()
+                .title(shorts.getTitle())
+                .videoPath(shorts.getVideoPath())
                 .build();
     }
 }
