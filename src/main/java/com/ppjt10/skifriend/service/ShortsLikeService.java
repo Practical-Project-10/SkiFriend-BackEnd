@@ -4,6 +4,7 @@ import com.ppjt10.skifriend.entity.Shorts;
 import com.ppjt10.skifriend.entity.ShortsLike;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.ShortsLikeRepository;
+import com.ppjt10.skifriend.repository.ShortsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,11 @@ public class ShortsLikeService {
         // 기존에 이미 좋아요를 누른 상태라면
         if(foundShortsLike != null){
             shortsLikeRepository.deleteById(foundShortsLike.getId());
-            shorts.setshortsLikeCnt(shorts.getShortsLikeCnt() - 1);
+            shorts.setShortsLikeCnt(shorts.getShortsLikeCnt() - 1);
             return "false";
         } else{ // 기존에 좋아요를 하지 않은 상태
             shortsLikeRepository.save(new ShortsLike(userId, shorts));
-            shorts.setshortsLikeCnt(shorts.getShortsLikeCnt() + 1);
+            shorts.setShortsLikeCnt(shorts.getShortsLikeCnt() + 1);
             return "true";
         }
     }

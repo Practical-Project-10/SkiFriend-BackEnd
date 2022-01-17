@@ -39,5 +39,10 @@ public class Shorts {
     }
 
     public void setShortsCommentCnt(int shortsCommentCnt) {
-        this.shortsCommentCnt = shortsCommentCnt; }
+        this.shortsCommentCnt = shortsCommentCnt;
+    }
+
+    public void setShortsLikeCnt(int shortsLikeCnt) {
+        this.shortsLikeCnt = shortsLikeCnt;
+    }
 }
