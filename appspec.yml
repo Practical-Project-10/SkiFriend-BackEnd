@@ -18,6 +18,8 @@ hooks:
 #        timeout: 60
 #        runas: ubuntu
 
+  file_exists_behavior: OVERWRITE
+
   AfterInstall:
     - location: stop.sh
       timeout: 60
