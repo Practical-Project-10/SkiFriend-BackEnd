@@ -3,7 +3,7 @@ jdk:
 - openjdk8
 branches:
   only:
-  - release/travis
+  - SecondVirus
 cache:
   directories:
   - "$HOME/.m2/repository"
@@ -26,7 +26,7 @@ deploy:
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
   on:
-    branch: release/travis
+    branch: SecondVirus
   bucket: skifriend-ci-bucket1
   region: ap-northeast-2
   skip_cleanup: true
@@ -37,7 +37,7 @@ deploy:
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
   on:
-    branch: release/travis
+    branch: SecondVirus
   bucket: skifriend-ci-bucket1
   key: SkiFriend-BackEnd.zip
   bundle_type: zip
