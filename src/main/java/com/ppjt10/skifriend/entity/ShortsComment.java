@@ -23,4 +23,10 @@ public class ShortsComment extends Timestamped {
 
     @Column(nullable = false)
     private String content;
+
+    public ShortsComment(Long userId, Shorts shorts, String content) {
+        this.userId = userId;
+        this.shorts = shorts;
+        this.content = content;
+    }
 }
