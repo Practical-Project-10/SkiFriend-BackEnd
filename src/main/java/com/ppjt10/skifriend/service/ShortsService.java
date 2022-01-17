@@ -28,10 +28,18 @@ public class ShortsService {
 
     @Transactional
     public ShortsResponseDto getShorts(HttpSession session) {
+        long pastRanNum = 0;
+        try {
+            pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
+        } catch (Exception ignored){}
         long totalNum = shortsRepository.count();
         Optional<Shorts> shorts;
         do {
             long randomNum = (long)(Math.random() * totalNum + 1);
+            if(randomNum == pastRanNum) {
+                randomNum = (long)(Math.random() * totalNum + 1);
+            }
+            redisRepository.setRandomNumSessionId(session.getId(), randomNum);
             shorts = shortsRepository.findById(randomNum);
             System.out.println("씨~~~~~~~~~바 랜더~~~~~~~~~엄 ~~~~~~~~~~~너어머 버~~~~~~~~~~~~~" + randomNum);
         } while (!shorts.isPresent());
