@@ -18,10 +18,10 @@ public class ShortsController {
     private final ShortsService shortsService;
 
     //Shorts 조회
-//    @GetMapping("/shorts")
-//    public ResponseEntity<ShortsResponseDto> getShorts() {
-//        return ResponseEntity.ok().body(shortsService.getShorts());
-//    }
+    @GetMapping("/shorts")
+    public ResponseEntity<ShortsResponseDto> getShorts() {
+        return ResponseEntity.ok().body(shortsService.getShorts());
+    }
 
     //Shorts 작성
     @PostMapping("/shorts")
