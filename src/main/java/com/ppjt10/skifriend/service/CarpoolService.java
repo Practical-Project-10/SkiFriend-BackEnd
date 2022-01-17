@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -60,13 +61,25 @@ public class CarpoolService {
     public CarpoolResponseDto createCarpool(String resortName, CarpoolRequestDto requestDto, User user) {
         if (user.getAgeRange() == null || user.getGender() == null) {
             throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
-        } else if(user.getPhoneNum() == null) {
+        } else if (user.getPhoneNum() == null) {
             throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
         }
 
         SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
+
+        if (requestDto.getStartLocation().equals(skiResort.getResortName())) {
+            List<String> endLocations = Arrays.asList(requestDto.getEndLocation().split(" "));
+            if (endLocations.get(1).equals("전체")) {
+                requestDto.setEndLocation(endLocations.get(0));
+            }
+        } else {
+            List<String> startLocations = Arrays.asList(requestDto.getStartLocation().split(" "));
+            if (startLocations.get(1).equals("전체")) {
+                requestDto.setStartLocation(startLocations.get(0));
+            }
+        }
 
         CarpoolType.findByCarpoolType(requestDto.getCarpoolType());
         DateValidator.validateDateForm(requestDto.getDate());
@@ -114,6 +127,22 @@ public class CarpoolService {
     //카풀 카테고리 분류
     @Transactional
     public List<CarpoolResponseDto> sortCarpools(String resortName, CarpoolFilterRequestDto requestDto) {
+        SkiResort skiResort = skiResortRepository.findByResortName(resortName).orElseThrow(
+                () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
+        );
+
+        if (requestDto.getStartLocation().equals(skiResort.getResortName())) {
+            List<String> endLocations = Arrays.asList(requestDto.getEndLocation().split(" "));
+            if (endLocations.get(1).equals("전체")) {
+                requestDto.setEndLocation(endLocations.get(0));
+            }
+        } else {
+            List<String> startLocations = Arrays.asList(requestDto.getStartLocation().split(" "));
+            if (startLocations.get(1).equals("전체")) {
+                requestDto.setStartLocation(startLocations.get(0));
+            }
+        }
+
         List<Carpool> sortedCategories;
         if (!requestDto.getStatus()) {
             sortedCategories =
@@ -158,13 +187,13 @@ public class CarpoolService {
             throw new IllegalArgumentException("작성자만 상태를 변경할 수 있습니다.");
         }
 
-        if(!carpool.isStatus()) {
+        if (!carpool.isStatus()) {
             LocalDateTime currentTime = LocalDateTime.now();
-            String textCarpoolTime = carpool.getDate()+ " "+ carpool.getTime();
+            String textCarpoolTime = carpool.getDate() + " " + carpool.getTime();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime carpoolTime = LocalDateTime.parse(textCarpoolTime, formatter);
             Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
-            if(timeDiff > 0) {
+            if (timeDiff > 0) {
                 throw new IllegalArgumentException("카풀 모집 마감시간이 지났습니다");
             }
             carpool.setStatus(true);
