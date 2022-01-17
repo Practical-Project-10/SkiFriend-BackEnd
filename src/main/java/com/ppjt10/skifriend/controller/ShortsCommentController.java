@@ -1,9 +1,6 @@
 package com.ppjt10.skifriend.controller;
 
-
-import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
-import com.ppjt10.skifriend.dto.shortscommentdto.ShortsCommentRequestDto;
-import com.ppjt10.skifriend.dto.shortscommentdto.ShortsCommentResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsCommentResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
 import com.ppjt10.skifriend.service.ShortsCommentService;

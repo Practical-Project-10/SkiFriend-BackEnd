@@ -1,4 +1,4 @@
-package com.ppjt10.skifriend.dto;
+package com.ppjt10.skifriend.dto.shortsdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

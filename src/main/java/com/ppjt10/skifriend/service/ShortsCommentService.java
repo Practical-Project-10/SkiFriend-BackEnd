@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 
-import com.ppjt10.skifriend.dto.shortscommentdto.ShortsCommentResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsCommentResponseDto;
 import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.ShortsCommentRepository;
 import com.ppjt10.skifriend.repository.ShortsRepository;

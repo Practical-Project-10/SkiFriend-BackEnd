@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.dto.ShortsResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.Shorts;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.ShortsCommentRepository;
