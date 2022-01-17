@@ -39,8 +39,8 @@ public class RedisRepository {
     private ValueOperations<String, String> timeOperations;
 
     // shorts 조회시 sessionId와 randomNum 저장
-//    public void setRandomNumSessionId() {
-//
+//    public void setRandomNumSessionId(String sessionId, Long) {
+//        longOperations.set(sessionId, )
 //    }
 
 
