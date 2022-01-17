@@ -131,16 +131,20 @@ public class CarpoolService {
                 () -> new IllegalArgumentException("해당 이름의 스키장이 존재하지 않습니다.")
         );
 
-        if (requestDto.getStartLocation().equals(skiResort.getResortName())) {
+        try {
             List<String> endLocations = Arrays.asList(requestDto.getEndLocation().split(" "));
             if (endLocations.get(1).equals("전체")) {
                 requestDto.setEndLocation(endLocations.get(0));
             }
-        } else {
+        } catch (Exception ignored) {
+        }
+
+        try {
             List<String> startLocations = Arrays.asList(requestDto.getStartLocation().split(" "));
             if (startLocations.get(1).equals("전체")) {
                 requestDto.setStartLocation(startLocations.get(0));
             }
+        } catch (Exception ignored) {
         }
 
         List<Carpool> sortedCategories;
@@ -148,7 +152,7 @@ public class CarpoolService {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingOrderByCreateAtDesc
                             (
-                                    resortName,
+                                    skiResort.getResortName(),
                                     requestDto.getCarpoolType(), //빈 값은 "" 으로
                                     requestDto.getStartLocation(), //빈 값은 "" 으로
                                     requestDto.getEndLocation(), //빈 값은 "" 으로
@@ -159,7 +163,7 @@ public class CarpoolService {
             sortedCategories =
                     carpoolRepository.findAllBySkiResortResortNameAndCarpoolTypeContainingAndStartLocationContainingAndEndLocationContainingAndDateContainingAndMemberNumIsContainingAndStatusOrderByCreateAtDesc
                             (
-                                    resortName,
+                                    skiResort.getResortName(),
                                     requestDto.getCarpoolType(), //빈 값은 "" 으로
                                     requestDto.getStartLocation(), //빈 값은 "" 으로
                                     requestDto.getEndLocation(), //빈 값은 "" 으로
