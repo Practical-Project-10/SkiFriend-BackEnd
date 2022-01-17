@@ -127,16 +127,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/");
 
         // 회원 관리 API 허용
-//        skipPathList.add("POST,/user/signup");
         skipPathList.add("GET,/user/kakao/callback");
         skipPathList.add("GET,/user/kakao/callback/{userId}");
         skipPathList.add("GET,/user/naver/callback");
-//        skipPathList.add("POST,/user/signup/idcheck");
-//        skipPathList.add("POST,/user/signup/nicknamecheck");
-
-        // 문자 SMS 인증 요청
-//        skipPathList.add("POST,/user/sms");
-//        skipPathList.add("POST,/user/sms/check");
 
         // 상세 탭
         skipPathList.add("GET,/main");
@@ -152,6 +145,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/ws-alarm/**");
         skipPathList.add("GET,/chat/room");
         skipPathList.add("GET,/chat/user");
+
+        // 쇼츠
+        skipPathList.add("GET,/shorts");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,

@@ -54,31 +54,6 @@ public class KakaoUserService {
                 .build();
     }
 
-//    @Transactional
-//    public UserLoginResponseDto kakaoAddUserProfile(String code, Long userId) throws JsonProcessingException {
-//        // 업데이트 필요성 체크
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new IllegalArgumentException("유저가 없어용")
-//        );
-//
-//        UserLoginResponseDto userLoginResponseDto;
-//        if (user.getAgeRange() == null) {
-//            // 1. "인가 코드"로 "액세스 토큰" 요청
-//            String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback/properties");
-//
-//            // 2. 유저 정보 업데이트
-//            userLoginResponseDto = updateUserProfile(accessToken, user);
-//        } else {
-//            userLoginResponseDto = UserLoginResponseDto.builder()
-//                    .userId(user.getId())
-//                    .nickname(user.getNickname())
-//                    .isProfile(true)
-//                    .build();
-//        }
-//
-//        return userLoginResponseDto;
-//    }
-
     @Transactional
     public UserResponseDto kakaoAddUserProfile(String code, Long userId) throws JsonProcessingException {
         // 업데이트 필요성 체크
