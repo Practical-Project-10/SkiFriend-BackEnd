@@ -1,11 +1,9 @@
 package com.ppjt10.skifriend.config;
 
-import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
-import com.ppjt10.skifriend.entity.ChatMessage;
-import com.ppjt10.skifriend.entity.User;
+import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.repository.ChatMessageRepository;
+import com.ppjt10.skifriend.repository.ChatRoomRepository;
 import com.ppjt10.skifriend.repository.RedisRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +23,10 @@ import java.util.Optional;
 public class StompHandler implements ChannelInterceptor {
     private final JwtDecoder jwtDecoder;
     private final ChatMessageService chatMessageService;
-//    private final UserRepository userRepository;
+    //    private final UserRepository userRepository;
     private final RedisRepository redisRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     // websocket 을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
@@ -36,8 +35,7 @@ public class StompHandler implements ChannelInterceptor {
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
-        }
-        else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             System.out.println("SUBSCRIBE!!!!");
 
             Long roomId = chatMessageService.getRoomId(
@@ -58,17 +56,21 @@ public class StompHandler implements ChannelInterceptor {
             String name = redisRepository.getUserNameId(sessionId);
 
             if (name != null) {
-                System.out.println("DISCONNECT 클라이언트 유저 이름: " + name);
-                int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
-                System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
-                redisRepository.setLastReadMsgCnt(roomId, name, chatMessageCount);
+                System.out.println("DISCONNECT 클라이언트 name: " + name);
+                System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
+                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
+                if(chatRoom.isPresent()) {
+                    int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
+                    System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
+                    redisRepository.setLastReadMsgCnt(roomId, name, chatMessageCount);
 
-                // 마지막 접속 시간 체크
-                String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                redisRepository.setLastMessageReadTime(roomId, name, currentTime);
+                    // 마지막 접속 시간 체크
+                    String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                    redisRepository.setLastMessageReadTime(roomId, name, currentTime);
 
-                // 마지막 접속 시간 및 메시지 수 체크
-                redisRepository.setLastMsgTimeCnt(roomId, name, currentTime, chatMessageCount);
+                    // 마지막 접속 시간 및 메시지 수 체크
+                    redisRepository.setLastMsgTimeCnt(roomId, name, currentTime, chatMessageCount);
+                }
 
             }
             redisRepository.removeUserEnterInfo(sessionId);
