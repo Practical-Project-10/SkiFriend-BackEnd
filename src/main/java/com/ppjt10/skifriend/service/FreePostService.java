@@ -160,7 +160,6 @@ public class FreePostService {
                 String oldImageUrl = URLDecoder.decode(photo.getFilePath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                 s3Uploader.deleteFromS3(oldImageUrl);
                 photoRepository.deleteById(photo.getId());
-                System.out.println("게시물에 저장돼 있던 삭제 해야할 포토아이디: " + photo.getId());
             } catch (Exception ignored) {
             }
         }
