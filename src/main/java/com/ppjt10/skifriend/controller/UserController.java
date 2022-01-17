@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsMyResponseDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
 import com.ppjt10.skifriend.dto.userdto.*;
 import com.ppjt10.skifriend.entity.User;
@@ -67,5 +68,13 @@ public class UserController {
     ) {
         User user = userDetails.getUser();
         return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, user));
+    }
+
+    // 내가 쓴 Shorts 목록 보기
+    @GetMapping("/user/info/shorts")
+    public ResponseEntity<List<ShortsMyResponseDto>> getMyShorts(@AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.getMyShorts(user));
     }
 }
