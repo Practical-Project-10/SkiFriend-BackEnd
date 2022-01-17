@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.net.URLDecoder;
 
 @Service
@@ -35,15 +36,11 @@ public class ShortsService {
     public ShortsResponseDto createShorts(MultipartFile videoPath,
                                           String title,
                                           User user
-    ) {
-        String videoUrl;
-        try {
-            videoUrl = s3Uploader.upload(videoPath, videoDirName);
-        } catch (Exception err) {
-            videoUrl = "No Video";
-        }
+    ) throws IOException {
+        String videoUrl = s3Uploader.upload(videoPath, videoDirName);
         Shorts shorts = new Shorts(user.getId(), title, videoUrl);
         shortsRepository.save(shorts);
+
 
         return generateShortsResponseDto(shorts);
     }
