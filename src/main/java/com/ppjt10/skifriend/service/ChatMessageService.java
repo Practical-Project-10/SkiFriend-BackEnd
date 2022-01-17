@@ -226,12 +226,16 @@ public class ChatMessageService {
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
 
+        ChatUserInfo oppenent = chatUserInfoRepository.findByUserIdAndChatRoomId(chatMessage.getUserId(), chatMessage.getChatRoom().getId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 정보가 존재하지 않습니다.")
+        );
+
         return ChatMessageResponseDto.builder()
                 .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .senderId(chatMessage.getUserId()) // 나중에 리시버로 바꿔야 함
+                .receiverId(oppenent.getOtherId())
                 .sender(nickname)
                 .senderImg(profileImg)
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))

@@ -53,12 +53,6 @@ public class NaverUserService {
         // 4. 로그인 JWT 토큰 발행
         String token = jwtTokenCreate(naverUser);
 
-//        UserLoginResponseDto userLoginResponseDto = UserLoginResponseDto.builder()
-//                .userId(naverUser.getId())
-//                .nickname(naverUser.getNickname())
-//                .isProfile(true)
-//                .build();
-
         UserResponseDto userResponseDto = UserResponseDto.builder()
                 .userId(naverUser.getId())
                 .username(naverUser.getUsername())
@@ -75,30 +69,6 @@ public class NaverUserService {
 //                .userLoginResponseDto(userLoginResponseDto)
                 .build();
     }
-
-//    @Transactional
-//    public UserLoginResponseDto naverAddUserProfile(String code, Long userId) throws JsonProcessingException {
-//        // 업데이트 필요성 체크
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new IllegalArgumentException("유저가 없어용")
-//        );
-//
-//        UserLoginResponseDto userLoginResponseDto;
-//        if (user.getAgeRange() == null) {
-//            // 1. "인가 코드"로 "액세스 토큰" 요청
-//            String accessToken = getAccessToken(code, "http://localhost:3000/user/naver/callback/properties");
-//
-//            // 2. 유저 정보 업데이트
-//            userLoginResponseDto = updateUserProfile(accessToken, user);
-//        } else {
-//            userLoginResponseDto = UserLoginResponseDto.builder()
-//                    .userId(user.getId())
-//                    .nickname(user.getNickname())
-//                    .isProfile(true)
-//                    .build();
-//        }
-//        return userLoginResponseDto;
-//    }
 
     private String getAccessToken(String code, String redirect_uri) throws JsonProcessingException {
         // HTTP Header 생성
@@ -168,27 +138,6 @@ public class NaverUserService {
 
         return naverUser;
     }
-
-    // 유저 프로필 등록 (나이대, 성별)
-//    private UserLoginResponseDto updateUserProfile(String accessToken, User user) throws JsonProcessingException {
-//        JsonNode jsonNode = getNaverUserInfo(accessToken);
-//
-//        String ageRange = jsonNode.get("kakao_account").get("age_range").asText();
-//        String gender = jsonNode.get("kakao_account").get("gender").asText();
-//
-//        user.updateKakaoProfile(ageRange, gender);
-//
-//        boolean isProfile = false;
-//        if (user.getPhoneNum() != null) {
-//            isProfile = true;
-//        }
-//
-//        return UserLoginResponseDto.builder()
-//                .userId(user.getId())
-//                .nickname(user.getNickname())
-//                .isProfile(isProfile)
-//                .build();
-//    }
 
     // 카카오에서 동의 항목 가져오기
     private JsonNode getNaverUserInfo(String accessToken) throws JsonProcessingException {
