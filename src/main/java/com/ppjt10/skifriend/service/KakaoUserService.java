@@ -40,7 +40,7 @@ public class KakaoUserService {
     @Transactional
     public SignupSocialDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback");
+        String accessToken = getAccessToken(code, "https://becoder.shop/user/kakao/callback");
 
         // 2. 필요시에 회원가입
         User kakaoUser = registerKakaoUserIfNeeded(accessToken);
@@ -64,7 +64,7 @@ public class KakaoUserService {
         UserResponseDto userLoginResponseDto;
         if (user.getAgeRange() == null) {
             // 1. "인가 코드"로 "액세스 토큰" 요청
-            String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback/properties");
+            String accessToken = getAccessToken(code, "https://becoder.shop/user/kakao/callback/properties");
 
             // 2. 유저 정보 업데이트
             userLoginResponseDto = updateUserProfile(accessToken, user);
