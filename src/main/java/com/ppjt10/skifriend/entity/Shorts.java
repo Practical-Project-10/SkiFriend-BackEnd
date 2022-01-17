@@ -28,4 +28,11 @@ public class Shorts {
     @Column
     private int shortsCommentCnt;
 
+    public Shorts(Long userId, String title){
+        this.userId = userId;
+        this.title = title;
+    }
+
+    public void setShortsCommentCnt(int shortsCommentCnt) {
+        this.shortsCommentCnt = shortsCommentCnt; }
 }
