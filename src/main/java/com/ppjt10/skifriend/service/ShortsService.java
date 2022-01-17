@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -26,7 +27,7 @@ public class ShortsService {
     private final String videoDirName = "shorts";
 
     @Transactional
-    public ShortsResponseDto getShorts() {
+    public ShortsResponseDto getShorts(HttpSession session) {
         long totalNum = shortsRepository.count();
         Optional<Shorts> shorts;
         do {
