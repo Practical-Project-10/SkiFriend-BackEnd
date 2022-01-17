@@ -33,10 +33,16 @@ public class RedisRepository {
     private ValueOperations<String, Integer> valueOperations;
 
 //    @Resource(name = "redisTemplate")
-//    private ValueOperations<String, String> stringOperations;
+//    private ValueOperations<String, Long> longOperations;
 
     @Resource(name = "redisTemplate")
     private ValueOperations<String, String> timeOperations;
+
+    // shorts 조회시 sessionId와 randomNum 저장
+//    public void setRandomNumSessionId() {
+//
+//    }
+
 
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
     public void setUserEnterInfo(String sessionId, Long roomId) {
