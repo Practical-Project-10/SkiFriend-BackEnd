@@ -28,8 +28,13 @@ public class Shorts {
     @Column
     private int shortsCommentCnt;
 
-    public Shorts(Long userId, String title){
+    public Shorts(Long userId, String title, String videoPath){
         this.userId = userId;
+        this.title = title;
+        this.videoPath = videoPath;
+    }
+
+    public void update(String title){
         this.title = title;
     }
 
