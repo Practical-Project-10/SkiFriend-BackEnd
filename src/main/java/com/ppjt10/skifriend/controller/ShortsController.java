@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @RestController
@@ -19,8 +20,8 @@ public class ShortsController {
 
     //Shorts 조회
     @GetMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> getShorts() {
-        return ResponseEntity.ok().body(shortsService.getShorts());
+    public ResponseEntity<ShortsResponseDto> getShorts(HttpSession session) {
+        return ResponseEntity.ok().body(shortsService.getShorts(session));
     }
 
     //Shorts 작성

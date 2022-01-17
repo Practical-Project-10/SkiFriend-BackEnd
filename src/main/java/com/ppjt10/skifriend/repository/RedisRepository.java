@@ -32,6 +32,9 @@ public class RedisRepository {
     @Resource(name = "redisTemplate")
     private ValueOperations<String, Integer> valueOperations;
 
+//    @Resource(name = "redisTemplate")
+//    private ValueOperations<String, String> stringOperations;
+
     @Resource(name = "redisTemplate")
     private ValueOperations<String, String> timeOperations;
 
