@@ -135,8 +135,8 @@ public class NaverUserService {
     private User registerNaverUserIfNeeded(String accessToken) throws JsonProcessingException {
         JsonNode jsonNode = getNaverUserInfo(accessToken);
 
-        // DB 에 중복된 Kakao Id 가 있는지 확인
-        String naverId = String.valueOf(jsonNode.get("response").get("id").asLong());
+        // DB 에 중복된 Naver Id 가 있는지 확인
+        String naverId = jsonNode.get("response").get("id").asText();
         User naverUser = userRepository.findByUsername(naverId)
                 .orElse(null);
 
@@ -195,14 +195,14 @@ public class NaverUserService {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        headers.add("Content-type", "application/xml;charset=utf-8");
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> naverUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://openapi.naver.com/v1/nid/me",
-                HttpMethod.POST,
+                HttpMethod.GET,
                 naverUserInfoRequest,
                 String.class
         );
