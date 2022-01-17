@@ -44,7 +44,7 @@ public class RedisRepository {
     }
     // shorts 조회시 sessionId로 randomNum 조회
     public int getRandomNumSessionId(String sessionId) {
-        return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(0);
+        return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(-1);
     }
 
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장

@@ -30,6 +30,9 @@ public class ShortsService {
     public ShortsResponseDto getShorts(HttpSession session) {
         long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
         long totalNum = shortsRepository.count();
+        if(totalNum == 0) {
+            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+        }
         Optional<Shorts> shorts;
         do {
             long randomNum = (long)(Math.random() * totalNum + 1);
