@@ -42,10 +42,10 @@ public class KakaoUserService {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code, "http://localhost:3000/user/kakao/callback");
 
-        // 3. 필요시에 회원가입
+        // 2. 필요시에 회원가입
         User kakaoUser = registerKakaoUserIfNeeded(accessToken);
 
-        // 4. 로그인 JWT 토큰 발행
+        // 3. 로그인 JWT 토큰 발행
         String token = jwtTokenCreate(kakaoUser);
 
         return SignupSocialDto.builder()

@@ -73,14 +73,7 @@ public class SignupController {
         return signupKakaoDto.getUserId();
     }
 
-//    @GetMapping("/user/kakao/callback/{userId}")
-//    public UserLoginResponseDto kakaoAddUserProfile(@RequestParam String code,
-//                                                    @PathVariable Long userId
-//    ) throws JsonProcessingException {
-//
-//        return kakaoUserService.kakaoAddUserProfile(code, userId);
-//    }
-
+    // 카카오 프로필 업데이트
     @GetMapping("/user/kakao/callback/{userId}")
     public ResponseEntity<UserResponseDto> kakaoAddUserProfile(@RequestParam String code,
                                                                @PathVariable Long userId
@@ -89,7 +82,7 @@ public class SignupController {
         return ResponseEntity.ok().body(kakaoUserService.kakaoAddUserProfile(code, userId));
     }
 
-    // 네이버 회원가입
+
 //    @GetMapping("/user/naver/callback")
 //    public UserLoginResponseDto naverLoogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
 //        // authorizedCode: 카카오 서버로부터 받은 인가 코드
@@ -99,8 +92,11 @@ public class SignupController {
 //        return signupNaverDto.getUserLoginResponseDto();
 //    }
 
+    // 네이버 회원가입
     @GetMapping("/user/naver/callback")
-    public ResponseEntity<UserResponseDto> naverLoogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<UserResponseDto> naverLogin(@RequestParam String code,
+                                                       HttpServletResponse response
+    ) throws JsonProcessingException {
         // authorizedCode: 카카오 서버로부터 받은 인가 코드
         SignupSocialDto signupNaverDto = naverUserService.naverLogin(code);
         response.addHeader(AUTH_HEADER, signupNaverDto.getToken());
