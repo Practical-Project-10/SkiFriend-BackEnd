@@ -1,10 +1,10 @@
 package com.ppjt10.skifriend.service;
 
-import com.ppjt10.skifriend.dto.commentdto.CommentRequestDto;
-import com.ppjt10.skifriend.dto.shortscommentdto.ShortsCommentRequestDto;
+
 import com.ppjt10.skifriend.dto.shortscommentdto.ShortsCommentResponseDto;
 import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.ShortsCommentRepository;
+import com.ppjt10.skifriend.repository.ShortsRepository;
 import com.ppjt10.skifriend.repository.UserRepository;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class ShortsCommentService {
 
             ShortsComment shortsComment = new ShortsComment(user.getId(), shorts, content);
 
-            shortsRepository.save(shortsComment);
+            shortsCommentRepository.save(shortsComment);
 
             shorts.setShortsCommentCnt(shorts.getShortsCommentCnt() + 1);
         }
