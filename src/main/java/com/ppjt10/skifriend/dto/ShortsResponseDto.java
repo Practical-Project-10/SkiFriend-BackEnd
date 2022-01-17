@@ -14,6 +14,7 @@ public class ShortsResponseDto {
     private Long userId;
     private String nickname;
     private String profileImg;
+    private String videoPath;
     private String title;
     private int shortsLikeCnt;
     private int shortsCommentCnt;
