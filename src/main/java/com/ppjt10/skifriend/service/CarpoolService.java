@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -221,15 +222,15 @@ public class CarpoolService {
 
     //CarpoolResponseDto 생성
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
+        Optional<User> user = userRepository.findById(carpool.getUserId());
+
         String nickname;
-        try {
-            User user = userRepository.findById(carpool.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-        } catch (Exception e) {
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+        } else{
             nickname = "알 수 없음";
         }
+
         return CarpoolResponseDto.builder()
                 .postId(carpool.getId())
                 .userId(carpool.getUserId())

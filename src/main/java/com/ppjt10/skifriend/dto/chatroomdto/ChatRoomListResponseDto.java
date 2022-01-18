@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class ChatRoomListResponseDto implements Comparable<ChatRoomListResponseDto>{
     private String roomName;
     private Long roomId;
-    private Long longRoomId;
     private String lastMsg;
     private String lastMsgTime;
     private String userProfile;

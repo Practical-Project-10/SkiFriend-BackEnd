@@ -24,7 +24,7 @@ public class ShortsLikeService {
         );
 
         Long userId = user.getId();
-        Optional<ShortsLike> foundShortsLike = shortsLikeRepository.findByUserIdAndAndShortsId(userId, shortsId);
+        Optional<ShortsLike> foundShortsLike = shortsLikeRepository.findByUserIdAndShortsId(userId, shortsId);
         // 기존에 이미 좋아요를 누른 상태라면
         if(foundShortsLike.isPresent()){
             shortsLikeRepository.deleteById(foundShortsLike.get().getId());

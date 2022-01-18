@@ -34,8 +34,11 @@ public class ChatMessage  extends Timestamped {
     @Column
     private String message; // 메시지
 
+//    @Column
+//    private String img; // 이미지 첨부시
+
     @Column
-    private String img; // 이미지 첨부시
+    private boolean read; // 메시지
 
     public ChatMessage(MessageType type, ChatRoom chatRoom, Long userId, String message) {
         this.type = type;
@@ -48,7 +51,11 @@ public class ChatMessage  extends Timestamped {
         this.message = message;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+//    public void setImg(String img) {
+//        this.img = img;
+//    }
+
+    public void setIsRead(boolean isRead) {
+        this.read = isRead;
     }
 }
