@@ -159,19 +159,14 @@ public class ChatRoomService {
     @Transactional
     public void exitChatRoom(Long roomId, User user) {
         Long userId = user.getId();
-        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
+        ChatUserInfo userChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 채팅방 정보가 존재하지 않습니다")
         );
-        Long chatRoomId = chatUserInfo.getChatRoom().getId();
-        if(userId.equals(chatUserInfo.getUserId())) {
-            chatUserInfoRepository.deleteByUserId(userId);
-        } else {
-            throw new IllegalArgumentException("해당유저는 이미 채팅방을 나갔습니다");
-        }
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatUserInfo.getOtherId());
-        if(!chatRoom.isPresent()){
-            chatMessageRepository.deleteAllByChatRoomId(chatRoomId);
-            chatRoomRepository.deleteById(chatRoomId);
+        Optional<ChatUserInfo> otherChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userChatUserInfo.getOtherId(), roomId);
+        chatUserInfoRepository.deleteByUserId(userId);
+        if(!otherChatUserInfo.isPresent()) {
+            chatMessageRepository.deleteAllByChatRoomId(otherChatUserInfo.get().getChatRoom().getId());
+            chatRoomRepository.deleteById(otherChatUserInfo.get().getChatRoom().getId());
         }
     }
 
