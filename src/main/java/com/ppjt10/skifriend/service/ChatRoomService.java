@@ -165,8 +165,9 @@ public class ChatRoomService {
         Optional<ChatUserInfo> otherChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userChatUserInfo.getOtherId(), roomId);
         chatUserInfoRepository.deleteByUserId(userId);
         if(!otherChatUserInfo.isPresent()) {
-            chatMessageRepository.deleteAllByChatRoomId(otherChatUserInfo.get().getChatRoom().getId());
-            chatRoomRepository.deleteById(otherChatUserInfo.get().getChatRoom().getId());
+            Long chatRoomId = otherChatUserInfo.get().getChatRoom().getId();
+            chatMessageRepository.deleteAllByChatRoomId(chatRoomId);
+            chatRoomRepository.deleteById(chatRoomId);
         }
     }
 
