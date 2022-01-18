@@ -40,7 +40,7 @@ public class ChatRoomService {
                     () -> new IllegalArgumentException("해당 메세지가 존재하지 않습니다.")
             );
 
-            int notVerifiedMsgCnt = chatMessageRepository.findAllByChatRoomIdAndReadAndUserId(roomId, false, otherId).size();
+            int notVerifiedMsgCnt = chatMessageRepository.findAllByChatRoomIdAndReadMsgAndUserId(roomId, false, otherId).size();
 
             String otherNick;
             String otherProfileImg;
