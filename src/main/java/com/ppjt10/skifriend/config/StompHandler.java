@@ -22,10 +22,7 @@ import java.util.Optional;
 public class StompHandler implements ChannelInterceptor {
     private final JwtDecoder jwtDecoder;
     private final ChatMessageService chatMessageService;
-    private final UserRepository userRepository;
     private final RedisRepository redisRepository;
-    private final ChatMessageRepository chatMessageRepository;
-    private final ChatUserInfoRepository chatUserInfoRepository;
 
     // websocket 을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
@@ -34,48 +31,32 @@ public class StompHandler implements ChannelInterceptor {
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
+        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            Long roomId = chatMessageService.getRoomId(
+                    Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
+            );
+            if (roomId != null) {
+                String sessionId = (String) message.getHeaders().get("simpSessionId");
+                String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
+                redisRepository.setSessionUserInfo(sessionId, roomId, name);
+                redisRepository.setUserChatRoomInOut(roomId + "_" + name, true);
+                System.out.println("SUBSCRIBE 클라이언트 헤더" + message.getHeaders());
+                System.out.println("SUBSCRIBE 클라이언트 세션 아이디" + sessionId);
+                System.out.println("SUBSCRIBE 클라이언트 유저 이름: " + name);
+            }
+        } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
+            String sessionId = (String) message.getHeaders().get("simpSessionId");
+            String findInOutKey = redisRepository.getSessionUserInfo(sessionId);
+            System.out.println("DISCONNECT 클라이언트 sessionId: " + sessionId);
+            System.out.println("DISCONNECT 클라이언트 inoutKey: " + findInOutKey);
+
+            if (findInOutKey != null) {
+                redisRepository.setUserChatRoomInOut(findInOutKey, false);
+            }
+
+            redisRepository.removeUserEnterInfo(sessionId);
         }
-//        else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
-//            System.out.println("SUBSCRIBE!!!!");
-//
-//            Long roomId = chatMessageService.getRoomId(
-//                    Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
-//            );
-//            if (roomId != null) {
-//                String sessionId = (String) message.getHeaders().get("simpSessionId");
-//                System.out.println("클라이언트 헤더" + message.getHeaders());
-//                System.out.println("클라이언트 세션 아이디" + sessionId);
-//                redisRepository.setUserEnterInfo(sessionId, roomId);
-//
-//                String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
-//                System.out.println("클라이언트 유저 이름: " + name);
-//                redisRepository.setUserNameInfo(sessionId, name);
-//            }
-//        } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
-//            String sessionId = (String) message.getHeaders().get("simpSessionId");
-//            System.out.println("DISCONNECT 클라이언트 sessionId: " + sessionId);
-//            Long roomId = redisRepository.getUserEnterRoomId(sessionId);
-//            String name = redisRepository.getUserNameId(sessionId);
-//
-//            if (name != null && roomId != null) {
-//                Optional<User> user = userRepository.findByUsername(name);
-////                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
-//
-//                if (user.isPresent()) {
-//                    int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
-//
-//                    System.out.println("DISCONNECT 클라이언트 name: " + name);
-//                    System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
-//                    System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
-//
-//                    ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(user.get().getId(), roomId).orElseThrow(
-//                            () -> new IllegalArgumentException("해당하는 채팅 정보가 없습니다.")
-//                    );
-////                    chatUserInfo.setReadMsgCnt(chatMessageCount);
-//                }
-//            }
-//            redisRepository.removeUserEnterInfo(sessionId);
-//        }
+
         return message;
     }
 }
