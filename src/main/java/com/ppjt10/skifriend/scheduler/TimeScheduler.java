@@ -64,7 +64,7 @@ public class TimeScheduler {
         }
 
         for(User user : userList){
-            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+            messageService.createChatRoomAlert(user.getPhoneNum(), "읽지 않은 메세지가 있습니다! 채팅방을 확인하세요 :)");
             System.out.println(user.getNickname() + "한테 알림왔대, 채팅방 확인좀해라");
         }
     }
