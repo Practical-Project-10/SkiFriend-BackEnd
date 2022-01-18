@@ -155,6 +155,24 @@ public class ChatRoomService {
         return generateChatRoomCarpoolInfoDto(carpool);
     }
 
+    // 채팅방 나가기
+    public void exitChatRoom(Long roomId, User user) {
+        Long userId = user.getId();
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 채팅방 정보가 존재하지 않습니다")
+        );
+        Long chatRoomId = chatUserInfo.getChatRoom().getId();
+        if(userId.equals(chatUserInfo.getUserId())) {
+            chatUserInfoRepository.deleteByUserId(userId);
+        } else {
+            throw new IllegalArgumentException("해당유저는 이미 채팅방을 나갔습니다");
+        }
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
+        if(chatRoom.isPresent()){
+            chatRoomRepository.deleteById(chatRoomId);
+        }
+    }
+
     // 채팅방 생성
     private ChatRoomResponseDto generateChatRoomResponseDto(ChatRoom chatRoom, String nickName) {
         return ChatRoomResponseDto.builder()

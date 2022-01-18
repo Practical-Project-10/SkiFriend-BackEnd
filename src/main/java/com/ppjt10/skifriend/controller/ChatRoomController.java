@@ -33,6 +33,13 @@ public class ChatRoomController {
         return ResponseEntity.ok().body(chatRoomService.createChatRoom(carpoolId, user));
     }
 
+    // 채팅방 나가기
+    @DeleteMapping("/chat/room/{roomId}")
+    public void exitChatRoom(@PathVariable Long roomId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        chatRoomService.exitChatRoom(roomId, user);
+    }
+
     // 특정 채팅방 조회
     @GetMapping("/chat/room/{roomId}")
     public ResponseEntity<ChatRoomResponseDto> getRoom(@PathVariable Long roomId,
