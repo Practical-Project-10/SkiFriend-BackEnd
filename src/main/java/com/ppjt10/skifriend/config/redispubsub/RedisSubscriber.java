@@ -17,7 +17,6 @@ public class RedisSubscriber {
     public void sendMessage(String publishedMessage) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-//            ChatMessage chatMessage = objectMapper.readValue(publishedMessage,ChatMessage.class);
             ChatMessageResponseDto responseDto = objectMapper.readValue(publishedMessage,ChatMessageResponseDto.class);
 
             messagingTemplate.convertAndSend("/sub/chat/room/" + responseDto.getRoomId(), responseDto);

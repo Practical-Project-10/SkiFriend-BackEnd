@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class SignupSocialDto {
     String token;
     Long userId;
-    //UserLoginResponseDto userLoginResponseDto;
     UserResponseDto userResponseDto;
 }
 
