@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.config;
 
+import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
@@ -68,7 +69,9 @@ public class StompHandler implements ChannelInterceptor {
     @Transactional
     public void saveReadMsgCnt(String name, Long roomId){
         Optional<User> user = userRepository.findByUsername(name);
-        if (user.isPresent()) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
+
+        if (user.isPresent() && chatRoom.isPresent()) {
             int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
 
             System.out.println("DISCONNECT 클라이언트 name: " + name);
