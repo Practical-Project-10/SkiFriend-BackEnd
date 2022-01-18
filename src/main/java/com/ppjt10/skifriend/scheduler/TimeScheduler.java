@@ -2,6 +2,7 @@ package com.ppjt10.skifriend.scheduler;
 
 import com.ppjt10.skifriend.certification.MessageService;
 import com.ppjt10.skifriend.entity.Carpool;
+import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
 @Component
 public class TimeScheduler {
     private final CarpoolRepository carpoolRepository;
-    private final RedisRepository redisRepository;
     private final MessageService messageService;
     private final UserRepository userRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChatUserInfoRepository chatUserInfoRepository;
 
     // 15분 마다 실행
     @Transactional
@@ -49,33 +50,14 @@ public class TimeScheduler {
 
     // 15분 마다 실행
     @Transactional
-    @Scheduled(cron = "0 0 0/1 * * *")
+    @Scheduled(cron = "0 0/1 0 * * *")
     public void chatAlertScheduler() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        List<String> userNameList = new ArrayList<>();
-        List<String> fromRedisLastMsgNameTimeCntList = redisRepository.getLastMsgTimeCnt();
-        for (String fromRedisLastMsgNameTimeCnt : fromRedisLastMsgNameTimeCntList) {
-            List<String> lastMsgNameTimeCnt = Arrays.asList(fromRedisLastMsgNameTimeCnt.split("/"));
-            Long roomId = Long.parseLong(lastMsgNameTimeCnt.get(0));
-            String lastMsgName = lastMsgNameTimeCnt.get(1);
-            LocalDateTime lastMessageTime = LocalDateTime.parse(lastMsgNameTimeCnt.get(2), formatter);
-            int lastMsgCnt = Integer.parseInt(lastMsgNameTimeCnt.get(3));
-            if (userNameList.contains(lastMsgName)) {
-                continue; // 아래 로직 실행하지 말고 다음 for 문을 돌아라
-            }
-            Long timeDiff = Duration.between(lastMessageTime, currentTime).getSeconds();
-            int presentMsgCnt = chatMessageRepository.findAllByChatRoomId(roomId).size();
-            int restMsgCnt = presentMsgCnt - lastMsgCnt;
-            if ((timeDiff / 3600) > 0 && restMsgCnt > 0) {
-                userNameList.add(lastMsgName);
-            }
-        }
-        for (String lastMessageName : userNameList) {
-            User user = userRepository.findByUsername(lastMessageName).orElseThrow(
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByModifiedAtAfter(LocalDateTime.now().minusSeconds(10));
+        for(ChatUserInfo chatUserInfo : chatUserInfoList){
+            User user = userRepository.findById(chatUserInfo.getUserId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 유저가 없습니다")
             );
-//            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
+            messageService.createChatRoomAlert(user.getPhoneNum(), "알림이 왔습니다 채팅방을 확인하세요");
             System.out.println(user.getNickname() + "한테 알림왔대, 채팅방 확인좀해라");
         }
     }

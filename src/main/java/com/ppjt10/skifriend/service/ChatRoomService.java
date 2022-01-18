@@ -17,7 +17,6 @@ import java.util.*;
 @Service
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
-    private final RedisRepository redisRepository;
     private final CarpoolRepository carpoolRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
@@ -101,7 +100,6 @@ public class ChatRoomService {
         }
 
         String writerNickname = writer.getNickname();
-        String writerUsername = writer.getUsername();
         String writerPhone = writer.getPhoneNum();
 
         ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndOtherIdAndChatRoomCarpoolId(writerId, senderId, carpoolId);
@@ -121,9 +119,6 @@ public class ChatRoomService {
             //방 생성시 첫 메시지 강제전송
             ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, sender.getId(), ":)");
             chatMessageRepository.save(initMsg);
-
-            // 작성자가 안 읽은 메시지 수를 저장
-            redisRepository.setLastReadMsgCnt(chatRoom.getId(), writerUsername, 1);
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), writer.getId(), chatRoom);
@@ -183,8 +178,10 @@ public class ChatRoomService {
             User user
     ) {
         Long roomId = chatRoom.getId();
-//        int presentChatMsgCnt = chatMessageRepository.findAllByChatRoomRoomId(roomId).size();
-        int pastMsgCnt = redisRepository.getLastReadMsgCnt(roomId, user.getUsername());
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(user.getId(), roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방 정보가 존재하지 않습니다.")
+        );
+        int pastMsgCnt = chatUserInfo.getReadMsgCnt();
         int notVerifiedMsgCnt = chatMessageSize - pastMsgCnt;
 
         return ChatRoomListResponseDto.builder()
