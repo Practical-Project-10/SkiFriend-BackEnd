@@ -167,8 +167,9 @@ public class ChatRoomService {
         } else {
             throw new IllegalArgumentException("해당유저는 이미 채팅방을 나갔습니다");
         }
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
-        if(chatRoom.isPresent()){
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatUserInfo.getOtherId());
+        if(!chatRoom.isPresent()){
+            chatMessageRepository.deleteAllByChatRoomId(chatRoomId);
             chatRoomRepository.deleteById(chatRoomId);
         }
     }
