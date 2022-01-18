@@ -15,53 +15,52 @@ import java.util.Set;
 @Repository
 public class RedisRepository {
 
-//    public static final String ENTER_INFO = "ENTER_INFO";
-//    public static final String NAME_INFO = "NAME_INFO";
+    public static final String ENTER_INFO = "ENTER_INFO";
     public static final String RANDOM_NUM = "RANDOM_NUM";
+    public static final String USER_INOUT = "USER_INOUT";
 
-
-//    @Resource(name = "redisTemplate")
-//    private HashOperations<String, String, Long> hashOpsEnterInfo;
-//
-//    @Resource(name = "redisTemplate")
-//    private HashOperations<String, String, String> stringHashOpsEnterInfo;
+    @Resource(name = "redisTemplate")
+    private HashOperations<String, String, String> stringHashOpsEnterInfo;
 
     @Resource(name = "redisTemplate")
     private ValueOperations<String, Integer> longOperations;
+
+    @Resource(name = "redisTemplate")
+    private ValueOperations<String, Boolean> userInOutOperations;
 
 
     // shorts 조회시 sessionId와 randomNum 저장
     public void setRandomNumSessionId(String sessionId, int randomNum) {
         longOperations.set(RANDOM_NUM + "_" + sessionId, randomNum);
     }
+
     // shorts 조회시 sessionId로 randomNum 조회
     public int getRandomNumSessionId(String sessionId) {
         return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(-1);
     }
 
-//    // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
-//    public void setUserEnterInfo(String sessionId, Long roomId) {
-//        hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
-//    }
-//
-//    // 세션에 유저이름 저장
-//    public void setUserNameInfo(String sessionId, String name) {
-//        stringHashOpsEnterInfo.put(NAME_INFO, sessionId, name);
-//    }
-//
-//    // 세션에서 유저이름 갖고오기
-//    public String getUserNameId(String sessionId) {
-//        return stringHashOpsEnterInfo.get(NAME_INFO, sessionId);
-//    }
-//
-//
-//    // 유저 세션으로 입장해 있는 채팅방 ID 조회
-//    public Long getUserEnterRoomId(String sessionId) {
-//        return hashOpsEnterInfo.get(ENTER_INFO, sessionId);
-//    }
-//
-//    // 유저 세션정보와 맵핑된 채팅방ID 삭제
-//    public void removeUserEnterInfo(String sessionId) {
-//        hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
-//    }
+    // sessionId로 inOutKey 등록
+    public void setSessionUserInfo(String sessionId, Long roomId, String name) {
+        stringHashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId + "_" + name);
+    }
+
+    // sessionId로 inOutKey 찾아오기
+    public String getSessionUserInfo(String sessionId) {
+        return stringHashOpsEnterInfo.get(ENTER_INFO, sessionId);
+    }
+
+    // sessionId 삭제
+    public void removeUserEnterInfo(String sessionId) {
+        stringHashOpsEnterInfo.delete(ENTER_INFO, sessionId);
+    }
+
+    // inOutKey로 현재 유저가 접속 중인지 설정
+    public void setUserChatRoomInOut(String key, Boolean inOut) {
+        userInOutOperations.set(USER_INOUT + "_" + key, inOut);
+    }
+
+    // inOutKey로 현재 유저가 접속 중인지 가져오기
+    public Boolean getUserChatRoomInOut(Long roomId, String name) {
+        return userInOutOperations.get(USER_INOUT + "_" + roomId + "_" + name);
+    }
 }
