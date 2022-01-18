@@ -8,14 +8,9 @@ import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
 import com.ppjt10.skifriend.dto.userdto.UserProfileOtherDto;
 import com.ppjt10.skifriend.dto.userdto.UserProfileUpdateDto;
 import com.ppjt10.skifriend.dto.userdto.UserResponseDto;
-import com.ppjt10.skifriend.entity.Carpool;
-import com.ppjt10.skifriend.entity.ChatUserInfo;
-import com.ppjt10.skifriend.entity.Shorts;
-import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.repository.CarpoolRepository;
-import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
-import com.ppjt10.skifriend.repository.ShortsRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.entity.*;
+import com.ppjt10.skifriend.repository.*;
+import com.ppjt10.skifriend.validator.CareerType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +42,8 @@ public class UserService {
     public UserResponseDto updateUserProfile(MultipartFile profileImg, UserProfileUpdateDto requestDto, User user) {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        CareerType.findByCareerType(requestDto.getCareer());
 
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
         dbUser.update(requestDto);
@@ -86,6 +83,12 @@ public class UserService {
         for (Carpool carpool : carpoolList) {
             carpool.setStatus(false);
         }
+
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(userId);
+        for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+            chatUserInfo.getChatRoom().setActive(false);
+        }
+
         return "회원탈퇴 되었습니다.";
     }
 
@@ -134,7 +137,7 @@ public class UserService {
         List<Shorts> shortsList = shortsRepository.findAllByUserId(user.getId());
 
         List<ShortsMyResponseDto> shortsMyResponseDtoList = new ArrayList<>();
-        for(Shorts shorts : shortsList) {
+        for (Shorts shorts : shortsList) {
             shortsMyResponseDtoList.add(generateShortsMyResponseDto(shorts));
         }
         return shortsMyResponseDtoList;

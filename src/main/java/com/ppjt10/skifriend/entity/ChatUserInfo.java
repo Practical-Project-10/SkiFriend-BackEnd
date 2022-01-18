@@ -24,17 +24,9 @@ public class ChatUserInfo extends Timestamped {
     @JoinColumn(nullable = false)
     private ChatRoom chatRoom;
 
-    @Column
-    private int readMsgCnt;
-
     public ChatUserInfo(Long userId, Long otherId, ChatRoom chatRoom) {
         this.userId = userId;
         this.otherId = otherId;
         this.chatRoom = chatRoom;
-        this.readMsgCnt = 1;
-    }
-
-    public void setReadMsgCnt(int readMsgCnt){
-        this.readMsgCnt = readMsgCnt;
     }
 }

@@ -194,7 +194,7 @@ public class FreePostService {
                     () -> new IllegalArgumentException("해당하는 skiResort가 없습니다")
             );
             Long skiResortId = foundSkiResort.getId();
-            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(3), skiResortId);
+            List<Likes> hotLikesList = likesRepository.findAllByModifiedAtAfterAndFreePost_SkiResortId(LocalDateTime.now().minusHours(24), skiResortId);
             HashMap<Long, Integer> postLikeCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
                 Long postId = likes.getFreePost().getId();
@@ -242,15 +242,15 @@ public class FreePostService {
 
     // FreePostResponseDto 생성
     private FreePostResponseDto generateFreePostResponseDto(FreePost freePost) {
+        Optional<User> user = userRepository.findById(freePost.getUserId());
+
         String nickname;
-        try {
-            User user = userRepository.findById(freePost.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-        } catch (Exception e) {
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+        } else{
             nickname = "알 수 없음";
         }
+
         return FreePostResponseDto.builder()
                 .postId(freePost.getId())
                 .userId(freePost.getUserId())
@@ -271,15 +271,15 @@ public class FreePostService {
 
     // CommentResponseDto 생성
     private CommentResponseDto generateCommentResponseDto(Comment comment) {
+        Optional<User> user = userRepository.findById(comment.getUserId());
+
         String nickname;
-        try {
-            User user = userRepository.findById(comment.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-        } catch (Exception e) {
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+        } else{
             nickname = "알 수 없음";
         }
+
         return CommentResponseDto.builder()
                 .userId(comment.getUserId())
                 .commentId(comment.getId())
@@ -304,15 +304,15 @@ public class FreePostService {
                                                                         List<CommentResponseDto> commentResponseDtoList,
                                                                         List<PhotoDto> photoDtoList
     ) {
+        Optional<User> user = userRepository.findById(freePost.getUserId());
+
         String nickname;
-        try {
-            User user = userRepository.findById(freePost.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-        } catch (Exception e) {
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+        } else{
             nickname = "알 수 없음";
         }
+
         return FreePostDetailResponseDto.builder()
                 .userId(freePost.getUserId())
                 .postId(freePost.getId())
