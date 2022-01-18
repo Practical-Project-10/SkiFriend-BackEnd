@@ -17,7 +17,7 @@ public class ChatMessageResponseDto {
     private Long receiverId;
     private String sender;
     private String senderImg;
-    private String img;
+    private String img; // 채팅방에서 이미지 보낼 때 쓸 이미지 dto
     private String message;
     private String createdAt;
 }

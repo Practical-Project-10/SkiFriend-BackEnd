@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByFreePostIdOrderByCreateAtDesc(Long boardId);
-    List<Comment> deleteAllByFreePostId(Long boardId);
+    void deleteAllByFreePostId(Long boardId);
 }
