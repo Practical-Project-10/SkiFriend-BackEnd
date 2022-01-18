@@ -9,10 +9,7 @@ import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.repository.ChatMessageRepository;
-import com.ppjt10.skifriend.repository.ChatRoomRepository;
-import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +27,7 @@ public class ChatMessageService {
     //    private final MessageService messageService;
     private final ChatUserInfoRepository chatUserInfoRepository;
     private final RedisPublisher redisPublisher;
+    private final RedisRepository redisRepository;
     private final UserRepository userRepository;
 //    private final S3Uploader s3Uploader;
 //    private final String imageDirName = "chatMessage";
@@ -132,6 +130,10 @@ public class ChatMessageService {
 //        }
 
         ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user.getId(), requestDto.getMessage());
+        if(redisRepository.getUserChatRoomInOut(chatRoom.getId(), user.getUsername())){
+            message.setIsRead(true);
+        }
+
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
 
             String phoneNum = user.getPhoneNum();
