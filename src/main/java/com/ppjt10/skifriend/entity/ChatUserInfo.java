@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.entity;
 
-import com.ppjt10.skifriend.time.Timestamped;
-import jdk.jfr.Timestamp;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +20,7 @@ public class RedisRepository {
     public static final String NAME_INFO = "NAME_INFO";
     public static final String LAST_MESSAGE_TIME = "LAST_MESSAGE_TIME";
     public static final String LAST_MSG_TIME_CNT = "LAST_MSG_TIME_CNT";
+    public static final String RANDOM_NUM = "RANDOM_NUM";
 
 
     @Resource(name = "redisTemplate")
@@ -33,7 +33,19 @@ public class RedisRepository {
     private ValueOperations<String, Integer> valueOperations;
 
     @Resource(name = "redisTemplate")
+    private ValueOperations<String, Integer> longOperations;
+
+    @Resource(name = "redisTemplate")
     private ValueOperations<String, String> timeOperations;
+
+    // shorts 조회시 sessionId와 randomNum 저장
+    public void setRandomNumSessionId(String sessionId, int randomNum) {
+        longOperations.set(RANDOM_NUM + "_" + sessionId, randomNum);
+    }
+    // shorts 조회시 sessionId로 randomNum 조회
+    public int getRandomNumSessionId(String sessionId) {
+        return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(-1);
+    }
 
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
     public void setUserEnterInfo(String sessionId, Long roomId) {

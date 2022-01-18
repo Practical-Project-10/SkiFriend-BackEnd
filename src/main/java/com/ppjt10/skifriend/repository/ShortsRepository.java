@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface ShortsRepository extends JpaRepository<Shorts, Long> {
     List<Shorts> findAllByUserId(Long userId);
+
+    @Override
+    long count();
 }

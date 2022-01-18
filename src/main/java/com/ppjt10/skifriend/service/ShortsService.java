@@ -4,32 +4,47 @@ import com.ppjt10.skifriend.config.S3Uploader;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.Shorts;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.repository.ShortsCommentRepository;
-import com.ppjt10.skifriend.repository.ShortsLikeRepository;
-import com.ppjt10.skifriend.repository.ShortsRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ShortsService {
     private final ShortsRepository shortsRepository;
     private final UserRepository userRepository;
+    private final RedisRepository redisRepository;
     private final ShortsCommentRepository shortsCommentRepository;
     private final ShortsLikeRepository shortsLikeRepository;
     private final S3Uploader s3Uploader;
     private final String videoDirName = "shorts";
 
-//    @Transactional
-//    public ShortsResponseDto getShorts() {
-//
-//    }
+    @Transactional
+    public ShortsResponseDto getShorts(HttpSession session) {
+        long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
+        long totalNum = shortsRepository.count();
+        if(totalNum == 0) {
+            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+        }
+        Optional<Shorts> shorts;
+        do {
+            long randomNum = (long)(Math.random() * totalNum + 1);
+            while(randomNum == pastRanNum) {
+                randomNum = (long)(Math.random() * totalNum + 1);
+            }
+            redisRepository.setRandomNumSessionId(session.getId(), (int)randomNum);
+            shorts = shortsRepository.findById(randomNum);
+        } while (!shorts.isPresent());
+
+        return generateShortsResponseDto(shorts.get());
+    }
 
     //Shorts 작성
     @Transactional
