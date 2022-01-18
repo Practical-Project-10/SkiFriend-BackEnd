@@ -156,6 +156,7 @@ public class ChatRoomService {
     }
 
     // 채팅방 나가기
+    @Transactional
     public void exitChatRoom(Long roomId, User user) {
         Long userId = user.getId();
         ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
