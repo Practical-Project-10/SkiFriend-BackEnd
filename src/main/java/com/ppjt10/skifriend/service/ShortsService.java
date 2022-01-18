@@ -28,20 +28,19 @@ public class ShortsService {
 
     @Transactional
     public ShortsResponseDto getShorts(HttpSession session) {
-        long pastRanNum = 0;
-        try {
-            pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
-        } catch (Exception ignored){}
+        long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
         long totalNum = shortsRepository.count();
+        if(totalNum == 0) {
+            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+        }
         Optional<Shorts> shorts;
         do {
             long randomNum = (long)(Math.random() * totalNum + 1);
-            if((int)randomNum == (int)pastRanNum) {
+            while(randomNum == pastRanNum) {
                 randomNum = (long)(Math.random() * totalNum + 1);
             }
-            redisRepository.setRandomNumSessionId(session.getId(), randomNum);
+            redisRepository.setRandomNumSessionId(session.getId(), (int)randomNum);
             shorts = shortsRepository.findById(randomNum);
-            System.out.println("씨~~~~~~~~~바 랜더~~~~~~~~~엄 ~~~~~~~~~~~너어머 버~~~~~~~~~~~~~" + randomNum);
         } while (!shorts.isPresent());
 
         return generateShortsResponseDto(shorts.get());

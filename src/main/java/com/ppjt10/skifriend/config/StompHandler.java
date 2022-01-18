@@ -41,26 +41,28 @@ public class StompHandler implements ChannelInterceptor {
             Long roomId = chatMessageService.getRoomId(
                     Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
             );
-            String sessionId = (String) message.getHeaders().get("simpSessionId");
-            System.out.println("클라이언트 헤더" + message.getHeaders());
-            System.out.println("클라이언트 세션 아이디" + sessionId);
-            redisRepository.setUserEnterInfo(sessionId, roomId);
+            if (roomId != null) {
+                String sessionId = (String) message.getHeaders().get("simpSessionId");
+                System.out.println("클라이언트 헤더" + message.getHeaders());
+                System.out.println("클라이언트 세션 아이디" + sessionId);
+                redisRepository.setUserEnterInfo(sessionId, roomId);
 
-            String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
-            System.out.println("클라이언트 유저 이름: " + name);
-            redisRepository.setUserNameInfo(sessionId, name);
-
+                String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
+                System.out.println("클라이언트 유저 이름: " + name);
+                redisRepository.setUserNameInfo(sessionId, name);
+            }
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
+            System.out.println("DISCONNECT 클라이언트 sessionId: " + sessionId);
             Long roomId = redisRepository.getUserEnterRoomId(sessionId);
             String name = redisRepository.getUserNameId(sessionId);
 
-            if (name != null) {
-                System.out.println("DISCONNECT 클라이언트 name: " + name);
-                System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
+            if (name != null && roomId != null) {
                 Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
-                if(chatRoom.isPresent()) {
+                if (chatRoom.isPresent()) {
                     int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
+                    System.out.println("DISCONNECT 클라이언트 name: " + name);
+                    System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
                     System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
                     redisRepository.setLastReadMsgCnt(roomId, name, chatMessageCount);
 
