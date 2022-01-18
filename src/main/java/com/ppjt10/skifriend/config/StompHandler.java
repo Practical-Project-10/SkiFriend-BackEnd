@@ -1,6 +1,5 @@
 package com.ppjt10.skifriend.config;
 
-import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
@@ -15,8 +14,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -61,22 +58,27 @@ public class StompHandler implements ChannelInterceptor {
 
             if (name != null && roomId != null) {
 //                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
-                Optional<User> user = userRepository.findByUsername(name);
-                if (user.isPresent()) {
-                    int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
-
-                    System.out.println("DISCONNECT 클라이언트 name: " + name);
-                    System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
-                    System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
-
-                    ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(user.get().getId(), roomId).orElseThrow(
-                            () -> new IllegalArgumentException("해당하는 채팅 정보가 없습니다.")
-                    );
-                    chatUserInfo.setReadMsgCnt(chatMessageCount);
-                }
+                saveReadMsgCnt(name, roomId);
             }
             redisRepository.removeUserEnterInfo(sessionId);
         }
         return message;
+    }
+
+    @Transactional
+    public void saveReadMsgCnt(String name, Long roomId){
+        Optional<User> user = userRepository.findByUsername(name);
+        if (user.isPresent()) {
+            int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
+
+            System.out.println("DISCONNECT 클라이언트 name: " + name);
+            System.out.println("DISCONNECT 클라이언트 roomId: " + roomId);
+            System.out.println("마지막으로 읽은 메세지 수 : " + chatMessageCount);
+
+            ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(user.get().getId(), roomId).orElseThrow(
+                    () -> new IllegalArgumentException("해당하는 채팅 정보가 없습니다.")
+            );
+            chatUserInfo.setReadMsgCnt(chatMessageCount);
+        }
     }
 }
