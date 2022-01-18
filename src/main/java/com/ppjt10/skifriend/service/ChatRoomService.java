@@ -64,21 +64,14 @@ public class ChatRoomService {
         );
 
         // 채팅방에 있는 모든 유저 정보 가져오기
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, chatRoom.getId()).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 채팅방 정보가 존재하지 않습니다")
+        );
 
-        if (!chatUserInfoList.get(0).getUserId().equals(userId) && !chatUserInfoList.get(1).getUserId().equals(userId)) {
-            throw new IllegalArgumentException("해당 채팅방에 참여중이 아닙니다");
-        }
-
-        Long opponentId;
-        if (chatUserInfoList.get(0).getUserId().equals(userId)) {
-            opponentId = chatUserInfoList.get(1).getUserId();
-        } else {
-            opponentId = chatUserInfoList.get(0).getUserId();
-        }
-        User opponent = userRepository.findById(opponentId).orElseThrow(
+        User opponent = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
                 () -> new IllegalArgumentException("유저가 없어용")
         );
+
         return generateChatRoomResponseDto(chatRoom, opponent.getNickname());
     }
 
@@ -162,12 +155,13 @@ public class ChatRoomService {
         ChatUserInfo userChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 채팅방 정보가 존재하지 않습니다")
         );
+
         Optional<ChatUserInfo> otherChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userChatUserInfo.getOtherId(), roomId);
         chatUserInfoRepository.deleteByUserId(userId);
         if(!otherChatUserInfo.isPresent()) {
-            Long chatRoomId = otherChatUserInfo.get().getChatRoom().getId();
-            chatMessageRepository.deleteAllByChatRoomId(chatRoomId);
-            chatRoomRepository.deleteById(chatRoomId);
+            chatMessageRepository.deleteAllByChatRoomId(roomId);
+            chatRoomRepository.deleteById(roomId);
+
         }
     }
 
