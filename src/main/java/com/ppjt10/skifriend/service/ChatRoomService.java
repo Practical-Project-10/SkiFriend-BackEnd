@@ -152,7 +152,7 @@ public class ChatRoomService {
         );
 
         Optional<ChatUserInfo> otherChatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userChatUserInfo.getOtherId(), roomId);
-        chatUserInfoRepository.deleteByUserId(userId);
+        chatUserInfoRepository.deleteByUserIdAndChatRoomId(userId, roomId);
         if(!otherChatUserInfo.isPresent()) {
             chatMessageRepository.deleteAllByChatRoomId(roomId);
             chatRoomRepository.deleteById(roomId);

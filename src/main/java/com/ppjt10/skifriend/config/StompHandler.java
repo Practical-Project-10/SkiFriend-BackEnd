@@ -15,12 +15,11 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
+@Transactional
 public class StompHandler implements ChannelInterceptor {
     private final JwtDecoder jwtDecoder;
     private final ChatMessageService chatMessageService;
@@ -32,7 +31,6 @@ public class StompHandler implements ChannelInterceptor {
 
     // websocket 을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
-    @Transactional
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // websocket 연결시 헤더의 jwt token 검증
@@ -61,9 +59,10 @@ public class StompHandler implements ChannelInterceptor {
             String name = redisRepository.getUserNameId(sessionId);
 
             if (name != null && roomId != null) {
-                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
                 Optional<User> user = userRepository.findByUsername(name);
-                if (chatRoom.isPresent() && user.isPresent()) {
+//                Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
+
+                if (user.isPresent()) {
                     int chatMessageCount = chatMessageRepository.findAllByChatRoomId(roomId).size();
 
                     System.out.println("DISCONNECT 클라이언트 name: " + name);
