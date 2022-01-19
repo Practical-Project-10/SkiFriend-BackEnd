@@ -76,6 +76,9 @@ public class KakaoUserService {
                     .profileImg(user.getProfileImg())
                     .gender(user.getGender())
                     .ageRange(user.getAgeRange())
+                    .career(user.getCareer())
+                    .phoneNum(user.getPhoneNum())
+                    .selfIntro(user.getSelfIntro())
                     .certification(user.getPhoneNum() != null)
                     .build();
         }
