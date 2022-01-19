@@ -90,12 +90,12 @@ public class MessageService {
         Twilio.init(apiKey, apiSecret);
         String toPhoneNum = "+" + 82 + phoneNumber;
 
-//        Message message = Message.creator(
-//                new PhoneNumber(toPhoneNum),
-//                new PhoneNumber(fromPhoneNum),
-//                SKIFRIEND + msg).create();
+        Message message = Message.creator(
+                new PhoneNumber(toPhoneNum),
+                new PhoneNumber(fromPhoneNum),
+                SKIFRIEND + msg).create();
 
-        System.out.println(phoneNumber + "에게 채팅방 생성 알림 전송 : " + msg);
+        System.out.println(phoneNumber + msg);
     }
 
 //    public void openPhoneNumAlert(String phoneNumber, String msg) {

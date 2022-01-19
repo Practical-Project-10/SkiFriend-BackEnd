@@ -9,10 +9,7 @@ import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.repository.ChatMessageRepository;
-import com.ppjt10.skifriend.repository.ChatRoomRepository;
-import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +27,7 @@ public class ChatMessageService {
     //    private final MessageService messageService;
     private final ChatUserInfoRepository chatUserInfoRepository;
     private final RedisPublisher redisPublisher;
+    private final RedisRepository redisRepository;
     private final UserRepository userRepository;
 //    private final S3Uploader s3Uploader;
 //    private final String imageDirName = "chatMessage";
@@ -111,6 +109,7 @@ public class ChatMessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(requestDto.getRoomId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다")
         );
+        Long roomId = chatRoom.getId();
         if (!chatRoom.isActive()) {
             throw new IllegalArgumentException("상대방이 채팅방을 퇴장했습니다.");
         }
@@ -118,6 +117,7 @@ public class ChatMessageService {
         User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
+        Long userId = user.getId();
 
 //        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
 //        User opponent;
@@ -131,7 +131,17 @@ public class ChatMessageService {
 //            );
 //        }
 
-        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user.getId(), requestDto.getMessage());
+        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, userId, requestDto.getMessage());
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방 정보가 존재하지 않습니다.")
+        );
+        User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
+                () -> new IllegalArgumentException()
+        );
+        if (redisRepository.getUserChatRoomInOut(roomId, other.getUsername())) {
+            message.setIsRead(true);
+        }
+
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
 
             String phoneNum = user.getPhoneNum();
@@ -140,7 +150,7 @@ public class ChatMessageService {
             chatMessageRepository.save(message);
             chatRoom.setLastMessageId(message.getId());
 //            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
-            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
+            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message, user.getNickname());
 
             System.out.println("전화번호 전송");
             redisPublisher.publishPhoneNum(messageDto);
@@ -150,12 +160,13 @@ public class ChatMessageService {
             chatMessageRepository.save(message);
             chatRoom.setLastMessageId(message.getId());
 
-            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message);
+            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message, user, other.getId());
 
             System.out.println("전송");
             redisPublisher.publish(messageDto);
             System.out.println("성공");
         }
+
     }
 
     // 상대방 전화번호 알림 메시지
@@ -209,53 +220,26 @@ public class ChatMessageService {
     }
 
     // 메시지 보내기
-    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
-        Optional<User> user = userRepository.findById(chatMessage.getUserId());
-
-        String profileImg;
-        String nickname;
-        if (user.isPresent()) {
-            nickname = user.get().getNickname();
-            profileImg = user.get().getProfileImg();
-        } else {
-            nickname = "알 수 없음";
-            profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
-        }
-
-        ChatUserInfo oppenent = chatUserInfoRepository.findByUserIdAndChatRoomId(chatMessage.getUserId(), chatMessage.getChatRoom().getId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 정보가 존재하지 않습니다.")
-        );
-
+    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage, User user, Long oppenentId) {
         return ChatMessageResponseDto.builder()
                 .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .receiverId(oppenent.getOtherId())
-                .sender(nickname)
-                .senderImg(profileImg)
+                .receiverId(oppenentId)
+                .sender(user.getNickname())
+                .senderImg(user.getProfileImg())
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 
     // 전화번호 보내기
-    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage) {
-        Optional<User> user = userRepository.findById(chatMessage.getUserId());
-
-        String nickname;
-        if (user.isPresent()) {
-            nickname = user.get().getNickname();
-        } else {
-            nickname = "알 수 없음";
-        }
-
+    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage, String nickname) {
         return ChatMessagePhoneNumDto.builder()
                 .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .message(chatMessage.getMessage())
                 .sender(nickname)
                 .build();
-
     }
-
 }
