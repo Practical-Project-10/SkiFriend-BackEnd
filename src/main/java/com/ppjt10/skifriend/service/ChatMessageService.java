@@ -136,7 +136,7 @@ public class ChatMessageService {
                 () -> new IllegalArgumentException("해당 채팅방 정보가 존재하지 않습니다.")
         );
         User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
-                () -> new IllegalArgumentException()
+                () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
         );
         if (redisRepository.getUserChatRoomInOut(roomId, other.getUsername())) {
             message.setIsRead(true);
