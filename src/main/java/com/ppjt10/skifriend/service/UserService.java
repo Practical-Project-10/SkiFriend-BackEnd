@@ -43,7 +43,7 @@ public class UserService {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
-        CareerType.findByCareerType(requestDto.getCareer());
+        // CareerType.findByCareerType(requestDto.getCareer());
 
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
         dbUser.update(requestDto);
