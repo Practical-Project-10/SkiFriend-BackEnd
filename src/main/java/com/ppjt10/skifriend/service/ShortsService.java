@@ -1,8 +1,10 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsLikeResponseDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.Shorts;
+import com.ppjt10.skifriend.entity.ShortsLike;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -101,6 +105,13 @@ public class ShortsService {
         shortsRepository.deleteById(shortsId);
     }
 
+    // ShortsLikeResponseDto 생성
+    private ShortsLikeResponseDto generateShortsLikeResponseDto(ShortsLike shortsLike) {
+        return ShortsLikeResponseDto.builder()
+                .userId(shortsLike.getUserId())
+                .build();
+    }
+
 
     //ShortsResponseDto 생성
     private ShortsResponseDto generateShortsResponseDto(Shorts shorts) {
@@ -116,6 +127,12 @@ public class ShortsService {
             nickname = "알 수 없음";
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
+        List<ShortsLikeResponseDto> shortsLikeResponseDtoList = new ArrayList<>();
+        List<ShortsLike> shortsLikeList = shortsLikeRepository.findAllByShorts(shorts);
+        for(ShortsLike shortsLike : shortsLikeList) {
+            shortsLikeResponseDtoList.add(generateShortsLikeResponseDto(shortsLike));
+        }
+
         return ShortsResponseDto.builder()
                 .shortsId(shorts.getId())
                 .userId(shorts.getUserId())
@@ -125,6 +142,7 @@ public class ShortsService {
                 .title(shorts.getTitle())
                 .shortsCommentCnt(shorts.getShortsCommentCnt())
                 .shortsLikeCnt(shorts.getShortsLikeCnt())
+                .shortsLikeResponseDtoList(shortsLikeResponseDtoList)
                 .build();
     }
 }
