@@ -115,7 +115,7 @@ public class ChatRoomService {
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrOtherId(carpoolId, senderId, senderId);
 
         //채팅방이 존재한다면
-        if (chatUserInfoList != null) {
+        if (!chatUserInfoList.isEmpty()) {
             ChatRoom existedChatRoom = chatUserInfoList.get(0).getChatRoom();
             return generateChatRoomResponseDto(existedChatRoom, writerNickname);
         } else { //존재하지 않는다면 방을 만들어준다.
