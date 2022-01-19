@@ -112,7 +112,7 @@ public class ChatRoomService {
         String writerNickname = writer.getNickname();
         String writerPhone = writer.getPhoneNum();
 
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrOtherId(carpoolId, senderId, senderId);
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrChatRoomCarpoolIdAndOtherId(carpoolId, senderId, carpoolId, senderId);
 
         // 채팅방이 존재한다면
         if (chatUserInfoList.size() != 0) {
