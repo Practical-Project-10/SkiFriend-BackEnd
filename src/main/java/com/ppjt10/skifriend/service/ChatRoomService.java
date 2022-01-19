@@ -112,11 +112,11 @@ public class ChatRoomService {
         String writerNickname = writer.getNickname();
         String writerPhone = writer.getPhoneNum();
 
-        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndOtherIdAndChatRoomCarpoolId(writerId, senderId, carpoolId);
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrOtherId(carpoolId, senderId, senderId);
 
         //채팅방이 존재한다면
-        if (chatUserInfo != null) {
-            ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
+        if (chatUserInfoList != null) {
+            ChatRoom existedChatRoom = chatUserInfoList.get(0).getChatRoom();
             return generateChatRoomResponseDto(existedChatRoom, writerNickname);
         } else { //존재하지 않는다면 방을 만들어준다.
             // 방 생성 알림 메세지 글 작성자한테 전송하기
