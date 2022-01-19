@@ -93,9 +93,11 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
-        if (sender.getAgeRange() == null || sender.getGender() == null) {
-            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
-        } else if (sender.getPhoneNum() == null) {
+//        if (sender.getAgeRange() == null || sender.getGender() == null) {
+//            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
+//        }
+
+        if (sender.getPhoneNum() == null) {
             throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
         }
 
