@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ShortsCommentResponseDto {
     private Long userId;
     private Long shortsCommentId;
+    private String userImg;
     private String nickname;
     private String content;
     private String createdAt;

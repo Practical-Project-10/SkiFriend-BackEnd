@@ -34,7 +34,7 @@ public class ShortsController {
         return ResponseEntity.ok().body(shortsService.createShorts(image, title, user));
     }
 
-    //자유 게시판 게시글 수정
+    //Shorts 수정
     @PutMapping("/shorts/{shortsId}")
     public ResponseEntity<ShortsResponseDto> updateShorts(@RequestPart(value = "title", required = false) String title,
                                                           @PathVariable Long shortsId,
@@ -44,7 +44,7 @@ public class ShortsController {
         return ResponseEntity.ok().body(shortsService.updateShorts(title, shortsId, user));
     }
 
-    // 자유 게시판 게시글 삭제
+    //Shorts 삭제
     @DeleteMapping("/shorts/{shortsId}")
     public void deleteShorts(@PathVariable Long shortsId,
                              @AuthenticationPrincipal UserDetailsImpl userDetails

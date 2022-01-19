@@ -30,6 +30,7 @@ public class ShortsService {
     private final S3Uploader s3Uploader;
     private final String videoDirName = "shorts";
 
+    //Shorts 조회
     @Transactional
     public ShortsResponseDto getShorts(HttpSession session) {
         long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
