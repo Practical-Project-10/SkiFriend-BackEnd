@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ChatUserInfoRepository extends JpaRepository<ChatUserInfo, Long> {
     ChatUserInfo findByUserIdAndOtherIdAndChatRoomCarpoolId(Long userId, Long otherId, Long carpoolId);
+    List<ChatUserInfo> findAllByChatRoomCarpoolIdAndUserIdOrOtherId(Long carpoolId, Long userId, Long otherId);
     void deleteByUserIdAndChatRoomId(Long userId, Long roomId);
     List<ChatUserInfo> findAllByUserId(Long userId);
     List<ChatUserInfo> findAllByChatRoomId(Long chatRoomId);
