@@ -45,10 +45,10 @@ public class ChatRoomService {
             String otherNick;
             String otherProfileImg;
             Optional<User> other = userRepository.findById(otherId);
-            if(other.isPresent()){
+            if (other.isPresent()) {
                 otherNick = other.get().getNickname();
                 otherProfileImg = other.get().getProfileImg();
-            } else{
+            } else {
                 otherNick = "알 수 없음";
                 otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
             }
@@ -93,9 +93,11 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("해당 카풀 게시물은 존재하지 않습니다")
         );
 
-        if (sender.getAgeRange() == null || sender.getGender() == null) {
-            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
-        } else if (sender.getPhoneNum() == null) {
+//        if (sender.getAgeRange() == null || sender.getGender() == null) {
+//            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
+//        }
+
+        if (sender.getPhoneNum() == null) {
             throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
         }
 
@@ -112,12 +114,19 @@ public class ChatRoomService {
         String writerNickname = writer.getNickname();
         String writerPhone = writer.getPhoneNum();
 
-        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndOtherIdAndChatRoomCarpoolId(writerId, senderId, carpoolId);
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrChatRoomCarpoolIdAndOtherId(carpoolId, senderId, carpoolId, senderId);
 
-        //채팅방이 존재한다면
-        if (chatUserInfo != null) {
-            ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
-            return generateChatRoomResponseDto(existedChatRoom, writerNickname);
+        // 채팅방이 존재한다면
+        if (chatUserInfoList.size() != 0) {
+            for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+                System.out.println(chatUserInfo.getUserId() + chatUserInfo.getOtherId());
+                if (chatUserInfo.getUserId().equals(senderId)) { // 내가 채팅방에 있을 때
+                    ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
+                    return generateChatRoomResponseDto(existedChatRoom, writerNickname);
+                }
+            }
+
+            throw new IllegalArgumentException("이미 나온 채팅방 입니다!");
         } else { //존재하지 않는다면 방을 만들어준다.
             // 방 생성 알림 메세지 글 작성자한테 전송하기
             String msg = carpool.getTitle() + "게시글에 대한 채팅이 왔습니다! 확인하세요 :)";

@@ -60,9 +60,11 @@ public class CarpoolService {
     //카풀 게시글 작성
     @Transactional
     public CarpoolResponseDto createCarpool(String resortName, CarpoolRequestDto requestDto, User user) {
-        if (user.getAgeRange() == null || user.getGender() == null) {
-            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
-        } else if (user.getPhoneNum() == null) {
+//        if (user.getAgeRange() == null || user.getGender() == null) {
+//            throw new IllegalArgumentException("추가 동의 항목이 필요합니다.");
+//        }
+
+        if (user.getPhoneNum() == null) {
             throw new IllegalArgumentException("전화번호 인증이 필요한 서비스입니다.");
         }
 
