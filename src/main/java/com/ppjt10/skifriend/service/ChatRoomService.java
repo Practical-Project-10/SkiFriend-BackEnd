@@ -114,10 +114,16 @@ public class ChatRoomService {
 
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrOtherId(carpoolId, senderId, senderId);
 
-        //채팅방이 존재한다면
+        // 채팅방이 존재한다면
         if (!chatUserInfoList.isEmpty()) {
-            ChatRoom existedChatRoom = chatUserInfoList.get(0).getChatRoom();
-            return generateChatRoomResponseDto(existedChatRoom, writerNickname);
+            for(ChatUserInfo chatUserInfo : chatUserInfoList){
+                if(chatUserInfo.getUserId().equals(senderId)){ // 내가 채팅방에 있을 때
+                    ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
+                    return generateChatRoomResponseDto(existedChatRoom, writerNickname);
+                }
+            }
+
+            throw new IllegalArgumentException("이미 나온 채팅방 입니다!");
         } else { //존재하지 않는다면 방을 만들어준다.
             // 방 생성 알림 메세지 글 작성자한테 전송하기
             String msg = carpool.getTitle() + "게시글에 대한 채팅이 왔습니다! 확인하세요 :)";
