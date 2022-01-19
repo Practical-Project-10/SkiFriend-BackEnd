@@ -45,10 +45,10 @@ public class ChatRoomService {
             String otherNick;
             String otherProfileImg;
             Optional<User> other = userRepository.findById(otherId);
-            if(other.isPresent()){
+            if (other.isPresent()) {
                 otherNick = other.get().getNickname();
                 otherProfileImg = other.get().getProfileImg();
-            } else{
+            } else {
                 otherNick = "알 수 없음";
                 otherProfileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
             }
@@ -112,12 +112,13 @@ public class ChatRoomService {
         String writerNickname = writer.getNickname();
         String writerPhone = writer.getPhoneNum();
 
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrOtherId(carpoolId, senderId, senderId);
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomCarpoolIdAndUserIdOrChatRoomCarpoolIdAndOtherId(carpoolId, senderId, carpoolId, senderId);
 
         // 채팅방이 존재한다면
-        if (!chatUserInfoList.isEmpty()) {
-            for(ChatUserInfo chatUserInfo : chatUserInfoList){
-                if(chatUserInfo.getUserId().equals(senderId)){ // 내가 채팅방에 있을 때
+        if (chatUserInfoList.size() != 0) {
+            for (ChatUserInfo chatUserInfo : chatUserInfoList) {
+                System.out.println(chatUserInfo.getUserId() + chatUserInfo.getOtherId());
+                if (chatUserInfo.getUserId().equals(senderId)) { // 내가 채팅방에 있을 때
                     ChatRoom existedChatRoom = chatUserInfo.getChatRoom();
                     return generateChatRoomResponseDto(existedChatRoom, writerNickname);
                 }
