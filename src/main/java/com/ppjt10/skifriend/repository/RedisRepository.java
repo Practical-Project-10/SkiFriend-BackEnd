@@ -61,6 +61,6 @@ public class RedisRepository {
 
     // inOutKey로 현재 유저가 접속 중인지 가져오기
     public Boolean getUserChatRoomInOut(Long roomId, String name) {
-        return userInOutOperations.get(USER_INOUT + "_" + roomId + "_" + name);
+        return Optional.ofNullable(userInOutOperations.get(USER_INOUT + "_" + roomId + "_" + name)).orElse(false);
     }
 }
