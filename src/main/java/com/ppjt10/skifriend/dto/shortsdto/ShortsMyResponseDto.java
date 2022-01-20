@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortsMyResponseDto {
+    private Long shortsId;
     private String title;
     private String videoPath;
 }
