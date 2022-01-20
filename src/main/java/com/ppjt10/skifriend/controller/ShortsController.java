@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
@@ -21,6 +24,13 @@ public class ShortsController {
     //Shorts 조회
     @GetMapping("/shorts")
     public ResponseEntity<ShortsResponseDto> getShorts(HttpSession session) {
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String ip = req.getHeader("X-FORWARDED-FOR");
+        if (ip == null)
+            ip = req.getRemoteAddr();
+        System.out.println("IP 주소 : " + ip);
+
+        System.out.println("세션 아이디 : " + session.getId());
         return ResponseEntity.ok().body(shortsService.getShorts(session));
     }
 

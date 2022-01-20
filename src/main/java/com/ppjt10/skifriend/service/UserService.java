@@ -200,6 +200,7 @@ public class UserService {
 
     private ShortsMyResponseDto generateShortsMyResponseDto(Shorts shorts) {
         return ShortsMyResponseDto.builder()
+                .shortsId(shorts.getId())
                 .title(shorts.getTitle())
                 .videoPath(shorts.getVideoPath())
                 .build();
