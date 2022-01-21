@@ -43,6 +43,12 @@ public class ShortsService {
         }
 
         Shorts shorts;
+
+        if(totalNum == 1) {
+            shorts = shortsList.get(0);
+            return generateShortsResponseDto(shorts);
+        }
+
         long randomNum = (long)(Math.random() * totalNum + 1);
         System.out.println("randomNum: " + randomNum);
         while(randomNum == pastRanNum) {
