@@ -203,6 +203,7 @@ public class UserService {
                 .shortsId(shorts.getId())
                 .title(shorts.getTitle())
                 .videoPath(shorts.getVideoPath())
+                .thumbNailPath(shorts.getThumbNailPath())
                 .build();
     }
 }

@@ -14,4 +14,5 @@ public class ShortsMyResponseDto {
     private Long shortsId;
     private String title;
     private String videoPath;
+    private String thumbNailPath;
 }

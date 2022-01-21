@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.config.VideoFileUtils;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsLikeResponseDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsRequestDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
@@ -33,8 +34,8 @@ public class ShortsService {
 
     //Shorts 조회
     @Transactional
-    public ShortsResponseDto getShorts(HttpSession session) {
-        long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
+    public ShortsResponseDto getShorts(String ip) {
+        long pastRanNum = redisRepository.getRandomNumSessionId(ip);
         long totalNum = shortsRepository.count();
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
@@ -45,7 +46,7 @@ public class ShortsService {
             while(randomNum == pastRanNum) {
                 randomNum = (long)(Math.random() * totalNum + 1);
             }
-            redisRepository.setRandomNumSessionId(session.getId(), (int)randomNum);
+            redisRepository.setRandomNumSessionId(ip, (int)randomNum);
             shorts = shortsRepository.findById(randomNum);
         } while (!shorts.isPresent());
 
@@ -58,8 +59,9 @@ public class ShortsService {
                                           ShortsRequestDto requestDto,
                                           User user
     ) throws IOException {
-        String videoUrl = s3Uploader.upload(videoPath, videoDirName);
-        Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl);
+        String videoUrl = s3Uploader.uploadVideo(videoPath, videoDirName).split("~")[0];
+        String thumbNailUrl = s3Uploader.uploadVideo(videoPath, videoDirName).split("~")[1];
+        Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl, thumbNailUrl);
         shortsRepository.save(shorts);
 
 
@@ -141,6 +143,7 @@ public class ShortsService {
                 .nickname(nickname)
                 .profileImg(profileImg)
                 .videoPath(shorts.getVideoPath())
+                .thumbNailPath(shorts.getThumbNailPath())
                 .title(shorts.getTitle())
                 .shortsCommentCnt(shorts.getShortsCommentCnt())
                 .shortsLikeCnt(shorts.getShortsLikeCnt())

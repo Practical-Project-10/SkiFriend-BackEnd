@@ -24,15 +24,13 @@ public class ShortsController {
 
     //Shorts 조회
     @GetMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> getShorts(HttpSession session) {
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    public ResponseEntity<ShortsResponseDto> getShorts(HttpServletRequest req) {
         String ip = req.getHeader("X-FORWARDED-FOR");
         if (ip == null)
             ip = req.getRemoteAddr();
         System.out.println("IP 주소 : " + ip);
 
-        System.out.println("세션 아이디 : " + session.getId());
-        return ResponseEntity.ok().body(shortsService.getShorts(session));
+        return ResponseEntity.ok().body(shortsService.getShorts(ip));
     }
 
     //Shorts 작성
