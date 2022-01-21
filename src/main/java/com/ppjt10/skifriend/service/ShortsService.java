@@ -43,9 +43,9 @@ public class ShortsService {
 
         Shorts shorts;
         do {
-            long randomNum = (long)(Math.random() * totalNum);
+            long randomNum = (long)(Math.random() * totalNum + 1);
             while(randomNum == pastRanNum) {
-                randomNum = (long)(Math.random() * totalNum);
+                randomNum = (long)(Math.random() * totalNum + 1);
             }
             redisRepository.setRandomNumIp(ip, (int)randomNum);
             shorts = shortsList.get((int)randomNum);
