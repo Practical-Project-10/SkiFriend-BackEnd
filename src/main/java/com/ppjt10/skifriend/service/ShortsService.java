@@ -33,22 +33,41 @@ public class ShortsService {
     //Shorts 조회
     @Transactional
     public ShortsResponseDto getShorts(String ip) {
+        List<Shorts> shortsList = shortsRepository.findAll();
+        long totalNum = shortsList.size();
         long pastRanNum = redisRepository.getRandomNumIp(ip);
-        long totalNum = shortsRepository.count();
+
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
         }
-        Optional<Shorts> shorts;
+
+        Shorts shorts;
         do {
-            long randomNum = (long)(Math.random() * totalNum + 1);
+            long randomNum = (long)(Math.random() * totalNum);
             while(randomNum == pastRanNum) {
-                randomNum = (long)(Math.random() * totalNum + 1);
+                randomNum = (long)(Math.random() * totalNum);
             }
             redisRepository.setRandomNumIp(ip, (int)randomNum);
-            shorts = shortsRepository.findById(randomNum);
-        } while (!shorts.isPresent());
+            shorts = shortsList.get((int)randomNum);
+        } while (shorts == null);
+        return generateShortsResponseDto(shorts);
 
-        return generateShortsResponseDto(shorts.get());
+//        long pastRanNum = redisRepository.getRandomNumIp(ip);
+//        long totalNum = shortsRepository.count();
+//        if(totalNum == 0) {
+//            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+//        }
+//        Optional<Shorts> shorts;
+//        do {
+//            long randomNum = (long)(Math.random() * totalNum + 1);
+//            while(randomNum == pastRanNum) {
+//                randomNum = (long)(Math.random() * totalNum + 1);
+//            }
+//            redisRepository.setRandomNumIp(ip, (int)randomNum);
+//            shorts = shortsRepository.findById(randomNum);
+//        } while (!shorts.isPresent());
+//
+//        return generateShortsResponseDto(shorts.get());
     }
 
     //Shorts 작성
