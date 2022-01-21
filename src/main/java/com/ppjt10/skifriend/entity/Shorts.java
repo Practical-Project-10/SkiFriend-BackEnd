@@ -22,16 +22,20 @@ public class Shorts {
     @Column(nullable = false)
     private String videoPath;
 
+    @Column(nullable = false)
+    private String thumbNailPath;
+
     @Column
     private int shortsLikeCnt;
 
     @Column
     private int shortsCommentCnt;
 
-    public Shorts(Long userId, String title, String videoPath){
+    public Shorts(Long userId, String title, String videoPath, String thumbNailPath){
         this.userId = userId;
         this.title = title;
         this.videoPath = videoPath;
+        this.thumbNailPath = thumbNailPath;
     }
 
     public void update(String title){

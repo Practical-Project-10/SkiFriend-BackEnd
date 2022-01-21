@@ -85,6 +85,7 @@ public class MessageService {
         return true;
     }
 
+    // 채팅방 생성시 알림
     public void createChatRoomAlert(String phoneNumber, String msg) {
         // 발신 정보 설정
         Twilio.init(apiKey, apiSecret);
@@ -111,6 +112,7 @@ public class MessageService {
 //        System.out.println(phoneNumber + "에게 번호 공개 알림 전송 : " + msg);
 //    }
 
+    // 인증번호 일치여부 확인
     private boolean isVerify(SignupSmsCertificationDto requestDto) {
         // 해당 휴대폰 번호로 전송된 인증번호가 존재하면
         if (smsRedisRepository.hasKey(requestDto.getPhoneNumber())) {

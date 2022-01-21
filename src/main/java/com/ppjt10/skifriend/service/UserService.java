@@ -116,8 +116,8 @@ public class UserService {
 
     // 해당 채팅방에서 상대유저의 프로필 조회
     @Transactional
-    public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
+    public UserProfileOtherDto getOtherProfile(Long roomId, User user) {
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(roomId);
 
         Long otherId;
         if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
@@ -200,8 +200,10 @@ public class UserService {
 
     private ShortsMyResponseDto generateShortsMyResponseDto(Shorts shorts) {
         return ShortsMyResponseDto.builder()
+                .shortsId(shorts.getId())
                 .title(shorts.getTitle())
                 .videoPath(shorts.getVideoPath())
+                .thumbNailPath(shorts.getThumbNailPath())
                 .build();
     }
 }

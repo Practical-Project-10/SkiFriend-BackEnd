@@ -198,7 +198,6 @@ public class FreePostService {
             HashMap<Long, Integer> postLikeCount = new HashMap<>();
             for (Likes likes : hotLikesList) {
                 Long postId = likes.getFreePost().getId();
-                postLikeCount.put(postId, 0);
                 if (postLikeCount.containsKey(postId)) {
                     postLikeCount.put(postId, postLikeCount.get(postId) + 1);
                 } else {
@@ -274,15 +273,19 @@ public class FreePostService {
         Optional<User> user = userRepository.findById(comment.getUserId());
 
         String nickname;
+        String userProfile;
         if(user.isPresent()){
             nickname = user.get().getNickname();
+            userProfile = user.get().getProfileImg();
         } else{
             nickname = "알 수 없음";
+            userProfile = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
 
         return CommentResponseDto.builder()
                 .userId(comment.getUserId())
                 .commentId(comment.getId())
+                .userProfile(userProfile)
                 .nickname(nickname)
                 .content(comment.getContent())
                 .createdAt(TimeConversion.timePostConversion(comment.getCreateAt()))
@@ -307,14 +310,18 @@ public class FreePostService {
         Optional<User> user = userRepository.findById(freePost.getUserId());
 
         String nickname;
+        String userProfile;
         if(user.isPresent()){
             nickname = user.get().getNickname();
+            userProfile = user.get().getProfileImg();
         } else{
             nickname = "알 수 없음";
+            userProfile = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
 
         return FreePostDetailResponseDto.builder()
                 .userId(freePost.getUserId())
+                .userProfile(userProfile)
                 .postId(freePost.getId())
                 .photoList(photoDtoList)
                 .nickname(nickname)

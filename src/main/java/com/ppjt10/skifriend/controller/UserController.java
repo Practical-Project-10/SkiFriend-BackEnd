@@ -62,12 +62,12 @@ public class UserController {
     }
 
     // 채팅 방에서 상대방 프로필 조회하기
-    @GetMapping("/user/introduction/{longRoomId}")
-    public ResponseEntity<UserProfileOtherDto> getOtherProfile(@PathVariable Long longRoomId,
+    @GetMapping("/user/introduction/{roomId}")
+    public ResponseEntity<UserProfileOtherDto> getOtherProfile(@PathVariable Long roomId,
                                                                @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, user));
+        return ResponseEntity.ok().body(userService.getOtherProfile(roomId, user));
     }
 
     // 내가 쓴 Shorts 목록 보기

@@ -61,6 +61,9 @@ dependencies {
     //Sockjs
     implementation 'org.webjars:sockjs-client:1.1.2'
 
+    //ffmpeg
+    implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.6.2'
+
 
     testCompileOnly 'org.projectlombok:lombok:1.18.12' // 테스트 의존성 추가
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12' // 테스트 의존성 추가

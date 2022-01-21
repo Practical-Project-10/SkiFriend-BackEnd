@@ -17,7 +17,7 @@ public class ShortsCommentController {
     private final ShortsCommentService shortsCommentService;
 
     // Shorts 댓글 조회
-    @GetMapping("/shorts/{shortsId}")
+    @GetMapping("/shorts/{shortsId}/comments")
     public ResponseEntity<List<ShortsCommentResponseDto>> getShortsComments(@PathVariable Long shortsId) {
         return ResponseEntity.ok().body(shortsCommentService.getShortsComments(shortsId));
     }
