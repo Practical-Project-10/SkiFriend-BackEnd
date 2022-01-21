@@ -36,20 +36,20 @@ public class ShortsService {
         List<Shorts> shortsList = shortsRepository.findAll();
         long totalNum = shortsList.size();
         long pastRanNum = redisRepository.getRandomNumIp(ip);
+        System.out.println("pastRanNum : " + pastRanNum);
 
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
         }
 
         Shorts shorts;
-        do {
-            long randomNum = (long)(Math.random() * totalNum + 1);
-            while(randomNum == pastRanNum) {
-                randomNum = (long)(Math.random() * totalNum + 1);
-            }
-            redisRepository.setRandomNumIp(ip, (int)randomNum);
-            shorts = shortsList.get((int)randomNum);
-        } while (shorts == null);
+        long randomNum = (long)(Math.random() * totalNum + 1);
+        while(randomNum == pastRanNum) {
+            randomNum = (long)(Math.random() * totalNum + 1);
+        }
+        redisRepository.setRandomNumIp(ip, (int)randomNum);
+        shorts = shortsList.get((int)randomNum - 1);
+        System.out.println("실행중인 shortsId: " + shorts.getId());
         return generateShortsResponseDto(shorts);
 
 //        long pastRanNum = redisRepository.getRandomNumIp(ip);
