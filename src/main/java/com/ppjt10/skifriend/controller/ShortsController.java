@@ -1,5 +1,6 @@
 package com.ppjt10.skifriend.controller;
 
+import com.ppjt10.skifriend.dto.shortsdto.ShortsRequestDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.security.UserDetailsImpl;
@@ -37,21 +38,21 @@ public class ShortsController {
     //Shorts 작성
     @PostMapping("/shorts")
     public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile image,
-                                                          @RequestPart(value = "title", required = false) String title,
+                                                          @RequestPart(value = "requestDto", required = false) ShortsRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(shortsService.createShorts(image, title, user));
+        return ResponseEntity.ok().body(shortsService.createShorts(image, requestDto, user));
     }
 
     //Shorts 수정
     @PutMapping("/shorts/{shortsId}")
-    public ResponseEntity<ShortsResponseDto> updateShorts(@RequestPart(value = "title", required = false) String title,
+    public ResponseEntity<ShortsResponseDto> updateShorts(@RequestPart(value = "requestDto", required = false) ShortsRequestDto requestDto,
                                                           @PathVariable Long shortsId,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(shortsService.updateShorts(title, shortsId, user));
+        return ResponseEntity.ok().body(shortsService.updateShorts(requestDto, shortsId, user));
     }
 
     //Shorts 삭제
