@@ -1,7 +1,6 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
-import com.ppjt10.skifriend.config.VideoFileUtils;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsLikeResponseDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsRequestDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
@@ -13,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -35,35 +33,53 @@ public class ShortsService {
     //Shorts 조회
     @Transactional
     public ShortsResponseDto getShorts(String ip) {
-        long pastRanNum = redisRepository.getRandomNumSessionId(ip);
-        long totalNum = shortsRepository.count();
+        List<Shorts> shortsList = shortsRepository.findAll();
+        long totalNum = shortsList.size();
+        long pastRanNum = redisRepository.getRandomNumIp(ip);
+
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
         }
-        Optional<Shorts> shorts;
-        do {
-            long randomNum = (long)(Math.random() * totalNum + 1);
-            while(randomNum == pastRanNum) {
-                randomNum = (long)(Math.random() * totalNum + 1);
-            }
-            redisRepository.setRandomNumSessionId(ip, (int)randomNum);
-            shorts = shortsRepository.findById(randomNum);
-        } while (!shorts.isPresent());
 
-        return generateShortsResponseDto(shorts.get());
+        Shorts shorts;
+        do {
+            long randomNum = (long)(Math.random() * totalNum);
+            while(randomNum == pastRanNum) {
+                randomNum = (long)(Math.random() * totalNum);
+            }
+            redisRepository.setRandomNumIp(ip, (int)randomNum);
+            shorts = shortsList.get((int)randomNum);
+        } while (shorts == null);
+        return generateShortsResponseDto(shorts);
+
+//        long pastRanNum = redisRepository.getRandomNumIp(ip);
+//        long totalNum = shortsRepository.count();
+//        if(totalNum == 0) {
+//            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+//        }
+//        Optional<Shorts> shorts;
+//        do {
+//            long randomNum = (long)(Math.random() * totalNum + 1);
+//            while(randomNum == pastRanNum) {
+//                randomNum = (long)(Math.random() * totalNum + 1);
+//            }
+//            redisRepository.setRandomNumIp(ip, (int)randomNum);
+//            shorts = shortsRepository.findById(randomNum);
+//        } while (!shorts.isPresent());
+//
+//        return generateShortsResponseDto(shorts.get());
     }
 
     //Shorts 작성
     @Transactional
-    public ShortsResponseDto createShorts(MultipartFile videoPath,
+    public ShortsResponseDto createShorts(MultipartFile videoFile,
                                           ShortsRequestDto requestDto,
                                           User user
     ) throws IOException {
-        String videoUrl = s3Uploader.uploadVideo(videoPath, videoDirName).split("~")[0];
-        String thumbNailUrl = s3Uploader.uploadVideo(videoPath, videoDirName).split("~")[1];
+        String videoUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[0];
+        String thumbNailUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[1];
         Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl, thumbNailUrl);
         shortsRepository.save(shorts);
-
 
         return generateShortsResponseDto(shorts);
     }
@@ -99,8 +115,10 @@ public class ShortsService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
         try {
-            String oldImageUrl = URLDecoder.decode(shorts.getVideoPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(oldImageUrl);
+            String oldVideoUrl = URLDecoder.decode(shorts.getVideoPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldVideoUrl);
+            String oldThumbNailUrl = URLDecoder.decode(shorts.getThumbNailPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldThumbNailUrl);
         } catch (Exception ignored) {
         }
 

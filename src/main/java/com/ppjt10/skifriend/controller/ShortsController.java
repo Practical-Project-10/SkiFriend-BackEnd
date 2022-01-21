@@ -35,12 +35,12 @@ public class ShortsController {
 
     //Shorts 작성
     @PostMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile image,
+    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile videoFile,
                                                           @RequestPart(value = "requestDto", required = false) ShortsRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(shortsService.createShorts(image, requestDto, user));
+        return ResponseEntity.ok().body(shortsService.createShorts(videoFile, requestDto, user));
     }
 
     //Shorts 수정
