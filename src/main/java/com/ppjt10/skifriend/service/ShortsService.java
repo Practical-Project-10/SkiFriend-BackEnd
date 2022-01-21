@@ -1,8 +1,11 @@
 package com.ppjt10.skifriend.service;
 
 import com.ppjt10.skifriend.config.S3Uploader;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsLikeResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsRequestDto;
 import com.ppjt10.skifriend.dto.shortsdto.ShortsResponseDto;
 import com.ppjt10.skifriend.entity.Shorts;
+import com.ppjt10.skifriend.entity.ShortsLike;
 import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,8 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +31,7 @@ public class ShortsService {
     private final S3Uploader s3Uploader;
     private final String videoDirName = "shorts";
 
+    //Shorts 조회
     @Transactional
     public ShortsResponseDto getShorts(HttpSession session) {
         long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
@@ -49,11 +55,11 @@ public class ShortsService {
     //Shorts 작성
     @Transactional
     public ShortsResponseDto createShorts(MultipartFile videoPath,
-                                          String title,
+                                          ShortsRequestDto requestDto,
                                           User user
     ) throws IOException {
         String videoUrl = s3Uploader.upload(videoPath, videoDirName);
-        Shorts shorts = new Shorts(user.getId(), title, videoUrl);
+        Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl);
         shortsRepository.save(shorts);
 
 
@@ -62,7 +68,7 @@ public class ShortsService {
 
     //Shorts 수정
     @Transactional
-    public ShortsResponseDto updateShorts(String title, Long shortsId, User user) {
+    public ShortsResponseDto updateShorts(ShortsRequestDto requestDto, Long shortsId, User user) {
 
         Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(
                 () -> new IllegalArgumentException("해당 동영상이 존재하지 않습니다.")
@@ -72,11 +78,11 @@ public class ShortsService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
-        if (title == null) {
+        if (requestDto.getTitle() == null) {
             throw new IllegalArgumentException("제목을 작성해주세요");
         }
 
-        shorts.update(title);
+        shorts.update(requestDto.getTitle());
         return generateShortsResponseDto(shorts);
     }
 
@@ -101,6 +107,13 @@ public class ShortsService {
         shortsRepository.deleteById(shortsId);
     }
 
+    // ShortsLikeResponseDto 생성
+    private ShortsLikeResponseDto generateShortsLikeResponseDto(ShortsLike shortsLike) {
+        return ShortsLikeResponseDto.builder()
+                .userId(shortsLike.getUserId())
+                .build();
+    }
+
 
     //ShortsResponseDto 생성
     private ShortsResponseDto generateShortsResponseDto(Shorts shorts) {
@@ -116,6 +129,12 @@ public class ShortsService {
             nickname = "알 수 없음";
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
+        List<ShortsLikeResponseDto> shortsLikeResponseDtoList = new ArrayList<>();
+        List<ShortsLike> shortsLikeList = shortsLikeRepository.findAllByShorts(shorts);
+        for(ShortsLike shortsLike : shortsLikeList) {
+            shortsLikeResponseDtoList.add(generateShortsLikeResponseDto(shortsLike));
+        }
+
         return ShortsResponseDto.builder()
                 .shortsId(shorts.getId())
                 .userId(shorts.getUserId())
@@ -125,6 +144,7 @@ public class ShortsService {
                 .title(shorts.getTitle())
                 .shortsCommentCnt(shorts.getShortsCommentCnt())
                 .shortsLikeCnt(shorts.getShortsLikeCnt())
+                .shortsLikeResponseDtoList(shortsLikeResponseDtoList)
                 .build();
     }
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -16,6 +18,7 @@ public class ShortsResponseDto {
     private String profileImg;
     private String videoPath;
     private String title;
+    private List<ShortsLikeResponseDto> shortsLikeResponseDtoList;
     private int shortsLikeCnt;
     private int shortsCommentCnt;
 }

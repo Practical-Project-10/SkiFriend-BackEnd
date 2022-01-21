@@ -43,7 +43,7 @@ public class UserService {
 
         User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
-        CareerType.findByCareerType(requestDto.getCareer());
+        // CareerType.findByCareerType(requestDto.getCareer());
 
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
         dbUser.update(requestDto);
@@ -116,8 +116,8 @@ public class UserService {
 
     // 해당 채팅방에서 상대유저의 프로필 조회
     @Transactional
-    public UserProfileOtherDto getOtherProfile(Long longRoomId, User user) {
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(longRoomId);
+    public UserProfileOtherDto getOtherProfile(Long roomId, User user) {
+        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(roomId);
 
         Long otherId;
         if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
@@ -200,6 +200,7 @@ public class UserService {
 
     private ShortsMyResponseDto generateShortsMyResponseDto(Shorts shorts) {
         return ShortsMyResponseDto.builder()
+                .shortsId(shorts.getId())
                 .title(shorts.getTitle())
                 .videoPath(shorts.getVideoPath())
                 .build();

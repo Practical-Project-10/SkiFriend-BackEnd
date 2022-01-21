@@ -7,13 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ShortsCommentResponseDto {
+@NoArgsConstructor
+public class ShortsLikeResponseDto {
     private Long userId;
-    private Long shortsCommentId;
-    private String userImg;
-    private String nickname;
-    private String content;
-    private String createdAt;
 }

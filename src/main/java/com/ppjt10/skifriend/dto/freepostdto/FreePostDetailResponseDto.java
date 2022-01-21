@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FreePostDetailResponseDto{
     private Long userId;
+    private String userProfile;
     private Long postId;
     private List<PhotoDto> photoList;
     private String nickname;

@@ -1,7 +1,5 @@
 package com.ppjt10.skifriend.config;
 
-import com.ppjt10.skifriend.entity.ChatUserInfo;
-import com.ppjt10.skifriend.entity.User;
 import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.security.jwt.JwtDecoder;
 import com.ppjt10.skifriend.service.ChatMessageService;
