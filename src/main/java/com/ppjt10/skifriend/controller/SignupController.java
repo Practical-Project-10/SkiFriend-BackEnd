@@ -25,7 +25,7 @@ public class SignupController {
     private final NaverUserService naverUserService;
     private final String AUTH_HEADER = "Authorization";
 
-    // 문자 SMS 인증
+    // 문자 인증번호 생성 후 발송하기
     @PostMapping("/user/sms")
     public ResponseEntity<String> getSmsCertification(@RequestBody SignupPhoneNumDto phoneNumber,
                                                       @AuthenticationPrincipal UserDetailsImpl userDetails

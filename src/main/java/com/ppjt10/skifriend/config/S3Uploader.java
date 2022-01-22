@@ -22,9 +22,21 @@ import java.util.UUID;
 public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
+    private final VideoFileUtils videoFileUtils;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
+
+    public String uploadVideo(MultipartFile multipartFile, String dirName) throws IOException {
+
+        File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
+                .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
+        System.out.println("파일변환 통과아아아아아");
+        String filePath = System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename();
+        videoFileUtils.createThumbnail(filePath, System.getProperty("user.dir") + "/" + "test.png");
+        File thumbNail = new File(System.getProperty("user.dir") + "/" + "test.png");
+        return upload(uploadFile, dirName) + "~" + upload(thumbNail, dirName);
+    }
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
 

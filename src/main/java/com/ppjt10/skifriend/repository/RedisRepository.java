@@ -29,13 +29,13 @@ public class RedisRepository {
     private ValueOperations<String, Boolean> userInOutOperations;
 
 
-    // shorts 조회시 sessionId와 randomNum 저장
-    public void setRandomNumSessionId(String sessionId, int randomNum) {
+    // shorts 조회시 Ip와 randomNum 저장
+    public void setRandomNumIp(String sessionId, int randomNum) {
         longOperations.set(RANDOM_NUM + "_" + sessionId, randomNum);
     }
 
-    // shorts 조회시 sessionId로 randomNum 조회
-    public int getRandomNumSessionId(String sessionId) {
+    // shorts 조회시 Ip로 randomNum 조회
+    public int getRandomNumIp(String sessionId) {
         return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(-1);
     }
 

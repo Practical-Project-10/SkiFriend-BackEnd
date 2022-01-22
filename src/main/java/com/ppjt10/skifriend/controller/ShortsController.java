@@ -24,25 +24,23 @@ public class ShortsController {
 
     //Shorts 조회
     @GetMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> getShorts(HttpSession session) {
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    public ResponseEntity<ShortsResponseDto> getShorts(HttpServletRequest req) {
         String ip = req.getHeader("X-FORWARDED-FOR");
         if (ip == null)
             ip = req.getRemoteAddr();
         System.out.println("IP 주소 : " + ip);
 
-        System.out.println("세션 아이디 : " + session.getId());
-        return ResponseEntity.ok().body(shortsService.getShorts(session));
+        return ResponseEntity.ok().body(shortsService.getShorts(ip));
     }
 
     //Shorts 작성
     @PostMapping("/shorts")
-    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile image,
+    public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart(value = "videoFile", required = false) MultipartFile videoFile,
                                                           @RequestPart(value = "requestDto", required = false) ShortsRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(shortsService.createShorts(image, requestDto, user));
+        return ResponseEntity.ok().body(shortsService.createShorts(videoFile, requestDto, user));
     }
 
     //Shorts 수정

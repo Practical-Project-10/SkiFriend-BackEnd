@@ -41,7 +41,9 @@ public class UserService {
     @Transactional
     public UserResponseDto updateUserProfile(MultipartFile profileImg, UserProfileUpdateDto requestDto, User user) {
 
-        User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        User dbUser = userRepository.findById(user.getId()).orElseThrow(
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
+        );
 
         // CareerType.findByCareerType(requestDto.getCareer());
 
@@ -55,7 +57,7 @@ public class UserService {
                 try {
                     String source = URLDecoder.decode(dbUser.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
                     s3Uploader.deleteFromS3(source);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -77,6 +79,15 @@ public class UserService {
     // 유저 탈퇴
     @Transactional
     public String deleteUser(User user) {
+
+        if (!user.getProfileImg().equals(defaultImg)) {
+            try {
+                String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+                s3Uploader.deleteFromS3(source);
+            } catch (Exception ignored) {
+            }
+        }
+
         Long userId = user.getId();
         userRepository.deleteById(userId);
         List<Carpool> carpoolList = carpoolRepository.findAllByUserId(userId);
@@ -203,6 +214,7 @@ public class UserService {
                 .shortsId(shorts.getId())
                 .title(shorts.getTitle())
                 .videoPath(shorts.getVideoPath())
+                .thumbNailPath(shorts.getThumbNailPath())
                 .build();
     }
 }

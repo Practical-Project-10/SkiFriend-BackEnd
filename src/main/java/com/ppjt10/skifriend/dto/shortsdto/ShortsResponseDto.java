@@ -17,6 +17,7 @@ public class ShortsResponseDto {
     private String nickname;
     private String profileImg;
     private String videoPath;
+    private String thumbNailPath;
     private String title;
     private List<ShortsLikeResponseDto> shortsLikeResponseDtoList;
     private int shortsLikeCnt;

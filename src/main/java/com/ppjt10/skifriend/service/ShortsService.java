@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -33,35 +32,62 @@ public class ShortsService {
 
     //Shorts 조회
     @Transactional
-    public ShortsResponseDto getShorts(HttpSession session) {
-        long pastRanNum = redisRepository.getRandomNumSessionId(session.getId());
-        long totalNum = shortsRepository.count();
+    public ShortsResponseDto getShorts(String ip) {
+        List<Shorts> shortsList = shortsRepository.findAll();
+        long totalNum = shortsList.size();
+        long pastRanNum = redisRepository.getRandomNumIp(ip);
+        System.out.println("pastRanNum : " + pastRanNum);
+
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
         }
-        Optional<Shorts> shorts;
-        do {
-            long randomNum = (long)(Math.random() * totalNum + 1);
-            while(randomNum == pastRanNum) {
-                randomNum = (long)(Math.random() * totalNum + 1);
-            }
-            redisRepository.setRandomNumSessionId(session.getId(), (int)randomNum);
-            shorts = shortsRepository.findById(randomNum);
-        } while (!shorts.isPresent());
 
-        return generateShortsResponseDto(shorts.get());
+        Shorts shorts;
+
+        if(totalNum == 1) {
+            shorts = shortsList.get(0);
+            return generateShortsResponseDto(shorts);
+        }
+
+        long randomNum = (long)(Math.random() * totalNum + 1);
+        System.out.println("randomNum: " + randomNum);
+        while(randomNum == pastRanNum) {
+            randomNum = (long)(Math.random() * totalNum + 1);
+            System.out.println("while문 안 randomNum: " + randomNum);
+        }
+        redisRepository.setRandomNumIp(ip, (int)randomNum);
+        shorts = shortsList.get((int)randomNum - 1);
+        System.out.println("실행중인 shortsId: " + shorts.getId());
+        return generateShortsResponseDto(shorts);
+
+//        long pastRanNum = redisRepository.getRandomNumIp(ip);
+//        long totalNum = shortsRepository.count();
+//        if(totalNum == 0) {
+//            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
+//        }
+//        Optional<Shorts> shorts;
+//        do {
+//            long randomNum = (long)(Math.random() * totalNum + 1);
+//            while(randomNum == pastRanNum) {
+//                randomNum = (long)(Math.random() * totalNum + 1);
+//            }
+//            redisRepository.setRandomNumIp(ip, (int)randomNum);
+//            shorts = shortsRepository.findById(randomNum);
+//        } while (!shorts.isPresent());
+//
+//        return generateShortsResponseDto(shorts.get());
     }
 
     //Shorts 작성
     @Transactional
-    public ShortsResponseDto createShorts(MultipartFile videoPath,
+    public ShortsResponseDto createShorts(MultipartFile videoFile,
                                           ShortsRequestDto requestDto,
                                           User user
     ) throws IOException {
-        String videoUrl = s3Uploader.upload(videoPath, videoDirName);
-        Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl);
+        String videoUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[0];
+        String thumbNailUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[1];
+        Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl, thumbNailUrl);
         shortsRepository.save(shorts);
-
 
         return generateShortsResponseDto(shorts);
     }
@@ -97,8 +123,10 @@ public class ShortsService {
             throw new IllegalArgumentException("게시글을 작성한 유저만 삭제가 가능합니다.");
         }
         try {
-            String oldImageUrl = URLDecoder.decode(shorts.getVideoPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
-            s3Uploader.deleteFromS3(oldImageUrl);
+            String oldVideoUrl = URLDecoder.decode(shorts.getVideoPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldVideoUrl);
+            String oldThumbNailUrl = URLDecoder.decode(shorts.getThumbNailPath().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            s3Uploader.deleteFromS3(oldThumbNailUrl);
         } catch (Exception ignored) {
         }
 
@@ -141,6 +169,7 @@ public class ShortsService {
                 .nickname(nickname)
                 .profileImg(profileImg)
                 .videoPath(shorts.getVideoPath())
+                .thumbNailPath(shorts.getThumbNailPath())
                 .title(shorts.getTitle())
                 .shortsCommentCnt(shorts.getShortsCommentCnt())
                 .shortsLikeCnt(shorts.getShortsLikeCnt())
