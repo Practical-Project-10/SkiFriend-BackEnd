@@ -132,9 +132,18 @@ public class UserService {
 
         Long otherId;
         if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
-            otherId = chatUserInfoList.get(1).getUserId();
+            try {
+                otherId = chatUserInfoList.get(1).getUserId();
+            } catch(Exception ex) {
+                otherId = chatUserInfoList.get(0).getOtherId();
+            }
+
         } else {
-            otherId = chatUserInfoList.get(0).getUserId();
+            try {
+                otherId = chatUserInfoList.get(0).getUserId();
+            } catch(Exception ex) {
+                otherId = chatUserInfoList.get(1).getOtherId();
+            }
         }
         User other = userRepository.findById(otherId).orElseThrow(
                 () -> new IllegalArgumentException("유저가 없어용")
