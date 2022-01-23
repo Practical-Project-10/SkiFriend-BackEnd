@@ -84,8 +84,9 @@ public class ShortsService {
                                           ShortsRequestDto requestDto,
                                           User user
     ) throws IOException {
-        String videoUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[0];
-        String thumbNailUrl = s3Uploader.uploadVideo(videoFile, videoDirName).split("~")[1];
+        String result = s3Uploader.uploadVideo(videoFile, videoDirName);
+        String videoUrl = result.split("~")[0];
+        String thumbNailUrl = result.split("~")[1];
         Shorts shorts = new Shorts(user.getId(), requestDto.getTitle(), videoUrl, thumbNailUrl);
         shortsRepository.save(shorts);
 
