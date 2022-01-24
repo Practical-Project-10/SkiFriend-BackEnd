@@ -26,9 +26,4 @@ public class ProfileController {
                 .findAny()
                 .orElse(defaultProfile);
     }
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
-    }
 }

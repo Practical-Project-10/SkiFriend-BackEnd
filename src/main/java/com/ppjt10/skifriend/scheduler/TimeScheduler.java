@@ -1,9 +1,7 @@
 package com.ppjt10.skifriend.scheduler;
 
 import com.ppjt10.skifriend.certification.MessageService;
-import com.ppjt10.skifriend.entity.Carpool;
-import com.ppjt10.skifriend.entity.ChatUserInfo;
-import com.ppjt10.skifriend.entity.User;
+import com.ppjt10.skifriend.entity.*;
 import com.ppjt10.skifriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +25,8 @@ public class TimeScheduler {
     private final MessageService messageService;
     private final UserRepository userRepository;
     private final ChatUserInfoRepository chatUserInfoRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // 15분 마다 실행
     @Transactional
@@ -52,17 +52,22 @@ public class TimeScheduler {
     @Transactional
     @Scheduled(cron = "0 0 0/1 * * *")
     public void chatAlertScheduler() {
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByModifiedAtAfter(LocalDateTime.now().minusHours(3));
         List<User> userList = new ArrayList<>();
-        for(ChatUserInfo chatUserInfo : chatUserInfoList){
-            User user = userRepository.findById(chatUserInfo.getUserId()).orElseThrow(
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByModifiedAtAfterAndActive(LocalDateTime.now().minusHours(6), true);
+        for(ChatRoom chatRoom : chatRoomList) {
+            Long lastMsgId = chatRoom.getLastMessageId();
+            ChatMessage notReadLastMsg = chatMessageRepository.findByIdAndReadMsg(lastMsgId, false);
+            Long userId = notReadLastMsg.getUserId();
+            ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, chatRoom.getId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당하는 채팅방 정보가 없습니다")
+            );
+            User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 유저가 없습니다")
             );
-            if(!userList.contains(user)){
-                userList.add(user);
+            if(!userList.contains(other)){
+                userList.add(other);
             }
         }
-
         for(User user : userList){
 //            messageService.createChatRoomAlert(user.getPhoneNum(), "읽지 않은 메세지가 있습니다! 채팅방을 확인하세요 :)");
             System.out.println(user.getNickname() + "한테 알림왔대, 채팅방 확인좀해라");
