@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+
 }
 
 group = 'com.ppjt10'
@@ -18,7 +19,9 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -57,6 +60,9 @@ dependencies {
 
     //Sockjs
     implementation 'org.webjars:sockjs-client:1.1.2'
+
+    //ffmpeg
+    implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.6.2'
 
 
     testCompileOnly 'org.projectlombok:lombok:1.18.12' // 테스트 의존성 추가

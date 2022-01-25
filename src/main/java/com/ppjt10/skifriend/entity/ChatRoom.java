@@ -1,41 +1,39 @@
 package com.ppjt10.skifriend.entity;
 
+import com.ppjt10.skifriend.time.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class ChatRoom {
+public class ChatRoom extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String roomId;
-
-    @Column
-    private String title;
-
-    @Column
-    private Long writerId;
-
-    @Column
-    private Long senderId;
-
-    @Column
     private Long carpoolId;
 
-    public ChatRoom (String title, Long writerId, Long senderId, Long carpoolId) {
-        //this.carpool = carpool;
-        this.title = title;
-        this.roomId = UUID.randomUUID().toString();
-        this.writerId = writerId;
-        this.senderId = senderId;
+    @Column
+    private Long lastMessageId;
+
+    @Column
+    private boolean active;
+
+    public ChatRoom(Long carpoolId) {
         this.carpoolId = carpoolId;
+        this.active = true;
+    }
+
+    public void setLastMessageId(Long lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

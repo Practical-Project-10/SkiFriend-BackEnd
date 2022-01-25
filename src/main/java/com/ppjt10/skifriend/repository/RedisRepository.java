@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,65 +15,52 @@ import java.util.Set;
 @Repository
 public class RedisRepository {
 
-    public static final String MESSAGE_COUNT = "MESSAGE_COUNT";
     public static final String ENTER_INFO = "ENTER_INFO";
-    public static final String NAME_INFO = "NAME_INFO";
-    public static final String LAST_MESSAGE_TIME = "LAST_MESSAGE_TIME";
-
-
-    @Resource(name = "redisTemplate")
-    private HashOperations<String, String, String> hashOpsEnterInfo;
+    public static final String RANDOM_NUM = "RANDOM_NUM";
+    public static final String USER_INOUT = "USER_INOUT";
 
     @Resource(name = "redisTemplate")
-    private ValueOperations<String, Integer> valueOperations;
+    private HashOperations<String, String, String> stringHashOpsEnterInfo;
 
     @Resource(name = "redisTemplate")
-    private ValueOperations<String, String> timeOperations;
+    private ValueOperations<String, Integer> longOperations;
 
-    // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
-    public void setUserEnterInfo(String sessionId, String roomId) {
-        hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
+    @Resource(name = "redisTemplate")
+    private ValueOperations<String, Boolean> userInOutOperations;
+
+
+    // shorts 조회시 Ip와 randomNum 저장
+    public void setRandomNumIp(String sessionId, int randomNum) {
+        longOperations.set(RANDOM_NUM + "_" + sessionId, randomNum);
     }
 
-    // 세션에 유저이름 저장
-    public void setUserNameInfo(String sessionId, String name) {
-        hashOpsEnterInfo.put(NAME_INFO, sessionId, name);
+    // shorts 조회시 Ip로 randomNum 조회
+    public int getRandomNumIp(String sessionId) {
+        return Optional.ofNullable(longOperations.get(RANDOM_NUM + "_" + sessionId)).orElse(-1);
     }
 
-    // 세션에서 유저이름 갖고오기
-    public String getUserNameId(String sessionId) {
-        return hashOpsEnterInfo.get(NAME_INFO, sessionId);
+    // sessionId로 inOutKey 등록
+    public void setSessionUserInfo(String sessionId, Long roomId, String name) {
+        stringHashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId + "_" + name);
     }
 
-
-    // 유저 세션으로 입장해 있는 채팅방 ID 조회
-    public String getUserEnterRoomId(String sessionId) {
-        return hashOpsEnterInfo.get(ENTER_INFO, sessionId);
+    // sessionId로 inOutKey 찾아오기
+    public String getSessionUserInfo(String sessionId) {
+        return stringHashOpsEnterInfo.get(ENTER_INFO, sessionId);
     }
 
-    // 유저 세션정보와 맵핑된 채팅방ID 삭제
+    // sessionId 삭제
     public void removeUserEnterInfo(String sessionId) {
-        hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
+        stringHashOpsEnterInfo.delete(ENTER_INFO, sessionId);
     }
 
-
-    // 과거에 읽었던 메세지 개수 가져오기
-    public int getLastReadMsgCnt(String roomId, String name) {
-        return Math.toIntExact(Long.valueOf(Optional.ofNullable(valueOperations.get(MESSAGE_COUNT + "_" + roomId + "_" + name)).orElse(0)));
+    // inOutKey로 현재 유저가 접속 중인지 설정
+    public void setUserChatRoomInOut(String key, Boolean inOut) {
+        userInOutOperations.set(USER_INOUT + "_" + key, inOut);
     }
 
-    // 채팅방에서 DISCONNECT 시점에 읽은 메세지 개수 저장
-    public void setLastReadMsgCnt(String roomId, String name, int chatMessageCount) {
-        valueOperations.set(MESSAGE_COUNT + "_" + roomId + "_" + name, chatMessageCount);
-    }
-
-    // 마지막으로 읽은 시간 체크
-    public void setLastMessageReadTime(String roomId, String name, String time){
-        timeOperations.set(LAST_MESSAGE_TIME + "_" + roomId + "_" + name, name + "/" + time);
-    }
-
-    public List<String> getLastMessageReadTime() {
-        Set<String> keys = timeOperations.getOperations().keys(LAST_MESSAGE_TIME+"*");
-        return timeOperations.multiGet(keys);
+    // inOutKey로 현재 유저가 접속 중인지 가져오기
+    public Boolean getUserChatRoomInOut(Long roomId, String name) {
+        return Optional.ofNullable(userInOutOperations.get(USER_INOUT + "_" + roomId + "_" + name)).orElse(false);
     }
 }

@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 public class ChatMessageResponseDto {
     private ChatMessage.MessageType type;
     private Long messageId;
-    private String roomId;
+    private Long roomId;
+    private Long receiverId;
     private String sender;
     private String senderImg;
-    private String img;
+    private String img; // 채팅방에서 이미지 보낼 때 쓸 이미지 dto
     private String message;
     private String createdAt;
 }

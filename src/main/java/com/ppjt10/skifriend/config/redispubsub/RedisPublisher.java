@@ -1,4 +1,4 @@
-package com.ppjt10.skifriend.redispubsub;
+package com.ppjt10.skifriend.config.redispubsub;
 
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
@@ -14,9 +14,7 @@ public class RedisPublisher {
     private final ChannelTopic channelTopic;
 
     public void publish(ChatMessageResponseDto messageDto) {
-
         redisTemplate.convertAndSend(channelTopic.getTopic(), messageDto);
-
     }
 
     public void publishPhoneNum(ChatMessagePhoneNumDto messageDto) {

@@ -1,12 +1,10 @@
 package com.ppjt10.skifriend.dto.carpooldto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarpoolFilterRequestDto{

@@ -1,4 +1,4 @@
-package com.ppjt10.skifriend.dto.likeDto;
+package com.ppjt10.skifriend.dto.likedto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

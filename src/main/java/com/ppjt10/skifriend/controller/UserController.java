@@ -1,6 +1,7 @@
 package com.ppjt10.skifriend.controller;
 
 import com.ppjt10.skifriend.dto.carpooldto.CarpoolResponseDto;
+import com.ppjt10.skifriend.dto.shortsdto.ShortsMyResponseDto;
 import com.ppjt10.skifriend.dto.signupdto.SignupPhoneNumDto;
 import com.ppjt10.skifriend.dto.userdto.*;
 import com.ppjt10.skifriend.entity.User;
@@ -26,17 +27,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getPhoneNum(user));
     }
 
-    // 유저 프로필 작성
-    @PostMapping("/user/profile")
-    public ResponseEntity<UserResponseDto> createUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
-                                                             @RequestPart(value = "requestDto") UserProfileRequestDto requestDto,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.createUserProfile(profileImg, vacImg, requestDto, user));
-    }
-
     // 유저 정보 조회하기
     @GetMapping("/user/info")
     public ResponseEntity<UserResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -47,12 +37,11 @@ public class UserController {
     // 유저 정보 수정하기
     @PutMapping("/user/info")
     public ResponseEntity<UserResponseDto> updateUserProfile(@RequestPart(value = "profileImg", required = false) MultipartFile profileImg,
-                                                             @RequestPart(value = "vacImg", required = false) MultipartFile vacImg,
                                                              @RequestPart(value = "requestDto") UserProfileUpdateDto requestDto,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, vacImg, requestDto, user);
+        UserResponseDto userResponseDto = userService.updateUserProfile(profileImg, requestDto, user);
         return ResponseEntity.ok().body(userResponseDto);
     }
 
@@ -64,15 +53,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.deleteUser(user));
     }
 
-    // 비밀번호 수정하기
-    @PutMapping("/user/info/password")
-    public void updatePassword(@RequestBody UserPasswordUpdateDto passwordDto,
-                               @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        User user = userDetails.getUser();
-        userService.updatePassword(passwordDto, user);
-    }
-
     // 내가 쓴 카풀 게시물 불러오기
     @GetMapping("/user/info/carpool")
     public ResponseEntity<List<CarpoolResponseDto>> getMyCarpools(@AuthenticationPrincipal UserDetailsImpl userDetails
@@ -82,11 +62,19 @@ public class UserController {
     }
 
     // 채팅 방에서 상대방 프로필 조회하기
-    @GetMapping("/user/introduction/{longRoomId}")
-    public ResponseEntity<UserProfileOtherDto> getOtherProfile(@PathVariable Long longRoomId,
+    @GetMapping("/user/introduction/{roomId}")
+    public ResponseEntity<UserProfileOtherDto> getOtherProfile(@PathVariable Long roomId,
                                                                @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        return ResponseEntity.ok().body(userService.getOtherProfile(longRoomId, user));
+        return ResponseEntity.ok().body(userService.getOtherProfile(roomId, user));
+    }
+
+    // 내가 쓴 Shorts 목록 보기
+    @GetMapping("/user/info/shorts")
+    public ResponseEntity<List<ShortsMyResponseDto>> getMyShorts(@AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok().body(userService.getMyShorts(user));
     }
 }

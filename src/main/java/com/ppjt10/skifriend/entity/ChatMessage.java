@@ -2,10 +2,8 @@ package com.ppjt10.skifriend.entity;
 
 
 import com.ppjt10.skifriend.time.Timestamped;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -26,22 +24,24 @@ public class ChatMessage  extends Timestamped {
     @JoinColumn(nullable = false)
     private ChatRoom chatRoom; // 방번호
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user; // 메시지 보낸사람
+    @Column(nullable = false)
+    private Long userId; // 메시지 보낸사람
 
     private MessageType type; // 메시지 타입
 
     @Column
     private String message; // 메시지
 
-    @Column
-    private String img; // 이미지 첨부시
+//    @Column
+//    private String img; // 이미지 첨부시
 
-    public ChatMessage(MessageType type, ChatRoom chatRoom, User user, String message) {
+    @Column
+    private boolean readMsg; // 메시지
+
+    public ChatMessage(MessageType type, ChatRoom chatRoom, Long userId, String message) {
         this.type = type;
         this.chatRoom = chatRoom;
-        this.user = user;
+        this.userId = userId;
         this.message = message;
     }
 
@@ -49,7 +49,11 @@ public class ChatMessage  extends Timestamped {
         this.message = message;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+//    public void setImg(String img) {
+//        this.img = img;
+//    }
+
+    public void setIsRead(boolean isRead) {
+        this.readMsg = isRead;
     }
 }

@@ -1,4 +1,5 @@
-package com.ppjt10.skifriend.dto.signupdto;
+package com.ppjt10.skifriend.dto.shortsdto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class SignupIdCheckDto {
-    private String username;
+@AllArgsConstructor
+public class ShortsRequestDto {
+    private String title;
 }

@@ -26,5 +26,4 @@ public class ProfileController {
                 .findAny()
                 .orElse(defaultProfile);
     }
-
 }

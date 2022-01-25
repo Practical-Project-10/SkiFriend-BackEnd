@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequiredArgsConstructor
 public class CarpoolController {
@@ -23,8 +22,12 @@ public class CarpoolController {
 
     // 카풀 게시물 조회
     @GetMapping("/board/carpool/{skiResort}")
-    public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort) {
-        return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort));
+    public ResponseEntity<List<CarpoolResponseDto>> getCarpools(@PathVariable String skiResort,
+                                                                @RequestParam int page,
+                                                                @RequestParam int size
+    ) {
+        page = page -1;
+        return ResponseEntity.ok().body(carpoolService.getCarpools(skiResort,page,size));
     }
 
     // 카풀 게시물 작성
@@ -58,11 +61,11 @@ public class CarpoolController {
 
     // 카풀 모집 완료 상태로 변경
     @PostMapping("/board/carpool/{carpoolId}/status")
-    public void changeStatus(@PathVariable Long carpoolId,
+    public ResponseEntity<CarpoolResponseDto> changeStatus(@PathVariable Long carpoolId,
                              @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        carpoolService.changeStatus(carpoolId, user);
+        return ResponseEntity.ok().body(carpoolService.changeStatus(carpoolId, user));
     }
 
     // 카풀 카테고리 분류

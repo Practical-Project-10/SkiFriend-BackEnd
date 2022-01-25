@@ -18,7 +18,7 @@ public class LikesService {
 
     // 좋아요 기능
     @Transactional
-    public void changeLike(Long postId, User user) {
+    public String changeLike(Long postId, User user) {
 
         FreePost freePost = freePostRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 게시물이 없습니다")
@@ -30,11 +30,12 @@ public class LikesService {
             likesRepository.deleteById(foundLikes.get().getId());
             freePost.setLikeCnt(freePost.getLikeCnt() - 1);
             System.out.println("좋아요가 삭제되었습니다");
+            return "false";
         } else {
-            likesRepository.save(new Likes(user, freePost));
+            likesRepository.save(new Likes(userId, freePost));
             freePost.setLikeCnt(freePost.getLikeCnt() + 1);
             System.out.println("좋아요가 클릭되었습니다");
-
+            return "true";
         }
     }
 }

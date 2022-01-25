@@ -1,7 +1,7 @@
 package com.ppjt10.skifriend.service;
 
 
-import com.ppjt10.skifriend.certification.MessageService;
+import com.ppjt10.skifriend.config.redispubsub.RedisPublisher;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessagePhoneNumDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageRequestDto;
 import com.ppjt10.skifriend.dto.chatmessagedto.ChatMessageResponseDto;
@@ -9,52 +9,54 @@ import com.ppjt10.skifriend.entity.ChatMessage;
 import com.ppjt10.skifriend.entity.ChatRoom;
 import com.ppjt10.skifriend.entity.ChatUserInfo;
 import com.ppjt10.skifriend.entity.User;
-import com.ppjt10.skifriend.redispubsub.RedisPublisher;
-import com.ppjt10.skifriend.repository.ChatMessageRepository;
-import com.ppjt10.skifriend.repository.ChatRoomRepository;
-import com.ppjt10.skifriend.repository.ChatUserInfoRepository;
-import com.ppjt10.skifriend.repository.UserRepository;
+import com.ppjt10.skifriend.repository.*;
 import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-//    private final MessageService messageService;
-//    private final ChatUserInfoRepository chatUserInfoRepository;
-//    private final RedisRepository redisRepository;
+    //    private final MessageService messageService;
+    private final ChatUserInfoRepository chatUserInfoRepository;
     private final RedisPublisher redisPublisher;
+    private final RedisRepository redisRepository;
     private final UserRepository userRepository;
 //    private final S3Uploader s3Uploader;
 //    private final String imageDirName = "chatMessage";
 
-    // 채팅방 String Id 값 가져오기, Url 생성에 이용
-    public String getRoomId(String destination) {
+    public Long getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
         if (lastIndex != -1) {
-            return destination.substring(lastIndex + 1);
+            return Long.parseLong(destination.substring(lastIndex + 1));
         } else {
-            return "";
+            return null;
         }
     }
 
     // 해당 채팅방 모든 채팅 내용 불러오기
-    public List<ChatMessageResponseDto> getAllMessages(String roomId, User user) {
+    @Transactional
+    public List<ChatMessageResponseDto> getAllMessages(Long roomId, User user) {
         Long userId = user.getId();
-        ChatRoom foundChatRoom = chatRoomRepository.findByRoomId(roomId);
-        if(!foundChatRoom.getSenderId().equals(userId) && !foundChatRoom.getWriterId().equals(userId)) {
-            throw new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다");
-        }
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
+                () -> new IllegalArgumentException("현재 참여중인 채팅방이 아닙니다")
+        );
 
-        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomRoomIdOrderByCreateAt(roomId);
+        Long verifiedRoomId = chatUserInfo.getChatRoom().getId();
+        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByChatRoomIdOrderByCreateAt(verifiedRoomId);
         List<ChatMessageResponseDto> chatMessageResponseDtoList = new ArrayList<>();
-        for(int i=1; i<chatMessageList.size(); i++) {
+        for (int i = 1; i < chatMessageList.size(); i++) {
+            ChatMessage chatMessage = chatMessageList.get(i);
+            if (!chatMessage.getUserId().equals(userId)) {
+                chatMessage.setIsRead(true);
+            }
             chatMessageResponseDtoList.add(generateChatMessageListResponseDto(chatMessageList.get(i)));
         }
 
@@ -100,15 +102,22 @@ public class ChatMessageService {
     //endregion
 
 
-
     // 채팅방 메시지 보내기
+    @Transactional
     public void sendChatMessage(ChatMessageRequestDto requestDto) {
 
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(requestDto.getRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(requestDto.getRoomId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다")
+        );
+        Long roomId = chatRoom.getId();
+        if (!chatRoom.isActive()) {
+            throw new IllegalArgumentException("상대방이 채팅방을 퇴장했습니다.");
+        }
 
         User user = userRepository.findByUsername(requestDto.getSender()).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다")
         );
+        Long userId = user.getId();
 
 //        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(chatRoom.getId());
 //        User opponent;
@@ -122,18 +131,26 @@ public class ChatMessageService {
 //            );
 //        }
 
-        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, user, requestDto.getMessage());
+        ChatMessage message = new ChatMessage(requestDto.getType(), chatRoom, userId, requestDto.getMessage());
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 채팅방 정보가 존재하지 않습니다.")
+        );
+        User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
+                () -> new IllegalArgumentException("상대방이 존재하지 않습니다.")
+        );
+        if (redisRepository.getUserChatRoomInOut(roomId, other.getUsername())) {
+            message.setIsRead(true);
+        }
 
         if (ChatMessage.MessageType.PHONE_NUM.equals(message.getType())) {
-            String phoneNum = message.getUser().getPhoneNum();
-            message.setMessage(phoneNum.substring(0,3) + "-" + phoneNum.substring(3,7) + "-" + phoneNum.substring(7));
+
+            String phoneNum = user.getPhoneNum();
+            message.setMessage(phoneNum.substring(0, 3) + "-" + phoneNum.substring(3, 7) + "-" + phoneNum.substring(7));
 
             chatMessageRepository.save(message);
-
+            chatRoom.setLastMessageId(message.getId());
 //            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
-
-
-            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message);
+            ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message, user.getNickname());
 
             System.out.println("전화번호 전송");
             redisPublisher.publishPhoneNum(messageDto);
@@ -141,14 +158,14 @@ public class ChatMessageService {
 
         } else {
             chatMessageRepository.save(message);
+            chatRoom.setLastMessageId(message.getId());
 
-            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message);
+            ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message, user, other.getId());
 
             System.out.println("전송");
             redisPublisher.publish(messageDto);
             System.out.println("성공");
         }
-
 
     }
 
@@ -180,38 +197,49 @@ public class ChatMessageService {
 
     // 저장된 메시지 목록 조회
     private ChatMessageResponseDto generateChatMessageListResponseDto(ChatMessage chatMessage) {
+        Optional<User> user = userRepository.findById(chatMessage.getUserId());
+
+        String profileImg;
+        String nickname;
+        if (user.isPresent()) {
+            nickname = user.get().getNickname();
+            profileImg = user.get().getProfileImg();
+        } else {
+            nickname = "알 수 없음";
+            profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
+        }
+
         return ChatMessageResponseDto.builder()
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
-                .senderImg(chatMessage.getUser().getProfileImg())
+                .sender(nickname)
+                .senderImg(profileImg)
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 
     // 메시지 보내기
-    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage) {
+    private ChatMessageResponseDto generateChatMessageResponseDto(ChatMessage chatMessage, User user, Long oppenentId) {
         return ChatMessageResponseDto.builder()
-                .roomId(chatMessage.getChatRoom().getRoomId())
+                .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .messageId(chatMessage.getId())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
-                .senderImg(chatMessage.getUser().getProfileImg())
+                .receiverId(oppenentId)
+                .sender(user.getNickname())
+                .senderImg(user.getProfileImg())
                 .createdAt(TimeConversion.timeChatConversion(chatMessage.getCreateAt()))
                 .build();
     }
 
     // 전화번호 보내기
-    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage) {
+    private ChatMessagePhoneNumDto generateChatMessagePhoneNumDto(ChatMessage chatMessage, String nickname) {
         return ChatMessagePhoneNumDto.builder()
-                .roomId(chatMessage.getChatRoom().getRoomId())
+                .roomId(chatMessage.getChatRoom().getId())
                 .type(chatMessage.getType())
                 .message(chatMessage.getMessage())
-                .sender(chatMessage.getUser().getNickname())
+                .sender(nickname)
                 .build();
-
     }
-
 }
