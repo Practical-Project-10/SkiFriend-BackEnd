@@ -1,5 +1,4 @@
-<h3 align="center"><b>❄ 스키프렌드 [SkiFriend] ❄</b></h3>
-
+<p align="center"><img src="https://user-images.githubusercontent.com/57797592/151089943-5fdc4edd-f643-4c6d-b00f-de6fb2101102.png" /></p>
 <h4 align="center">📆 2021.12.13 ~ 2021.12.17</h4>
 <br>
 
@@ -32,11 +31,11 @@
 
 <h3><b>🎫 프로젝트 소개 🎫</b></h3>
 
+<br><br>
 <h3><b>📣 팀 블로그 📣</b></h3>
 https://power-bowler-c76.notion.site/8-13-10-0c3ad4dd39b34a2b8501e8bac3c63d19
 
 <br><br>
-
 <h3><b>🎞 프로젝트 시연영상 🎞</b></h3>
 
 <br>
@@ -61,6 +60,9 @@ https://power-bowler-c76.notion.site/8-13-10-0c3ad4dd39b34a2b8501e8bac3c63d19
 <img src="https://img.shields.io/badge/Nginx-7DB249?style=for-the-badge&logo=Nginx&logoColor=white">
 <img src="https://img.shields.io/badge/Ffmpeg-47?style=for-the-badge&logo=Ffmpeg&logoColor=white">
 
+<br><br>
+<h3 align="center"><b>📊 Back-End Architecture 📊</b></h3>
+<p align="center"><img src="https://user-images.githubusercontent.com/57797592/151089797-b13eb41b-2dec-442b-972c-3354b4b92923.png" /></p>
 
 <br><br>
 <h3 align="center"><b>📢 Entity Relationship Diagram 📢</b></h3>
@@ -75,5 +77,76 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
 
 ---
 
-<h3 align="center"><b>✏ Trouble Shooting ✏</b></h3>
+<h3 align="center"><b>✏ Trouble Shooting & 기술적 고민들 ✏</b></h3>
 <br>
+<details>
+    <summary>
+        <b>회원 탈퇴 시, 해당 유저의 연관 정보들의 처리</b>
+    </summary>
+해결 : 유저 연관 관계를 Id만 가지고 있는 식으로 약한 결합으로 만들어 준 뒤, 서비스 단에서 예외처리를 해주었다.
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>사용자가 웹 페이지에 접속 중일 때, 실시간 알림 전송하기</b>
+    </summary>
+해결 : 로그인 시, 웹 소켓을 연결하여 참여 중인 채팅 방에서 메세지가 오거나, 새로운 채팅 방이 생성되었을 경우 알림이 가도록 구현
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>회원 가입 & 로그인 방식 변경</b>
+    </summary>
+해결 : 기존의 복잡한 회원가입 과정에서 소셜 로그인을 도입하여 가입 과정을 대폭 축소시켰다.
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>채팅방에 유저 두 명이 모두 존재할 때, 메세지 읽음 처리가 안되는 예외 발생</b>
+    </summary>
+해결 : 세션을 이용한 in, out 상태를 저장하여 in일 시, 메세지를 바로 읽음 상태로 변경
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>회원 탈퇴 시, 해당 유저의 연관 정보들의 처리</b>
+    </summary>
+해결 : 유저 연관 관계를 Id만 가지고 있는 식으로 약한 결합으로 만들어 준 뒤, 서비스 단에서 예외처리를 해주었다.
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>SkiResort 테이블 생성</b>
+    </summary>
+해결 : 원래 SkiResort의 경우 Enum을 활용한 유효성 검사만 해주었지만 스키장에 해당하는 정보들이 생김으로써 관리의 편의성을 위해 테이블을 생성함
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>채팅방 생성 시, 이미 나온 채팅방에 다시 접근하려고 했을 때의 예외처리</b>
+    </summary>
+해결 : 상대방의 ChatUserInfo가 존재할 때, 사용자에게 이미 나온 채팅방이라는 알림을 줄 수 있도록 함
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>상대방이 채팅 나갔을 때 또는 회원 탈퇴를 했을 때, 채팅 내용은 남아있지만 더 이상 채팅은 불가하도록 예외처리</b>
+    </summary>
+해결 : Chatroom 테이블에 active 컬럼을 추가하여 true일 경우만 채팅을 보낼 수 있도록 예외처리를 해줌
+<br><b>자세히 보기 : </b>
+</details>
+
+<details>
+    <summary>
+        <b>쇼츠 기능의 동영상 썸네일 처리</b>
+    </summary>
+해결 : 1초 대의 프레임을 가져와서 썸네일 이미지로 저장한 후, 동영상과 함께 프론트로 전달
+<br><b>자세히 보기 : </b>
+</details>
