@@ -39,8 +39,8 @@ public class TimeScheduler {
         List<Carpool> carpoolList = carpoolRepository.findAllByDate(dateTime[0]);
         for (Carpool carpool : carpoolList) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime carpoolTime = LocalDateTime.parse(carpool.getTime(), formatter);
-            LocalDateTime currentTime = LocalDateTime.parse(dateTime[1], formatter);
+            LocalDateTime carpoolTime = LocalDateTime.parse(carpool.getDate() + " " + carpool.getTime(), formatter);
+            LocalDateTime currentTime = LocalDateTime.parse(currentDateTime, formatter);
             Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
             if (timeDiff > 0) {
                 carpool.setStatus(false);
@@ -54,7 +54,7 @@ public class TimeScheduler {
     public void chatAlertScheduler() {
         List<User> userList = new ArrayList<>();
         List<ChatRoom> chatRoomList = chatRoomRepository.findAllByModifiedAtAfterAndActive(LocalDateTime.now().minusHours(6), true);
-        for(ChatRoom chatRoom : chatRoomList) {
+        for (ChatRoom chatRoom : chatRoomList) {
             Long lastMsgId = chatRoom.getLastMessageId();
             ChatMessage notReadLastMsg = chatMessageRepository.findByIdAndReadMsg(lastMsgId, false);
             Long userId = notReadLastMsg.getUserId();
@@ -64,11 +64,11 @@ public class TimeScheduler {
             User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 유저가 없습니다")
             );
-            if(!userList.contains(other)){
+            if (!userList.contains(other)) {
                 userList.add(other);
             }
         }
-        for(User user : userList){
+        for (User user : userList) {
 //            messageService.createChatRoomAlert(user.getPhoneNum(), "읽지 않은 메세지가 있습니다! 채팅방을 확인하세요 :)");
             System.out.println(user.getNickname() + "한테 알림왔대, 채팅방 확인좀해라");
         }

@@ -35,12 +35,12 @@ public class S3Uploader {
         String filePath = System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename();
 
         videoFileUtils.createThumbnail(filePath, System.getProperty("user.dir") + "/" + "test.png");
-//        videoFileUtils.videoEncode(filePath, System.getProperty("user.dir") + "/" + "test.mp4");
+        videoFileUtils.videoEncode(filePath, System.getProperty("user.dir") + "/" + "test.mp4");
 
-//        removeNewFile(uploadFile);
+        removeNewFile(uploadFile);
         File thumbNail = new File(System.getProperty("user.dir") + "/" + "test.png");
-//        File encodedVideo =new File(System.getProperty("user.dir") + "/" + "test.mp4");
-        return upload(uploadFile, dirName) + "~" + upload(thumbNail, dirName);
+        File encodedVideo =new File(System.getProperty("user.dir") + "/" + "test.mp4");
+        return upload(encodedVideo, dirName) + "~" + upload(thumbNail, dirName);
     }
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
