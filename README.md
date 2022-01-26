@@ -92,7 +92,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>사용자가 웹 페이지에 접속 중일 때, 실시간 알림 전송하기</b>
     </summary>
 해결 : 로그인 시, 웹 소켓을 연결하여 참여 중인 채팅 방에서 메세지가 오거나, 새로운 채팅 방이 생성되었을 경우 알림이 가도록 구현
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://beomin-sd.tistory.com/380</b>
 </details>
 
 <details>
@@ -140,7 +140,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>상대방이 채팅 나갔을 때 또는 회원 탈퇴를 했을 때, 채팅 내용은 남아있지만 더 이상 채팅은 불가하도록 예외처리</b>
     </summary>
 해결 : Chatroom 테이블에 active 컬럼을 추가하여 true일 경우만 채팅을 보낼 수 있도록 예외처리를 해줌
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://beomin-sd.tistory.com/381</b>
 </details>
 
 <details>
@@ -148,5 +148,5 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>쇼츠 기능의 동영상 썸네일 처리</b>
     </summary>
 해결 : 1초 대의 프레임을 가져와서 썸네일 이미지로 저장한 후, 동영상과 함께 프론트로 전달
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://beomin-sd.tistory.com/382</b>
 </details>
