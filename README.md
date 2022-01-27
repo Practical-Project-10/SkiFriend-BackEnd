@@ -36,6 +36,9 @@
 https://power-bowler-c76.notion.site/8-13-10-0c3ad4dd39b34a2b8501e8bac3c63d19
 
 <br><br>
+<h3><b>🎞 프로젝트 발표영상 🎞</b></h3>
+
+<br><br>
 <h3><b>🎞 프로젝트 시연영상 🎞</b></h3>
 
 <br>
@@ -100,7 +103,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>회원 가입 & 로그인 방식 변경</b>
     </summary>
 해결 : 기존의 복잡한 회원가입 과정에서 소셜 로그인을 도입하여 가입 과정을 대폭 축소시켰다.
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://diddl.tistory.com/157</b>
 </details>
 
 <details>
@@ -108,7 +111,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>채팅방에 유저 두 명이 모두 존재할 때, 메세지 읽음 처리가 안되는 예외 발생</b>
     </summary>
 해결 : 세션을 이용한 in, out 상태를 저장하여 in일 시, 메세지를 바로 읽음 상태로 변경
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://indecisive-viscount-244.notion.site/9b752db72c7242ec83d632ce97b1dcbc</b>
 </details>
 
 <details>
@@ -132,7 +135,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>채팅방 생성 시, 이미 나온 채팅방에 다시 접근하려고 했을 때의 예외처리</b>
     </summary>
 해결 : 상대방의 ChatUserInfo가 존재할 때, 사용자에게 이미 나온 채팅방이라는 알림을 줄 수 있도록 함
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://indecisive-viscount-244.notion.site/2a33bbdc642c4a40bea6e6301288ee3f</b>
 </details>
 
 <details>
