@@ -36,11 +36,9 @@ public class ChatRoomService {
             ChatRoom chatRoom = chatUserInfo.getChatRoom();
             Long otherId = chatUserInfo.getOtherId();
             Long roomId = chatRoom.getId();
-            ChatMessage chatMessage = chatMessageRepository.findById(chatRoom.getLastMessageId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 메세지가 존재하지 않습니다.")
-            );
+            ChatMessage chatMessage = chatMessageRepository.findTopByChatRoomIdOrderByIdDesc(roomId);
 
-            int notVerifiedMsgCnt = chatMessageRepository.findAllByChatRoomIdAndReadMsgAndUserId(roomId, false, otherId).size();
+            int notVerifiedMsgCnt = chatMessageRepository.countAllByChatRoomIdAndReadMsgAndUserId(roomId, false, otherId);
 
             String otherNick;
             String otherProfileImg;
@@ -139,7 +137,6 @@ public class ChatRoomService {
             ChatMessage initMsg = new ChatMessage(ChatMessage.MessageType.ENTER, chatRoom, sender.getId(), ":)");
             chatMessageRepository.save(initMsg);
             initMsg.setIsRead(true);
-            chatRoom.setLastMessageId(initMsg.getId());
 
             //sender 정보
             ChatUserInfo chatUserInfoSender = new ChatUserInfo(sender.getId(), writer.getId(), chatRoom);
@@ -184,7 +181,6 @@ public class ChatRoomService {
 
             Long quitMsgId = quitMessage.getId();
             ChatRoom chatRoom = otherChatUserInfo.get().getChatRoom();
-            chatRoom.setLastMessageId(quitMsgId);
             chatRoom.setActive(false);
 
             ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.builder()

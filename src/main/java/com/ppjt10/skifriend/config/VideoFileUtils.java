@@ -76,6 +76,16 @@ public class VideoFileUtils {
         int width = probeResult.getStreams().get(0).width;
         int height = probeResult.getStreams().get(0).height;
 
+        int enWidth;
+        int enHeight;
+        if(width>height){
+            enWidth = 416;
+            enHeight = 234;
+        } else{
+            enWidth = 234;
+            enHeight = 416;
+        }
+
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(filePath) // 파일경로
                 .overrideOutputFiles(true) // 오버라이드
@@ -84,7 +94,7 @@ public class VideoFileUtils {
                 .setVideoCodec("libx264") // 비디오 코덱
                 .disableSubtitle() // 서브타이틀 제거
                 .setAudioChannels(2) // 오디오 채널 ( 1 : 모노 , 2 : 스테레오 )
-                .setVideoResolution(480, height * 480 / width) // 동영상 해상도
+                .setVideoResolution(enWidth, enHeight) // 동영상 해상도
                 .setVideoBitRate(1464800) // 비디오 비트레이트
                 .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL) // ffmpeg 빌더 실행 허용
                 .done();
