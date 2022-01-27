@@ -42,7 +42,7 @@ public class TimeScheduler {
             LocalDateTime carpoolTime = LocalDateTime.parse(carpool.getDate() + " " + carpool.getTime(), formatter);
             LocalDateTime currentTime = LocalDateTime.parse(currentDateTime, formatter);
             Long timeDiff = Duration.between(carpoolTime, currentTime).getSeconds();
-            if (timeDiff > 0) {
+            if (timeDiff >= 0) {
                 carpool.setStatus(false);
             }
         }
