@@ -30,6 +30,9 @@
 ---
 
 <h3><b>🎫 프로젝트 소개 🎫</b></h3>
+스키프랜드(SkiFriend)
+마땅한 이동수단이 없어 고민하는 스키인들을 위한 
+카풀, 커뮤니티 서비스
 
 <br><br>
 <h3><b>📣 팀 블로그 📣</b></h3>
@@ -37,9 +40,11 @@ https://power-bowler-c76.notion.site/8-13-10-0c3ad4dd39b34a2b8501e8bac3c63d19
 
 <br><br>
 <h3><b>🎞 프로젝트 발표영상 🎞</b></h3>
+https://www.youtube.com/watch?v=UvTk7JV03cs&t=4s
 
 <br><br>
 <h3><b>🎞 프로젝트 시연영상 🎞</b></h3>
+https://youtu.be/1j_bk71_Eaw
 
 <br>
 
