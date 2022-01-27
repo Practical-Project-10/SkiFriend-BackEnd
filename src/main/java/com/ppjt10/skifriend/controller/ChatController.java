@@ -23,7 +23,7 @@ public class ChatController {
     private final JwtDecoder jwtDecoder;
 
     // 해당 방에서 했던 모든 메시지 조회
-    @GetMapping("/chat/message/{roomId}")
+    @GetMapping("/chat/message/{r6oomId}")
     @ResponseBody
     public ResponseEntity<List<ChatMessageResponseDto>> getAllMessages(@PathVariable Long roomId,
                                                                        @AuthenticationPrincipal UserDetailsImpl userDetails
