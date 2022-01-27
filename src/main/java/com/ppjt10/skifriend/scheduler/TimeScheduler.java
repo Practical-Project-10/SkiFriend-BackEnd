@@ -55,10 +55,11 @@ public class TimeScheduler {
         List<User> userList = new ArrayList<>();
         List<ChatRoom> chatRoomList = chatRoomRepository.findAllByModifiedAtAfterAndActive(LocalDateTime.now().minusHours(6), true);
         for (ChatRoom chatRoom : chatRoomList) {
-            Long lastMsgId = chatRoom.getLastMessageId();
+            Long roomId = chatRoom.getId();
+            Long lastMsgId = chatMessageRepository.findTopByChatRoomIdOrderByIdDesc(roomId).getId();
             ChatMessage notReadLastMsg = chatMessageRepository.findByIdAndReadMsg(lastMsgId, false);
             Long userId = notReadLastMsg.getUserId();
-            ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, chatRoom.getId()).orElseThrow(
+            ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(userId, roomId).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 채팅방 정보가 없습니다")
             );
             User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(

@@ -148,7 +148,6 @@ public class ChatMessageService {
             message.setMessage(phoneNum.substring(0, 3) + "-" + phoneNum.substring(3, 7) + "-" + phoneNum.substring(7));
 
             chatMessageRepository.save(message);
-            chatRoom.setLastMessageId(message.getId());
 //            messageService.openPhoneNumAlert(opponent.getPhoneNum(), phoneNum); // 문자메시지로 상대방한테 번호 전송
             ChatMessagePhoneNumDto messageDto = generateChatMessagePhoneNumDto(message, user.getNickname());
 
@@ -158,7 +157,6 @@ public class ChatMessageService {
 
         } else {
             chatMessageRepository.save(message);
-            chatRoom.setLastMessageId(message.getId());
 
             ChatMessageResponseDto messageDto = generateChatMessageResponseDto(message, user, other.getId());
 
