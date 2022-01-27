@@ -87,7 +87,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>회원 탈퇴 시, 해당 유저의 연관 정보들의 처리</b>
     </summary>
 해결 : 유저 연관 관계를 Id만 가지고 있는 식으로 약한 결합으로 만들어 준 뒤, 서비스 단에서 예외처리를 해주었다.
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://www.notion.so/Trouble-Shooting-e589ceeee9534c7894c0c655891e0785</b>
 </details>
 
 <details>
@@ -119,7 +119,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>카풀 게시글의 설정한 시간이 지났을 경우의 게시글 상태 처리</b>
     </summary>
 해결 : 스케쥴러를 사용해 15분 마다 현재 시간과 설정 시간을 체크하여, 자동으로 카풀 게시글을 모집완료 상태로 변경.
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://www.notion.so/Trouble-Shooting-b3fa7f60e4704bd38287a78dd9376202</b>
 </details>
 
 <details>
@@ -127,7 +127,7 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
         <b>SkiResort 테이블 생성</b>
     </summary>
 해결 : 원래 SkiResort의 경우 Enum을 활용한 유효성 검사만 해주었지만 스키장에 해당하는 정보들이 생김으로써 관리의 편의성을 위해 테이블을 생성함
-<br><b>자세히 보기 : </b>
+<br><b>자세히 보기 : https://www.notion.so/Trouble-Shooting-7c750abab120437f88c6326e0006204b</b>
 </details>
 
 <details>
