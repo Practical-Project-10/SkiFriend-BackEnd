@@ -80,4 +80,5 @@ public class Carpool extends Timestamped {
     public void setStatus(boolean logic) {
         this.status = logic;
     }
+    //끝났다!
 }
