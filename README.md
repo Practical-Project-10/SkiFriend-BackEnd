@@ -138,14 +138,6 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
 
 <details>
     <summary>
-        <b>채팅방 생성 시, 이미 나온 채팅방에 다시 접근하려고 했을 때의 예외처리</b>
-    </summary>
-해결 : 상대방의 ChatUserInfo가 존재할 때, 사용자에게 이미 나온 채팅방이라는 알림을 줄 수 있도록 함
-<br><b>자세히 보기 : https://indecisive-viscount-244.notion.site/2a33bbdc642c4a40bea6e6301288ee3f</b>
-</details>
-
-<details>
-    <summary>
         <b>상대방이 채팅 나갔을 때 또는 회원 탈퇴를 했을 때, 채팅 내용은 남아있지만 더 이상 채팅은 불가하도록 예외처리</b>
     </summary>
 해결 : Chatroom 테이블에 active 컬럼을 추가하여 true일 경우만 채팅을 보낼 수 있도록 예외처리를 해줌
