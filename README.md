@@ -130,14 +130,6 @@ https://drawsql.app/sout/diagrams/copy-of-db-2
 
 <details>
     <summary>
-        <b>SkiResort 테이블 생성</b>
-    </summary>
-해결 : 원래 SkiResort의 경우 Enum을 활용한 유효성 검사만 해주었지만 스키장에 해당하는 정보들이 생김으로써 관리의 편의성을 위해 테이블을 생성함
-<br><b>자세히 보기 : https://power-bowler-c76.notion.site/Trouble-Shooting-7c750abab120437f88c6326e0006204b</b>
-</details>
-
-<details>
-    <summary>
         <b>상대방이 채팅 나갔을 때 또는 회원 탈퇴를 했을 때, 채팅 내용은 남아있지만 더 이상 채팅은 불가하도록 예외처리</b>
     </summary>
 해결 : Chatroom 테이블에 active 컬럼을 추가하여 true일 경우만 채팅을 보낼 수 있도록 예외처리를 해줌
