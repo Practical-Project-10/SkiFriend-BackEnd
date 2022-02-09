@@ -37,11 +37,13 @@ public class ShortsLikeService {
             shorts.setShortsLikeCnt(shorts.getShortsLikeCnt() + 1);
         }
 
+        // 현재 쇼츠에 좋아요를 누른 사람들의 List Dto, 프론트 요청
         List<ShortsLikeResponseDto> shortsLikeResponseDtoList = new ArrayList<>();
         List<ShortsLike> shortsLikeList = shortsLikeRepository.findAllByShorts(shorts);
         for(ShortsLike shortsLike : shortsLikeList) {
             shortsLikeResponseDtoList.add(generateShortsLikesResponseDto(shortsLike));
         }
+
         return shortsLikeResponseDtoList;
     }
 

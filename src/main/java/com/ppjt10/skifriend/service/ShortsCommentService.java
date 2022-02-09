@@ -80,7 +80,6 @@ public class ShortsCommentService {
         shortsCommentRepository.deleteById(shortsCommentId);
 
         Shorts commentShorts = shortsComment.getShorts();
-
         commentShorts.setShortsCommentCnt(commentShorts.getShortsCommentCnt() - 1);
     }
 
