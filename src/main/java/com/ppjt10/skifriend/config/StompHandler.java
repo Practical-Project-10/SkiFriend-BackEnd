@@ -26,29 +26,31 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        // websocket 연결시 헤더의 jwt token 검증
+
         if (StompCommand.CONNECT == accessor.getCommand()) {
+            // websocket 연결시 헤더의 jwt token 검증
             jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
         } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            // 채팅방 식별 번호 찾아오기
             Long roomId = chatMessageService.getRoomId(
                     Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId")
             );
+
+            // 채팅방이 존재할 경우
             if (roomId != null) {
                 String sessionId = (String) message.getHeaders().get("simpSessionId");
                 String name = jwtDecoder.decodeUsername(accessor.getFirstNativeHeader("Authorization").substring(7));
                 redisRepository.setSessionUserInfo(sessionId, roomId, name);
+
+                // 해당 유저가 현재 채팅방에 IN상태로 변경
                 redisRepository.setUserChatRoomInOut(roomId + "_" + name, true);
-                System.out.println("SUBSCRIBE 클라이언트 헤더" + message.getHeaders());
-                System.out.println("SUBSCRIBE 클라이언트 세션 아이디" + sessionId);
-                System.out.println("SUBSCRIBE 클라이언트 유저 이름: " + name);
             }
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String findInOutKey = redisRepository.getSessionUserInfo(sessionId);
-            System.out.println("DISCONNECT 클라이언트 sessionId: " + sessionId);
-            System.out.println("DISCONNECT 클라이언트 inoutKey: " + findInOutKey);
 
             if (findInOutKey != null) {
+                // DISCONNECT 시, 유저가 채팅방에 OUT 상태로 변경
                 redisRepository.setUserChatRoomInOut(findInOutKey, false);
             }
 

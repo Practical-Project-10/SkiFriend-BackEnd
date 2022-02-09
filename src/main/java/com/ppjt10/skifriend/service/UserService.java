@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +46,6 @@ public class UserService {
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다.")
         );
 
-        // CareerType.findByCareerType(requestDto.getCareer());
-
         // 기타 유저 정보 등, 이미지를 제외한 정보 업데이트
         dbUser.update(requestDto);
 
@@ -61,6 +60,7 @@ public class UserService {
                 }
             }
 
+            // 새 이미지 설정 시
             if (!profileImg.getOriginalFilename().equals("delete")) {
                 try {
                     String profileImgUrl = s3Uploader.upload(profileImg, profileImgDirName);
@@ -68,7 +68,7 @@ public class UserService {
                 } catch (Exception e) {
                     dbUser.setProfileImg(defaultImg);
                 }
-            } else {
+            } else { // 기본 이미지로 설정 시 (기존 이미지 삭제 시)
                 dbUser.setProfileImg(defaultImg);
             }
         }
@@ -79,7 +79,7 @@ public class UserService {
     // 유저 탈퇴
     @Transactional
     public String deleteUser(User user) {
-
+        // S3에서 유저의 프로필 삭제
         if (!user.getProfileImg().equals(defaultImg)) {
             try {
                 String source = URLDecoder.decode(user.getProfileImg().replace("https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
@@ -90,11 +90,14 @@ public class UserService {
 
         Long userId = user.getId();
         userRepository.deleteById(userId);
+
+        // 해당 유저가 작성했던 카풀 게시글의 상태를 false로 변경
         List<Carpool> carpoolList = carpoolRepository.findAllByUserId(userId);
         for (Carpool carpool : carpoolList) {
             carpool.setStatus(false);
         }
 
+        // 해당 유저가 참여하고 있는 채팅방에서 해당 유저 정보 모두 삭제 후 채팅방 비활성화
         List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByUserId(userId);
         for (ChatUserInfo chatUserInfo : chatUserInfoList) {
             chatUserInfo.getChatRoom().setActive(false);
@@ -128,26 +131,13 @@ public class UserService {
     // 해당 채팅방에서 상대유저의 프로필 조회
     @Transactional
     public UserProfileOtherDto getOtherProfile(Long roomId, User user) {
-        List<ChatUserInfo> chatUserInfoList = chatUserInfoRepository.findAllByChatRoomId(roomId);
+        ChatUserInfo chatUserInfo = chatUserInfoRepository.findByUserIdAndChatRoomId(user.getId(), roomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 정보가 존재하지 않습니다."));
 
-        Long otherId;
-        if (chatUserInfoList.get(0).getUserId().equals(user.getId())) {
-            try {
-                otherId = chatUserInfoList.get(1).getUserId();
-            } catch(Exception ex) {
-                otherId = chatUserInfoList.get(0).getOtherId();
-            }
-
-        } else {
-            try {
-                otherId = chatUserInfoList.get(0).getUserId();
-            } catch(Exception ex) {
-                otherId = chatUserInfoList.get(1).getOtherId();
-            }
-        }
-        User other = userRepository.findById(otherId).orElseThrow(
-                () -> new IllegalArgumentException("유저가 없어용")
+        User other = userRepository.findById(chatUserInfo.getOtherId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
         );
+
         return generateOtherResponseDto(other);
     }
 
@@ -164,15 +154,14 @@ public class UserService {
     }
 
     private CarpoolResponseDto generateCarpoolResponseDto(Carpool carpool) {
+        Optional<User> user = userRepository.findById(carpool.getUserId());
         String nickname;
-        try {
-            User user = userRepository.findById(carpool.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-        } catch (Exception e) {
+        if (user.isPresent()) {
+            nickname = user.get().getNickname();
+        } else {
             nickname = "알 수 없음";
         }
+
         return CarpoolResponseDto.builder()
                 .userId(carpool.getUserId())
                 .postId(carpool.getId())

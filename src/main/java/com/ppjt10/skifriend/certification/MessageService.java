@@ -33,12 +33,7 @@ public class MessageService {
     // 인증번호 생성하기
     public String getSmsRedisRepository(SignupPhoneNumDto requestDto, User user) {
         if (user.getPhoneNum() != null) {
-            throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
-        }
-
-        User existedUser = userRepository.findByPhoneNum(requestDto.getPhoneNumber());
-        if (existedUser != null) {
-            throw new IllegalArgumentException("이미 가입된 번호입니다.");
+            return "이미 전화번호 인증을 완료하셨습니다.";
         }
 
         // 랜덤한 인증 번호 생성
@@ -54,9 +49,9 @@ public class MessageService {
                 new PhoneNumber(fromPhoneNum),
                 "인증번호 [" + randomNum + "]를 입력해 주세요").create();
 
-        // DB에 발송한 인증번호 저장
+        // Redis에 발송한 인증번호 저장
         smsRedisRepository.createSmsCertification(requestDto.getPhoneNumber(), randomNum);
-//        return randomNum;
+
         return "문자 전송이 완료되었습니다.";
     }
 
@@ -67,16 +62,12 @@ public class MessageService {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
 
-        if (user.getPhoneNum() != null) {
-            throw new IllegalArgumentException("이미 전화번호 인증을 완료하셨습니다.");
-        }
-
         String phoneNum = requestDto.getPhoneNumber();
 
         // 인증 완료 시, Redis Repository에서 인증번호 삭제
         smsRedisRepository.deleteSmsCertification(phoneNum);
 
-        // 유저 전화번호 업데이트
+        // 유저 전화번호 정보 업데이트
         User verifiedUser = userRepository.findById(user.getId()).orElseThrow(
                 () -> new IllegalArgumentException("유저가 없어용")
         );
@@ -91,10 +82,10 @@ public class MessageService {
         Twilio.init(apiKey, apiSecret);
         String toPhoneNum = "+" + 82 + phoneNumber;
 
-//        Message message = Message.creator(
-//                new PhoneNumber(toPhoneNum),
-//                new PhoneNumber(fromPhoneNum),
-//                SKIFRIEND + msg).create();
+        Message message = Message.creator(
+                new PhoneNumber(toPhoneNum),
+                new PhoneNumber(fromPhoneNum),
+                SKIFRIEND + msg).create();
 
         System.out.println(phoneNumber + msg);
     }
