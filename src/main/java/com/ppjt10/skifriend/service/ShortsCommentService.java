@@ -10,9 +10,11 @@ import com.ppjt10.skifriend.time.TimeConversion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -85,16 +87,15 @@ public class ShortsCommentService {
     private ShortsCommentResponseDto generateShortsCommentResponseDto(ShortsComment shortsComment) {
         String nickname;
         String userImg;
-        try {
-            User user = userRepository.findById(shortsComment.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-            userImg = user.getProfileImg();
-        } catch (Exception e) {
+        Optional<User> user = userRepository.findById(shortsComment.getUserId());
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+            userImg = user.get().getProfileImg();
+        } else{
             nickname = "알 수 없음";
             userImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
+
         return ShortsCommentResponseDto.builder()
                 .userId(shortsComment.getUserId())
                 .shortsCommentId(shortsComment.getId())

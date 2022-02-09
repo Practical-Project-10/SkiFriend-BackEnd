@@ -38,7 +38,6 @@ public class MessageService {
 
         // 랜덤한 인증 번호 생성
         String randomNum = String.valueOf((int) (Math.random() * 9000) + 1000);
-        System.out.println("인증번호" + randomNum);
 
         // 발신 정보 설정
         Twilio.init(apiKey, apiSecret);

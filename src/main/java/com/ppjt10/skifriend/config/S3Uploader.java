@@ -31,15 +31,17 @@ public class S3Uploader {
 
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-        System.out.println("파일변환 통과아아아아아");
+
         String filePath = System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename();
 
         videoFileUtils.createThumbnail(filePath, System.getProperty("user.dir") + "/" + "test.png");
         videoFileUtils.videoEncode(filePath, System.getProperty("user.dir") + "/" + "test.mp4");
 
         removeNewFile(uploadFile);
+
         File thumbNail = new File(System.getProperty("user.dir") + "/" + "test.png");
         File encodedVideo =new File(System.getProperty("user.dir") + "/" + "test.mp4");
+
         return upload(encodedVideo, dirName) + "~" + upload(thumbNail, dirName);
     }
 
