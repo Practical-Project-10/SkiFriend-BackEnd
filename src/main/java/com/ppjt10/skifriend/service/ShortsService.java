@@ -36,16 +36,13 @@ public class ShortsService {
         List<Shorts> shortsList = shortsRepository.findAll();
         long totalNum = shortsList.size();
         long pastRanNum = redisRepository.getRandomNumIp(ip);
-        System.out.println("pastRanNum : " + pastRanNum);
 
         if(totalNum == 0) {
             throw new IllegalArgumentException("Shorts가 하나도 없습니다");
         }
 
-        Shorts shorts;
-
         if(totalNum == 1) {
-            shorts = shortsList.get(0);
+            Shorts shorts = shortsList.get(0);
             return generateShortsResponseDto(shorts);
         }
 
@@ -56,26 +53,9 @@ public class ShortsService {
             System.out.println("while문 안 randomNum: " + randomNum);
         }
         redisRepository.setRandomNumIp(ip, (int)randomNum);
-        shorts = shortsList.get((int)randomNum - 1);
-        System.out.println("실행중인 shortsId: " + shorts.getId());
-        return generateShortsResponseDto(shorts);
+        Shorts shorts = shortsList.get((int)randomNum - 1);
 
-//        long pastRanNum = redisRepository.getRandomNumIp(ip);
-//        long totalNum = shortsRepository.count();
-//        if(totalNum == 0) {
-//            throw new IllegalArgumentException("Shorts가 하나도 없습니다");
-//        }
-//        Optional<Shorts> shorts;
-//        do {
-//            long randomNum = (long)(Math.random() * totalNum + 1);
-//            while(randomNum == pastRanNum) {
-//                randomNum = (long)(Math.random() * totalNum + 1);
-//            }
-//            redisRepository.setRandomNumIp(ip, (int)randomNum);
-//            shorts = shortsRepository.findById(randomNum);
-//        } while (!shorts.isPresent());
-//
-//        return generateShortsResponseDto(shorts.get());
+        return generateShortsResponseDto(shorts);
     }
 
     //Shorts 작성
@@ -96,21 +76,20 @@ public class ShortsService {
     //Shorts 수정
     @Transactional
     public ShortsResponseDto updateShorts(ShortsRequestDto requestDto, Long shortsId, User user) {
-
+        // 수정하려고 하는 쇼츠 찾아오기
         Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(
                 () -> new IllegalArgumentException("해당 동영상이 존재하지 않습니다.")
         );
 
+        // 작성한 유저 정보가 일치하는지 확인
         if (!user.getId().equals(shorts.getUserId())) {
             throw new IllegalArgumentException("게시글을 작성한 유저만 수정이 가능합니다.");
         }
 
-        if (requestDto.getTitle() == null) {
-            throw new IllegalArgumentException("제목을 작성해주세요");
-        }
-
+        // 수정
         shorts.update(requestDto.getTitle());
-        return generateShortsResponseDto(shorts);
+
+        return generateShortsResponseDto(shorts); //수정 정보 반환
     }
 
     //Shorts 삭제
@@ -143,21 +122,19 @@ public class ShortsService {
                 .build();
     }
 
-
     //ShortsResponseDto 생성
     private ShortsResponseDto generateShortsResponseDto(Shorts shorts) {
         String nickname;
         String profileImg;
-        try {
-            User user = userRepository.findById(shorts.getUserId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            );
-            nickname = user.getNickname();
-            profileImg = user.getProfileImg();
-        } catch (Exception e) {
+        Optional<User> user = userRepository.findById(shorts.getUserId());
+        if(user.isPresent()){
+            nickname = user.get().getNickname();
+            profileImg = user.get().getProfileImg();
+        } else{
             nickname = "알 수 없음";
             profileImg = "https://skifriendbucket.s3.ap-northeast-2.amazonaws.com/static/defalt+user+frofile.png";
         }
+
         List<ShortsLikeResponseDto> shortsLikeResponseDtoList = new ArrayList<>();
         List<ShortsLike> shortsLikeList = shortsLikeRepository.findAllByShorts(shorts);
         for(ShortsLike shortsLike : shortsLikeList) {
